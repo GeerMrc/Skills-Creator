@@ -1,0 +1,9 @@
+{
+  "plansDirectory": ".claude/plans",
+  "permissions": {
+    "allow": ["WebSearch", "Web-reader", "Thinking", "RegistryTools", "Context7", "GitHub"],
+    "deny": [],
+    "ask": []
+  },
+  "language": "chinese"
+}

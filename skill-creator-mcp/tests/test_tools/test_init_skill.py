@@ -3,8 +3,19 @@
 import pytest
 from pathlib import Path
 
-from skill_creator_mcp.utils.validators import validate_skill_name, validate_template_type
-from skill_creator_mcp.utils.file_ops import create_directory_structure_async, write_file_async
+from skill_creator_mcp.utils.validators import (
+    validate_skill_name,
+    validate_template_type,
+    validate_skill_directory,
+)
+from skill_creator_mcp.utils.file_ops import (
+    create_directory_structure_async,
+    write_file_async,
+    create_directory_structure,
+    write_file,
+    read_file_async,
+    read_file,
+)
 
 
 @pytest.mark.asyncio
@@ -61,6 +72,75 @@ def test_validate_template_type():
     # 无效模板
     with pytest.raises(ValueError):
         validate_template_type("invalid")
+
+
+def test_validate_skill_directory(temp_dir):
+    """测试技能目录验证."""
+    # 创建有效的技能目录
+    skill_dir = temp_dir / "valid-skill"
+    skill_dir.mkdir()
+    (skill_dir / "SKILL.md").write_text("test")
+
+    # 应该通过验证
+    validate_skill_directory(skill_dir)
+
+    # 测试不存在的目录
+    with pytest.raises(ValueError, match="不存在"):
+        validate_skill_directory(temp_dir / "non-existent")
+
+    # 测试缺少 SKILL.md 的目录
+    invalid_dir = temp_dir / "invalid-skill"
+    invalid_dir.mkdir()
+
+    with pytest.raises(ValueError, match="SKILL.md 不存在"):
+        validate_skill_directory(invalid_dir)
+
+
+def test_sync_create_directory_structure(temp_dir):
+    """测试同步创建目录结构."""
+    skill_dir = create_directory_structure(
+        name="test-sync",
+        template_type="minimal",
+        output_dir=temp_dir,
+    )
+
+    assert skill_dir.exists()
+    assert (skill_dir / "references").exists()
+    assert (skill_dir / "examples").exists()
+    assert (skill_dir / "scripts").exists()
+    assert (skill_dir / ".claude").exists()
+
+
+def test_sync_write_file(temp_dir):
+    """测试同步写入文件."""
+    test_file = temp_dir / "test.txt"
+    content = "Hello, World!"
+
+    write_file(test_file, content)
+
+    assert test_file.exists()
+    assert test_file.read_text() == content
+
+
+@pytest.mark.asyncio
+async def test_async_read_file(temp_dir):
+    """测试异步读取文件."""
+    test_file = temp_dir / "test-read.txt"
+    content = "Test content for reading"
+    test_file.write_text(content)
+
+    result = await read_file_async(test_file)
+    assert result == content
+
+
+def test_sync_read_file(temp_dir):
+    """测试同步读取文件."""
+    test_file = temp_dir / "test-sync-read.txt"
+    content = "Test sync read"
+    test_file.write_text(content)
+
+    result = read_file(test_file)
+    assert result == content
 
 
 def _generate_skill_md_content(name: str, template: str) -> str:

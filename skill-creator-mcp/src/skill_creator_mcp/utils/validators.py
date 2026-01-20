@@ -7,17 +7,22 @@ from pathlib import Path
 def validate_skill_name(name: str) -> None:
     """验证技能名称符合规范.
 
+    规范：
+    - 只能包含小写字母、数字、连字符
+    - 不能以连字符开头或结尾
+    - 不能有连续的连字符
+
     Args:
         name: 技能名称
 
     Raises:
         ValueError: 名称不符合规范时抛出
     """
-    pattern = r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'
+    pattern = r'^[a-z0-9]+(?:-[a-z0-9]+)*$'
     if not re.match(pattern, name):
         raise ValueError(
             f"技能名称 '{name}' 不符合规范。"
-            "要求：小写字母、数字、连字符，不能以连字符开头或结尾"
+            "要求：小写字母、数字、单个连字符，不能以连字符开头或结尾，不能有连续连字符"
         )
 
 

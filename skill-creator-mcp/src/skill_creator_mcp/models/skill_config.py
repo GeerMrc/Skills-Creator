@@ -54,11 +54,11 @@ class InitSkillInput(BaseModel):
         Raises:
             ValueError: 名称不符合规范时抛出
         """
-        pattern = r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'
+        pattern = r'^[a-z0-9]+(?:-[a-z0-9]+)*$'
         if not re.match(pattern, v):
             raise ValueError(
                 f"技能名称 '{v}' 不符合规范。"
-                "要求：小写字母、数字、连字符，不能以连字符开头或结尾"
+                "要求：小写字母、数字、单个连字符，不能以连字符开头或结尾，不能有连续连字符"
             )
         return v
 
