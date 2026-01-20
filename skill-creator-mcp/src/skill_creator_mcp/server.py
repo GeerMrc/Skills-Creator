@@ -10,7 +10,14 @@ from typing import Any
 from fastmcp import Context, FastMCP
 
 from .utils.file_ops import create_directory_structure_async, write_file_async
-from .utils.validators import validate_skill_name, validate_template_type
+from .utils.validators import (
+    _validate_naming,
+    _validate_skill_md,
+    _validate_structure,
+    _validate_template_requirements,
+    validate_skill_name,
+    validate_template_type,
+)
 
 # 创建 MCP Server
 mcp = FastMCP(
@@ -31,6 +38,14 @@ mcp = FastMCP(
     - output_dir (str): 输出目录路径
     - with_scripts (bool): 是否包含示例脚本
     - with_examples (bool): 是否包含使用示例
+
+    ### validate_skill
+    验证 Agent-Skill 的结构和内容。
+
+    参数：
+    - skill_path (str): 技能目录路径
+    - check_structure (bool): 是否检查目录结构（默认 True）
+    - check_content (bool): 是否检查内容格式（默认 True）
 
     ## TODO: 更多工具正在开发中
 
@@ -117,6 +132,109 @@ async def init_skill(
         return {
             "success": False,
             "error": str(e),
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def validate_skill(
+    ctx: Context,
+    skill_path: str,
+    check_structure: bool = True,
+    check_content: bool = True,
+) -> dict[str, Any]:
+    """
+    验证 Agent-Skill 的结构和内容.
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: 技能目录路径
+        check_structure: 是否检查目录结构
+        check_content: 是否检查内容格式
+
+    Returns:
+        包含验证结果的字典
+    """
+    try:
+        skill_dir = Path(skill_path)
+
+        # 初始化结果
+        errors = []
+        warnings = []
+        checks = {}
+        template_type = None
+
+        # 检查目录是否存在
+        if not skill_dir.exists():
+            return {
+                "success": False,
+                "valid": False,
+                "skill_path": skill_path,
+                "errors": [f"目录不存在: {skill_path}"],
+                "warnings": [],
+                "checks": {},
+            }
+
+        if not skill_dir.is_dir():
+            return {
+                "success": False,
+                "valid": False,
+                "skill_path": skill_path,
+                "errors": [f"路径不是目录: {skill_path}"],
+                "warnings": [],
+                "checks": {},
+            }
+
+        # 1. 检查目录结构
+        if check_structure:
+            structure_errors = _validate_structure(skill_dir)
+            errors.extend(structure_errors)
+            checks["structure"] = len(structure_errors) == 0
+
+        # 2. 检查命名规范
+        naming_errors = _validate_naming(skill_dir)
+        errors.extend(naming_errors)
+        checks["naming"] = len(naming_errors) == 0
+
+        # 3. 检查内容格式
+        if check_content:
+            content_errors, content_warnings, detected_template = _validate_skill_md(skill_dir)
+            errors.extend(content_errors)
+            warnings.extend(content_warnings)
+            checks["content"] = len(content_errors) == 0
+
+            if detected_template:
+                template_type = detected_template
+
+            # 4. 检查模板特定要求
+            if template_type:
+                template_errors = _validate_template_requirements(skill_dir, template_type)
+                errors.extend(template_errors)
+                checks["template_requirements"] = len(template_errors) == 0
+
+        # 判断验证是否通过
+        valid = len(errors) == 0
+
+        return {
+            "success": True,
+            "valid": valid,
+            "skill_path": str(skill_dir),
+            "skill_name": skill_dir.name,
+            "template_type": template_type,
+            "errors": errors,
+            "warnings": warnings,
+            "checks": checks,
+            "message": "验证通过" if valid else f"验证失败，发现 {len(errors)} 个错误",
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "valid": False,
+            "skill_path": skill_path,
+            "errors": [f"验证过程出错: {e}"],
+            "warnings": [],
+            "checks": {},
             "error_type": "internal_error",
         }
 

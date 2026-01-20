@@ -7,6 +7,8 @@ from skill_creator_mcp.models.skill_config import (
     InitSkillInput,
     SkillConfig,
     SkillTemplateType,
+    ValidateSkillInput,
+    ValidationResult,
 )
 
 
@@ -105,3 +107,82 @@ def test_skill_config_optional_fields():
     assert config.version == "0.1.0"
     assert config.allowed_tools is None
     assert config.mcp_servers is None
+
+
+# ==================== ValidateSkillInput 测试 ====================
+
+
+def test_validate_skill_input_valid():
+    """测试有效的 ValidateSkillInput."""
+    input_data = {
+        "skill_path": "/path/to/skill",
+        "check_structure": True,
+        "check_content": True,
+    }
+    model = ValidateSkillInput(**input_data)
+    assert model.skill_path == "/path/to/skill"
+    assert model.check_structure is True
+    assert model.check_content is True
+
+
+def test_validate_skill_input_defaults():
+    """测试 ValidateSkillInput 默认值."""
+    model = ValidateSkillInput(skill_path="/path/to/skill")
+    assert model.skill_path == "/path/to/skill"
+    assert model.check_structure is True
+    assert model.check_content is True
+
+
+def test_validate_skill_input_path_required():
+    """测试 skill_path 必需字段."""
+    with pytest.raises(ValidationError):
+        ValidateSkillInput()
+
+
+# ==================== ValidationResult 测试 ====================
+
+
+def test_validation_result_valid():
+    """测试有效的 ValidationResult."""
+    result = ValidationResult(
+        valid=True,
+        skill_path="/path/to/skill",
+        skill_name="test-skill",
+        template_type="minimal",
+    )
+    assert result.valid is True
+    assert result.skill_path == "/path/to/skill"
+    assert result.skill_name == "test-skill"
+    assert result.template_type == "minimal"
+    assert result.errors == []
+    assert result.warnings == []
+    assert result.checks == {}
+
+
+def test_validation_result_with_errors():
+    """测试带错误的 ValidationResult."""
+    result = ValidationResult(
+        valid=False,
+        skill_path="/path/to/skill",
+        errors=["缺少 SKILL.md", "缺少 references 目录"],
+        warnings=["描述为空"],
+        checks={"structure": False, "naming": True},
+    )
+    assert result.valid is False
+    assert len(result.errors) == 2
+    assert len(result.warnings) == 1
+    assert result.checks["structure"] is False
+    assert result.checks["naming"] is True
+
+
+def test_validation_result_optional_fields():
+    """测试 ValidationResult 可选字段."""
+    result = ValidationResult(
+        valid=True,
+        skill_path="/path/to/skill",
+    )
+    assert result.skill_name is None
+    assert result.template_type is None
+    assert result.errors == []
+    assert result.warnings == []
+    assert result.checks == {}

@@ -73,3 +73,53 @@ class SkillConfig(BaseModel):
     version: str = "0.1.0"
     allowed_tools: list[str] | None = None
     mcp_servers: list[str] | None = None
+
+
+class ValidateSkillInput(BaseModel):
+    """验证技能输入参数模型."""
+
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    check_structure: bool = Field(
+        default=True,
+        description="是否检查目录结构",
+    )
+    check_content: bool = Field(
+        default=True,
+        description="是否检查内容格式",
+    )
+
+
+class ValidationResult(BaseModel):
+    """验证结果模型."""
+
+    valid: bool = Field(
+        ...,
+        description="验证是否通过",
+    )
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    skill_name: str | None = Field(
+        default=None,
+        description="技能名称",
+    )
+    template_type: SkillTemplateType | None = Field(
+        default=None,
+        description="模板类型",
+    )
+    errors: list[str] = Field(
+        default_factory=list,
+        description="错误信息列表",
+    )
+    warnings: list[str] = Field(
+        default_factory=list,
+        description="警告信息列表",
+    )
+    checks: dict[str, bool] = Field(
+        default_factory=dict,
+        description="各项检查结果",
+    )
