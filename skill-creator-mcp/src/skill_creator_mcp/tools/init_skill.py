@@ -1,46 +1,18 @@
-"""Skill Creator MCP Server.
+"""初始化技能工具.
 
-这是一个基于 FastMCP SDK 开发的 MCP Server，用于创建、验证、
-分析和重构 Agent-Skills。
+提供创建新 Agent-Skill 的功能，包括目录结构生成、模板渲染等。
 """
 
 from pathlib import Path
 from typing import Any
 
-from fastmcp import Context, FastMCP
+from fastmcp import Context
 
-from .utils.file_ops import create_directory_structure_async, write_file_async
-from .utils.validators import validate_skill_name, validate_template_type
-
-# 创建 MCP Server
-mcp = FastMCP(
-    name="skill-creator",
-    instructions="""
-    Skill Creator MCP Server - Agent-Skills 开发工具
-
-    这个服务器提供创建、验证、分析和重构 Agent-Skills 的工具。
-
-    ## 可用工具
-
-    ### init_skill
-    初始化新的 Agent-Skill。
-
-    参数：
-    - name (str): 技能名称（小写字母、数字、连字符，1-64字符）
-    - template (str): 模板类型（minimal/tool-based/workflow-based/analyzer-based）
-    - output_dir (str): 输出目录路径
-    - with_scripts (bool): 是否包含示例脚本
-    - with_examples (bool): 是否包含使用示例
-
-    ## TODO: 更多工具正在开发中
-
-    当前处于开发阶段，其他工具和资源正在逐步实现中。
-    """
-)
+from ..utils.file_ops import create_directory_structure_async, write_file_async
+from ..utils.validators import validate_skill_name, validate_template_type
 
 
-@mcp.tool()
-async def init_skill(
+async def init_skill_tool(
     ctx: Context,
     name: str,
     template: str = "minimal",
@@ -292,6 +264,3 @@ async def _create_example_examples(skill_dir: Path, name: str) -> None:
 描述错误情况的处理方式。
 """
     await write_file_async(examples_dir / "basic-usage.md", example_content)
-
-
-__all__ = ["mcp"]
