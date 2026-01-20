@@ -1,8 +1,9 @@
 """测试 FastMCP 包装的 init_skill 工具."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from skill_creator_mcp.server import mcp
 

@@ -2,15 +2,12 @@
 
 from pathlib import Path
 
-import pytest
-
 from skill_creator_mcp.utils.validators import (
     _validate_naming,
     _validate_skill_md,
     _validate_structure,
     _validate_template_requirements,
 )
-
 
 # ==================== _validate_structure 测试 ====================
 

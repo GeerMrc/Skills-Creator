@@ -1,5 +1,12 @@
 """工具函数模块."""
 
+from .analyzers import (
+    _analyze_complexity,
+    _analyze_quality,
+    _analyze_structure,
+    _generate_analysis_summary,
+    _generate_suggestions,
+)
 from .file_ops import (
     create_directory_structure,
     create_directory_structure_async,
@@ -26,6 +33,11 @@ __all__ = [
     "_validate_naming",
     "_validate_skill_md",
     "_validate_template_requirements",
+    "_analyze_structure",
+    "_analyze_complexity",
+    "_analyze_quality",
+    "_generate_suggestions",
+    "_generate_analysis_summary",
     "create_directory_structure_async",
     "create_directory_structure",
     "write_file_async",

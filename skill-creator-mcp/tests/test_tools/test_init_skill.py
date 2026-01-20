@@ -1,20 +1,20 @@
 """测试 init_skill 工具."""
 
-import pytest
-from pathlib import Path
 
+import pytest
+
+from skill_creator_mcp.utils.file_ops import (
+    create_directory_structure,
+    create_directory_structure_async,
+    read_file,
+    read_file_async,
+    write_file,
+    write_file_async,
+)
 from skill_creator_mcp.utils.validators import (
+    validate_skill_directory,
     validate_skill_name,
     validate_template_type,
-    validate_skill_directory,
-)
-from skill_creator_mcp.utils.file_ops import (
-    create_directory_structure_async,
-    write_file_async,
-    create_directory_structure,
-    write_file,
-    read_file_async,
-    read_file,
 )
 
 

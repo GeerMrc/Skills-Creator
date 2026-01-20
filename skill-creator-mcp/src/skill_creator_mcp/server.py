@@ -9,6 +9,13 @@ from typing import Any
 
 from fastmcp import Context, FastMCP
 
+from .utils.analyzers import (
+    _analyze_complexity,
+    _analyze_quality,
+    _analyze_structure,
+    _generate_analysis_summary,
+    _generate_suggestions,
+)
 from .utils.file_ops import create_directory_structure_async, write_file_async
 from .utils.validators import (
     _validate_naming,
@@ -46,6 +53,15 @@ mcp = FastMCP(
     - skill_path (str): 技能目录路径
     - check_structure (bool): 是否检查目录结构（默认 True）
     - check_content (bool): 是否检查内容格式（默认 True）
+
+    ### analyze_skill
+    分析 Agent-Skill 的代码质量、复杂度和结构。
+
+    参数：
+    - skill_path (str): 技能目录路径
+    - analyze_structure (bool): 是否分析代码结构（默认 True）
+    - analyze_complexity (bool): 是否分析代码复杂度（默认 True）
+    - analyze_quality (bool): 是否分析代码质量（默认 True）
 
     ## TODO: 更多工具正在开发中
 
@@ -235,6 +251,105 @@ async def validate_skill(
             "errors": [f"验证过程出错: {e}"],
             "warnings": [],
             "checks": {},
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def analyze_skill(
+    ctx: Context,
+    skill_path: str,
+    analyze_structure: bool = True,
+    analyze_complexity: bool = True,
+    analyze_quality: bool = True,
+) -> dict[str, Any]:
+    """
+    分析 Agent-Skill 的代码质量和结构.
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: 技能目录路径
+        analyze_structure: 是否分析代码结构
+        analyze_complexity: 是否分析代码复杂度
+        analyze_quality: 是否分析代码质量
+
+    Returns:
+        包含分析结果的字典
+    """
+    from .models.skill_config import (
+        QualityScore,
+    )
+
+    try:
+        skill_dir = Path(skill_path)
+
+        # 检查目录是否存在
+        if not skill_dir.exists():
+            return {
+                "success": False,
+                "error": f"目录不存在: {skill_path}",
+                "error_type": "path_error",
+            }
+
+        if not skill_dir.is_dir():
+            return {
+                "success": False,
+                "error": f"路径不是目录: {skill_path}",
+                "error_type": "path_error",
+            }
+
+        # 1. 结构分析
+        if analyze_structure:
+            structure = _analyze_structure(skill_dir)
+        else:
+            from .models.skill_config import StructureAnalysis
+            structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
+
+        # 2. 复杂度分析
+        if analyze_complexity:
+            complexity = _analyze_complexity(skill_dir)
+        else:
+            from .models.skill_config import ComplexityMetrics
+            complexity = ComplexityMetrics(cyclomatic_complexity=None, maintainability_index=None, code_duplication=None)
+
+        # 3. 质量分析
+        if analyze_quality:
+            quality = _analyze_quality(skill_dir)
+        else:
+            # 如果不分析质量，使用默认值
+            quality = QualityScore(overall_score=0.0, structure_score=0.0, documentation_score=0.0, test_coverage_score=0.0)
+
+        # 4. 生成改进建议
+        suggestions = _generate_suggestions(structure, complexity, quality)
+
+        return {
+            "success": True,
+            "skill_path": str(skill_dir),
+            "skill_name": skill_dir.name,
+            "structure": {
+                "total_files": structure.total_files,
+                "total_lines": structure.total_lines,
+                "file_breakdown": structure.file_breakdown,
+            },
+            "complexity": {
+                "cyclomatic_complexity": complexity.cyclomatic_complexity,
+                "maintainability_index": complexity.maintainability_index,
+                "code_duplication": complexity.code_duplication,
+            },
+            "quality": {
+                "overall_score": quality.overall_score,
+                "structure_score": quality.structure_score,
+                "documentation_score": quality.documentation_score,
+                "test_coverage_score": quality.test_coverage_score,
+            },
+            "suggestions": suggestions,
+            "summary": _generate_analysis_summary(quality, complexity),
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"分析过程出错: {e}",
             "error_type": "internal_error",
         }
 

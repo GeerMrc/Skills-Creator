@@ -6,7 +6,6 @@ from pydantic import ValidationError
 from skill_creator_mcp.models.skill_config import (
     InitSkillInput,
     SkillConfig,
-    SkillTemplateType,
     ValidateSkillInput,
     ValidationResult,
 )

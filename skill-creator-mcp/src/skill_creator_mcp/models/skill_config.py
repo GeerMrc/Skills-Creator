@@ -123,3 +123,110 @@ class ValidationResult(BaseModel):
         default_factory=dict,
         description="各项检查结果",
     )
+
+
+class AnalyzeSkillInput(BaseModel):
+    """分析技能输入参数模型."""
+
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    analyze_structure: bool = Field(
+        default=True,
+        description="是否分析代码结构",
+    )
+    analyze_complexity: bool = Field(
+        default=True,
+        description="是否分析代码复杂度",
+    )
+    analyze_quality: bool = Field(
+        default=True,
+        description="是否分析代码质量",
+    )
+
+
+class StructureAnalysis(BaseModel):
+    """结构分析结果模型."""
+
+    total_files: int = Field(
+        default=0,
+        description="文件总数",
+    )
+    total_lines: int = Field(
+        default=0,
+        description="代码总行数",
+    )
+    file_breakdown: dict[str, int] = Field(
+        default_factory=dict,
+        description="文件分类统计",
+    )
+
+
+class ComplexityMetrics(BaseModel):
+    """复杂度指标模型."""
+
+    cyclomatic_complexity: int | None = Field(
+        default=None,
+        description="圈复杂度",
+    )
+    maintainability_index: float | None = Field(
+        default=None,
+        description="可维护性指数",
+    )
+    code_duplication: float | None = Field(
+        default=None,
+        description="代码重复率",
+    )
+
+
+class QualityScore(BaseModel):
+    """质量评分模型."""
+
+    overall_score: float = Field(
+        ...,
+        description="总体评分 (0-100)",
+        ge=0,
+        le=100,
+    )
+    structure_score: float = Field(
+        default=0,
+        description="结构评分",
+    )
+    documentation_score: float = Field(
+        default=0,
+        description="文档评分",
+    )
+    test_coverage_score: float = Field(
+        default=0,
+        description="测试覆盖率评分",
+    )
+
+
+class AnalyzeResult(BaseModel):
+    """分析结果模型."""
+
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    skill_name: str | None = Field(
+        default=None,
+        description="技能名称",
+    )
+    structure: StructureAnalysis = Field(
+        default_factory=StructureAnalysis,
+        description="结构分析结果",
+    )
+    complexity: ComplexityMetrics = Field(
+        default_factory=ComplexityMetrics,
+        description="复杂度指标",
+    )
+    quality: QualityScore = Field(
+        ...,
+        description="质量评分",
+    )
+    suggestions: list[str] = Field(
+        default_factory=list,
+        description="改进建议列表",
+    )

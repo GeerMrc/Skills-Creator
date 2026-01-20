@@ -12,8 +12,6 @@ from skill_creator_mcp.utils.validators import (
     _validate_skill_md,
     _validate_structure,
     _validate_template_requirements,
-    validate_skill_name,
-    validate_template_type,
 )
 
 
@@ -178,7 +176,6 @@ async def test_full_validate_skill_flow_missing_files(temp_dir: Path):
 
     # 执行验证
     structure_errors = _validate_structure(skill_dir)
-    naming_errors = _validate_naming(skill_dir)
     content_errors, content_warnings, template_type = _validate_skill_md(skill_dir)
 
     # 验证结果 - 应该有错误

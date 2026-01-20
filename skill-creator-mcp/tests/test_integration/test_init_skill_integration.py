@@ -3,17 +3,17 @@
 测试 init_skill 的完整流程，包括所有辅助函数。
 """
 
+
 import pytest
-from pathlib import Path
 
 from skill_creator_mcp.server import (
-    _generate_skill_md_content,
-    _create_reference_files,
-    _create_example_scripts,
     _create_example_examples,
+    _create_example_scripts,
+    _create_reference_files,
+    _generate_skill_md_content,
 )
-from skill_creator_mcp.utils.validators import validate_skill_name, validate_template_type
 from skill_creator_mcp.utils.file_ops import create_directory_structure_async, write_file_async
+from skill_creator_mcp.utils.validators import validate_skill_name, validate_template_type
 
 
 @pytest.mark.asyncio
