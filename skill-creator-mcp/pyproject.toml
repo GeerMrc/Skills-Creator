@@ -64,6 +64,8 @@ packages = ["src/skill_creator_mcp"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint]
 select = [
     "E",
     "F",
@@ -77,7 +79,7 @@ ignore = [
     "B008",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["skill_creator_mcp"]
 
 [tool.mypy]

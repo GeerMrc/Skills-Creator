@@ -9,6 +9,12 @@ from typing import Any
 
 from fastmcp import Context, FastMCP
 
+from .resources import (
+    get_best_practices,
+    get_template_content,
+    get_validation_rules,
+    list_templates,
+)
 from .utils.analyzers import (
     _analyze_complexity,
     _analyze_quality,
@@ -525,6 +531,45 @@ async def _create_example_examples(skill_dir: Path, name: str) -> None:
 描述错误情况的处理方式。
 """
     await write_file_async(examples_dir / "basic-usage.md", example_content)
+
+
+# ==================== MCP Resources ====================
+
+
+@mcp.resource("skill://templates")
+def list_templates_resource() -> str:
+    """列出所有可用的技能模板."""
+    templates = list_templates()
+    result = "# 技能模板列表\n\n"
+    for t in templates:
+        result += f"## {t['type']}\n"
+        result += f"{t['description']}\n\n"
+    return result
+
+
+@mcp.resource("skill://templates/{type}")
+def get_template_resource(type: str) -> str:
+    """获取指定类型的技能模板内容."""
+    from .resources.templates import TemplateType
+
+    # 验证模板类型
+    valid_types = ["minimal", "tool-based", "workflow-based", "analyzer-based"]
+    if type not in valid_types:
+        return f"# 错误\n\n未知的模板类型: {type}\n\n有效类型: {', '.join(valid_types)}"
+
+    return get_template_content(TemplateType(type))  # type: ignore
+
+
+@mcp.resource("skill://best-practices")
+def best_practices_resource() -> str:
+    """获取 Agent-Skills 开发最佳实践."""
+    return get_best_practices()
+
+
+@mcp.resource("skill://validation-rules")
+def validation_rules_resource() -> str:
+    """获取 Agent-Skills 验证规则."""
+    return get_validation_rules()
 
 
 __all__ = ["mcp"]
