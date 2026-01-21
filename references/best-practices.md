@@ -244,11 +244,11 @@ SKILL.md (100行)
 ```markdown
 ## 核心能力
 
-1. 文件处理 - 处理各种文件格式
+1. 技能验证 - 验证技能规范符合度
 
 ## 详细文档
 
-- **[文件处理详解](references/file-processing.md)**
+- **[验证规范详解](references/validation.md)**
 ```
 
 ### 4. 控制引用深度
