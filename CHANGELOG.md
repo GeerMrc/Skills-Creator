@@ -39,6 +39,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Branch Strategy**: Updated to reflect simplified main + feature/* structure
+  - Removed outdated `develop` branch references
+  - Updated audit report Git workflow score from 70/100 to 95/100
+
+### Fixed
+- **Documentation**: Fixed broken reference in `best-practices.md`
+  - Replaced invalid `file-processing.md` with actual `validation.md`
+
+### Improved
+- **Project Organization**: Comprehensive cleanup and optimization
+  - Added core project documentation (ARCHITECTURE_AUDIT_REPORT_v2.md, CLAUDE.md, ISSUES.md, ROADMAP.md)
+  - Archived old audit report versions to `.claude/archive/`
+  - Moved outdated `architecture-audit-report.md` from references/ to archive/
+  - Organized plan files with proper version control
+
+### Verified
+- **Test Coverage**: Maintained at 94% (276 tests passing)
+- **Cross-references**: All documentation links validated
+- **Code Quality**: All quality checks passing (ruff, mypy, pytest)
+
 ### Planned
 - MCP Inspector guide
 - Performance benchmarks
