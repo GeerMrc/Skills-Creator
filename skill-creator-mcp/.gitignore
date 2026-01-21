@@ -33,6 +33,7 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
+coverage.json
 .cache
 nosetests.xml
 coverage.xml
@@ -40,6 +41,9 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+
+# UV lock file (optional - uncomment if not needed)
+# uv.lock
 
 # Environments
 .env

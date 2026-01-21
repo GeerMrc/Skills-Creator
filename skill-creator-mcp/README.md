@@ -20,8 +20,8 @@ Agent-Skills 开发与质量保证 MCP Server。
 - ✅ **init_skill** - 初始化新的 Agent-Skill 项目（支持 4 种模板）
 - ✅ **validate_skill** - 验证技能结构和内容规范
 - ✅ **analyze_skill** - 分析代码质量和复杂度
-- 🚧 **refactor_skill** - 重构建议生成（开发中）
-- 🚧 **package_skill** - 打包发布工具（开发中）
+- ✅ **refactor_skill** - 重构建议生成（P0/P1/P2 优先级）
+- ✅ **package_skill** - 打包发布工具（zip/tar.gz/tar.bz2）
 
 ### 技能模板
 
