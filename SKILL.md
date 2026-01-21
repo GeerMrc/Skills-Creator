@@ -11,6 +11,8 @@ description: |
   - 访问技能模板和最佳实践指南
 
   触发词：创建技能、初始化技能、验证技能、分析技能、重构技能、技能模板
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+mcp_servers: ["skill-creator"]
 ---
 
 # Skill-Creator - Agent-Skills 开发工具
