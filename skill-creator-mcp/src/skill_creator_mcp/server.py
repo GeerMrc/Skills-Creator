@@ -9,6 +9,11 @@ from typing import Any
 
 from fastmcp import Context, FastMCP
 
+from .prompts import (
+    get_create_skill_prompt,
+    get_refactor_skill_prompt,
+    get_validate_skill_prompt,
+)
 from .resources import (
     get_best_practices,
     get_template_content,
@@ -570,6 +575,60 @@ def best_practices_resource() -> str:
 def validation_rules_resource() -> str:
     """获取 Agent-Skills 验证规则."""
     return get_validation_rules()
+
+
+# ==================== MCP Prompts ====================
+
+
+@mcp.prompt("create-skill")
+def create_skill_prompt(
+    name: str,
+    template: str = "minimal",
+) -> str:
+    """创建新技能的 Prompt 模板.
+
+    Args:
+        name: 技能名称
+        template: 模板类型（默认：minimal）
+
+    Returns:
+        Prompt 模板内容
+    """
+    return get_create_skill_prompt(name, template)
+
+
+@mcp.prompt("validate-skill")
+def validate_skill_prompt(
+    skill_path: str,
+    template: str | None = None,
+) -> str:
+    """验证技能的 Prompt 模板.
+
+    Args:
+        skill_path: 技能目录路径
+        template: 模板类型（可选）
+
+    Returns:
+        Prompt 模板内容
+    """
+    return get_validate_skill_prompt(skill_path, template)
+
+
+@mcp.prompt("refactor-skill")
+def refactor_skill_prompt(
+    skill_path: str,
+    focus: list[str] | None = None,
+) -> str:
+    """重构技能的 Prompt 模板.
+
+    Args:
+        skill_path: 技能目录路径
+        focus: 重点关注领域（可选）
+
+    Returns:
+        Prompt 模板内容
+    """
+    return get_refactor_skill_prompt(skill_path, focus)
 
 
 __all__ = ["mcp"]
