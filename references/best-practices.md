@@ -300,19 +300,21 @@ if __name__ == '__main__':
 
 **2. 在 SKILL.md 中指引使用**
 
+在 SKILL.md 中添加脚本使用说明：
+
 ```markdown
 ## 运行验证
 
-```bash
+\`\`\`bash
 # 查看帮助
 python scripts/validate.py --help
 
 # 验证技能
 python scripts/validate.py /path/to/skill
+\`\`\`
 ```
 
-注意：先运行 --help 了解用法，而非读取源码。
-```
+注意：先运行 `--help` 了解用法，而非读取源码。
 
 **3. 错误处理和提示**
 

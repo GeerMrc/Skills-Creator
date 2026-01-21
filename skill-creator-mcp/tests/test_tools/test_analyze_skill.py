@@ -1,5 +1,6 @@
 """测试 analyze_skill 分析函数."""
 
+import pytest
 from pathlib import Path
 
 from skill_creator_mcp.utils.analyzers import (
@@ -66,7 +67,8 @@ def test_categorize_file_other(temp_dir: Path):
 # ==================== _analyze_structure 测试 ====================
 
 
-def test_analyze_structure_basic(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_basic(temp_dir: Path):
     """测试基本结构分析."""
     # 创建项目结构
     src_dir = temp_dir / "test_skill"
@@ -74,19 +76,20 @@ def test_analyze_structure_basic(temp_dir: Path):
     (src_dir / "__init__.py").write_text("")
     (src_dir / "server.py").write_text("# " + "\n# ".join([""] * 10))
 
-    result = _analyze_structure(temp_dir / "test_skill")
+    result = await _analyze_structure(temp_dir / "test_skill")
 
     assert result.total_files == 2
     assert result.total_lines == 10  # 0 空行 + 10 # 行
     assert "server" in result.file_breakdown
 
 
-def test_analyze_structure_empty(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_empty(temp_dir: Path):
     """测试空目录结构分析."""
     empty_dir = temp_dir / "empty"
     empty_dir.mkdir()
 
-    result = _analyze_structure(empty_dir)
+    result = await _analyze_structure(empty_dir)
 
     assert result.total_files == 0
     assert result.total_lines == 0
@@ -96,7 +99,8 @@ def test_analyze_structure_empty(temp_dir: Path):
 # ==================== _analyze_complexity 测试 ====================
 
 
-def test_analyze_complexity_basic(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_complexity_basic(temp_dir: Path):
     """测试基本复杂度分析."""
     src_dir = temp_dir / "test_skill"
     src_dir.mkdir(parents=True)
@@ -109,18 +113,19 @@ def hello():
     return "done"
 """)
 
-    result = _analyze_complexity(temp_dir / "test_skill")
+    result = await _analyze_complexity(temp_dir / "test_skill")
 
     assert result.cyclomatic_complexity is not None
     assert result.cyclomatic_complexity >= 1
 
 
-def test_analyze_complexity_no_files(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_complexity_no_files(temp_dir: Path):
     """测试无文件时的复杂度分析."""
     empty_dir = temp_dir / "empty"
     empty_dir.mkdir()
 
-    result = _analyze_complexity(empty_dir)
+    result = await _analyze_complexity(empty_dir)
 
     assert result.cyclomatic_complexity is None
 
@@ -128,7 +133,8 @@ def test_analyze_complexity_no_files(temp_dir: Path):
 # ==================== _analyze_quality 测试 ====================
 
 
-def test_analyze_quality_full_project(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_quality_full_project(temp_dir: Path):
     """测试完整项目的质量分析."""
     # 创建完整的项目结构
     skill_dir = temp_dir / "test-skill"
@@ -154,7 +160,7 @@ def test_analyze_quality_full_project(temp_dir: Path):
     (tests_dir / "test_utils.py").write_text("def test(): pass")
     (tests_dir / "test_models.py").write_text("def test(): pass")
 
-    result = _analyze_quality(skill_dir)
+    result = await _analyze_quality(skill_dir)
 
     assert result.overall_score > 0
     assert result.structure_score > 0
@@ -162,7 +168,8 @@ def test_analyze_quality_full_project(temp_dir: Path):
     assert result.test_coverage_score > 0
 
 
-def test_analyze_quality_minimal(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_quality_minimal(temp_dir: Path):
     """测试最小化项目的质量分析."""
     skill_dir = temp_dir / "minimal-skill"
     skill_dir.mkdir()
@@ -170,7 +177,7 @@ def test_analyze_quality_minimal(temp_dir: Path):
     # 只创建最基本的文件
     (skill_dir / "SKILL.md").write_text("# Minimal")
 
-    result = _analyze_quality(skill_dir)
+    result = await _analyze_quality(skill_dir)
 
     assert result.overall_score >= 10  # 至少有 SKILL.md
 

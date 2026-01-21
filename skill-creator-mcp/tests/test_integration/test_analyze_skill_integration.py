@@ -127,9 +127,9 @@ __all__ = ["mcp"]
 ''')
 
     # 执行分析
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = _generate_suggestions(structure, complexity, quality)
     summary = _generate_analysis_summary(quality, complexity)
@@ -165,8 +165,8 @@ async def test_analyze_minimal_skill(temp_dir: Path):
 
     (skill_dir / "SKILL.md").write_text("# Minimal")
 
-    structure = _analyze_structure(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 最小项目应该有较低的分数
     assert quality.overall_score >= 10  # 至少有 SKILL.md
@@ -184,7 +184,7 @@ async def test_analyze_skill_with_references_only(temp_dir: Path):
     (skill_dir / "references" / "guide.md").write_text("# Guide")
     (skill_dir / "references" / "api.md").write_text("# API")
 
-    quality = _analyze_quality(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 应该获得文档分数
     assert quality.documentation_score > 10
@@ -204,8 +204,8 @@ async def test_analyze_skill_with_tests(temp_dir: Path):
     for i in range(5):
         (tests_dir / f"test_{i}.py").write_text(f"def test_{i}(): assert True")
 
-    structure = _analyze_structure(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 应该获得测试分数
     assert quality.test_coverage_score > 10
@@ -218,9 +218,9 @@ async def test_analyze_skill_empty_directory(temp_dir: Path):
     skill_dir = temp_dir / "empty-skill"
     skill_dir.mkdir()
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 空目录应该返回默认值
     assert structure.total_files == 0
@@ -274,7 +274,7 @@ def complex_function(data):
 
     (skill_dir / "SKILL.md").write_text("# Complex Skill")
 
-    complexity = _analyze_complexity(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
 
     # 验证复杂度计算
     assert complexity.cyclomatic_complexity is not None
@@ -290,9 +290,9 @@ async def test_generate_suggestions_for_poor_quality(temp_dir: Path):
     # 只创建最基本的文件
     (skill_dir / "SKILL.md").write_text("# Poor")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = _generate_suggestions(structure, complexity, quality)
 
@@ -363,7 +363,7 @@ async def test_file_categorization_integration(temp_dir: Path):
     scripts_dir.mkdir()
     (scripts_dir / "validate.py").write_text("# Validate")
 
-    structure = _analyze_structure(skill_dir)
+    structure = await _analyze_structure(skill_dir)
 
     # 验证文件分类
     assert structure.file_breakdown.get("server") >= 1

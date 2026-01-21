@@ -4,6 +4,8 @@
 
 本文档定义 Agent-Skills 的验证规则和检查清单。使用这些规则确保技能符合官方最佳实践。
 
+> **提示**：查看 [验证实施指南](validation-guide.md) 了解等级划分、常见问题和自动化验证示例。
+
 ## 验证维度
 
 ### 1. 命名验证
@@ -317,114 +319,4 @@ if __name__ == '__main__':
 | 内容质量 | 20% | 符合规范=100 |
 | Token 效率 | 10% | ≥70%=100，≥50%=70 |
 
-### 等级划分
-
-**优秀 (90-100分)**：
-- SKILL.md ≤150行
-- 描述三要素完整
-- 按能力组织
-- Token 效率 ≥70%
-
-**良好 (75-89分)**：
-- SKILL.md ≤200行
-- 描述包含功能和场景
-- 基本按能力组织
-- Token 效率 ≥50%
-
-**及格 (60-74分)**：
-- SKILL.md ≤350行
-- 描述有功能陈述
-- 部分按能力组织
-- Token 效率 ≥30%
-
-**不及格 (<60分)**：
-- SKILL.md >500行
-- 描述缺少要素
-- 按工具组织
-- Token 效率 <30%
-
-## 常见问题
-
-### Q1: SKILL.md 多少行合适？
-
-**A**: 推荐 ≤150行。如果内容较多：
-1. 移动详细示例到 `examples/`
-2. 移动 API 文档到 `references/api.md`
-3. 移动配置说明到 `references/config.md`
-
-### Q2: 描述应该多长？
-
-**A**:
-- 最小：50字符（避免太短）
-- 推荐：150-300字符（平衡信息量和效率）
-- 最大：1024字符（MCP 协议限制）
-
-### Q3: 如何判断按能力还是按工具？
-
-**A**: 问自己：
-- 这个技能解决什么工作流问题？（能力）
-- 还是提供什么工具？（工具）
-
-如果答案是工作流，按能力组织。
-
-### Q4: 引用文件可以互相引用吗？
-
-**A**: 不推荐。原因：
-1. Claude 可能部分读取
-2. 深层嵌套导致信息不完整
-3. 增加导航复杂度
-
-最佳实践：所有引用文件直接从 SKILL.md 链接。
-
-### Q5: 如何测量 Token 效率？
-
-**A**: 使用 analyze_skill 工具：
-```python
-analyze_skill(skill_path="/path/to/skill")
-```
-
-返回包含：
-- 首次加载 tokens
-- 内容密度百分比
-- 优化建议
-
-## 自动化验证
-
-### 使用 validate_skill 工具
-
-```bash
-# 基本验证
-python scripts/validate_skill.py /path/to/skill
-
-# 带模板验证
-python scripts/validate_skill.py /path/to/skill --template tool-based
-
-# 输出详细报告
-python scripts/validate_skill.py /path/to/skill --verbose
-```
-
-### 集成到 CI/CD
-
-```yaml
-# .github/workflows/skill-validation.yml
-name: Skill Validation
-
-on: [push, pull_request]
-
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate Skills
-        run: |
-          for skill in skills/*; do
-            python scripts/validate_skill.py "$skill"
-          done
-```
-
-## 参考资源
-
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具和资源使用
-- **[最佳实践](best-practices.md)** - 渐进式披露和开发规范
-- **[SKILL.md](../SKILL.md)** - 技能入口点
+> **继续阅读**：[验证实施指南](validation-guide.md) 包含等级划分标准、常见问题解答和 CI/CD 集成示例。

@@ -9,7 +9,11 @@
 import pytest
 
 from skill_creator_mcp.server import _generate_skill_md_content
-from skill_creator_mcp.utils.analyzers import _analyze_quality
+from skill_creator_mcp.utils.analyzers import (
+    _analyze_complexity,
+    _analyze_quality,
+    _analyze_structure,
+)
 from skill_creator_mcp.utils.file_ops import create_directory_structure_async, write_file_async
 from skill_creator_mcp.utils.validators import validate_skill_name, validate_template_type
 
@@ -31,7 +35,7 @@ async def test_iterative_improvement_scenario(temp_dir):
     await write_file_async(skill_dir / "SKILL.md", skill_md_content)
 
     # 2. 初始质量分析
-    initial_quality = _analyze_quality(skill_dir)
+    initial_quality = await _analyze_quality(skill_dir)
     initial_score = initial_quality.overall_score
 
     # 3. 添加改进（在 examples 目录添加文件）
@@ -39,7 +43,7 @@ async def test_iterative_improvement_scenario(temp_dir):
     example_file.write_text("# Advanced Usage\n\nAdvanced example here.")
 
     # 4. 重新分析质量
-    improved_quality = _analyze_quality(skill_dir)
+    improved_quality = await _analyze_quality(skill_dir)
     improved_score = improved_quality.overall_score
 
     # 改进后的分数应该更高或相等
@@ -66,7 +70,7 @@ async def test_multi_template_comparison_scenario(temp_dir):
         await write_file_async(skill_dir / "SKILL.md", skill_md_content)
 
         # 分析质量
-        quality = _analyze_quality(skill_dir)
+        quality = await _analyze_quality(skill_dir)
         results[template_type] = {
             "score": quality.overall_score,
             "structure_score": quality.structure_score,
@@ -99,7 +103,7 @@ async def test_complete_lifecycle_scenario(temp_dir):
     assert (skill_dir / "references").exists()
 
     # 3. 质量分析
-    quality = _analyze_quality(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 应该有有效的分数
     assert quality.overall_score > 0

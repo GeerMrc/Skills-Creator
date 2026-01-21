@@ -29,7 +29,7 @@ async def test_e2e_complete_workflow(temp_dir):
                 analyze_skill_tool = tool
             elif tool.name == 'refactor_skill':
                 refactor_skill_tool = tool
-            elif tool.name == 'package_skill_tool':
+            elif tool.name == 'package_skill':
                 package_skill_tool = tool
 
     assert init_skill_tool is not None, "init_skill tool not found"
@@ -113,7 +113,7 @@ async def test_e2e_workflow_with_validation(temp_dir):
                 init_skill_tool = tool
             elif tool.name == 'analyze_skill':
                 analyze_skill_tool = tool
-            elif tool.name == 'package_skill_tool':
+            elif tool.name == 'package_skill':
                 package_skill_tool = tool
 
     ctx = MagicMock()
@@ -328,7 +328,7 @@ async def test_e2e_package_formats(temp_dir):
         if hasattr(tool, 'name'):
             if tool.name == 'init_skill':
                 init_skill_tool = tool
-            elif tool.name == 'package_skill_tool':
+            elif tool.name == 'package_skill':
                 package_skill_tool = tool
 
     ctx = MagicMock()

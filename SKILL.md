@@ -10,7 +10,13 @@ description: |
   - 获取基于最佳实践的重构建议
   - 访问技能模板和最佳实践指南
 
-  触发词：创建技能、初始化技能、验证技能、分析技能、重构技能、技能模板
+  触发词：
+  - 创建技能
+  - 初始化技能
+  - 验证技能
+  - 分析技能
+  - 重构技能
+  - 技能模板
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 mcp_servers: ["skill-creator"]
 ---
@@ -72,14 +78,15 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 | `validate_skill` | 验证技能规范 |
 | `analyze_skill` | 分析技能质量 |
 | `refactor_skill` | 生成重构建议 |
+| `package_skill` | 打包技能为分发格式 |
 
 ## MCP 资源访问
 
 | 资源 URI | 内容 |
 |----------|------|
-| `skill://templates/{type}` | 技能模板内容 |
-| `skill://best-practices` | 最佳实践指南 |
-| `skill://validation-rules` | 验证规则详情 |
+| `http://skills/schema/templates/{type}` | 技能模板内容 |
+| `http://skills/schema/best-practices` | 最佳实践指南 |
+| `http://skills/schema/validation-rules` | 验证规则详情 |
 
 ## 详细文档
 

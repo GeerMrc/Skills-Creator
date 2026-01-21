@@ -1,5 +1,6 @@
 """测试 analyzers 分析函数."""
 
+import pytest
 from pathlib import Path
 
 from skill_creator_mcp.utils.analyzers import (
@@ -13,7 +14,8 @@ from skill_creator_mcp.utils.analyzers import (
 # ==================== _analyze_structure 测试 ====================
 
 
-def test_analyze_structure_with_tests_in_alternative_location(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_with_tests_in_alternative_location(temp_dir: Path):
     """测试在替代位置查找 tests 目录 (覆盖 lines 283-284)."""
     skill_dir = temp_dir / "alt-test-loc"
     skill_dir.mkdir(parents=True)
@@ -24,13 +26,14 @@ def test_analyze_structure_with_tests_in_alternative_location(temp_dir: Path):
     (skill_dir / "src" / "tests" / "test_one.py").write_text("def test(): pass")
     (skill_dir / "src" / "tests" / "test_two.py").write_text("def test(): pass")
 
-    quality = _analyze_quality(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 应该识别到 src/tests 目录
     assert quality.test_coverage_score > 0
 
 
-def test_analyze_structure_with_test_directory(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_with_test_directory(temp_dir: Path):
     """测试在 test 目录（单数）查找测试文件."""
     skill_dir = temp_dir / "test-dir"
     skill_dir.mkdir(parents=True)
@@ -40,7 +43,7 @@ def test_analyze_structure_with_test_directory(temp_dir: Path):
     (skill_dir / "test").mkdir(parents=True)
     (skill_dir / "test" / "test_one.py").write_text("def test(): pass")
 
-    quality = _analyze_quality(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 应该识别到 test 目录
     assert quality.test_coverage_score > 0
@@ -49,7 +52,8 @@ def test_analyze_structure_with_test_directory(temp_dir: Path):
 # ==================== _generate_suggestions 测试 ====================
 
 
-def test_generate_suggestions_high_complexity(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_suggestions_high_complexity(temp_dir: Path):
     """测试高圈复杂度时生成建议 (覆盖 line 331)."""
     skill_dir = temp_dir / "high-complexity"
     skill_dir.mkdir(parents=True)
@@ -64,9 +68,9 @@ def test_generate_suggestions_high_complexity(temp_dir: Path):
 
     (skill_dir / "complex.py").write_text("\n".join(complex_code))
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = _generate_suggestions(structure, complexity, quality)
 
@@ -75,7 +79,8 @@ def test_generate_suggestions_high_complexity(temp_dir: Path):
         assert any("圈复杂度" in s for s in suggestions)
 
 
-def test_generate_suggestions_low_maintainability(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_suggestions_low_maintainability(temp_dir: Path):
     """测试低可维护性指数时生成建议 (覆盖 line 334)."""
     skill_dir = temp_dir / "low-mi"
     skill_dir.mkdir(parents=True)
@@ -99,9 +104,9 @@ def test_generate_suggestions_low_maintainability(temp_dir: Path):
 
     (skill_dir / "very_complex.py").write_text("\n".join(complex_code))
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = _generate_suggestions(structure, complexity, quality)
 
@@ -110,7 +115,8 @@ def test_generate_suggestions_low_maintainability(temp_dir: Path):
         assert any("可维护性指数" in s for s in suggestions)
 
 
-def test_generate_suggestions_many_files(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_suggestions_many_files(temp_dir: Path):
     """测试文件数量多时生成建议 (覆盖 line 338)."""
     skill_dir = temp_dir / "many-files"
     skill_dir.mkdir(parents=True)
@@ -120,9 +126,9 @@ def test_generate_suggestions_many_files(temp_dir: Path):
     for i in range(25):
         (skill_dir / f"file_{i}.py").write_text("# File")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = _generate_suggestions(structure, complexity, quality)
 
@@ -130,7 +136,8 @@ def test_generate_suggestions_many_files(temp_dir: Path):
     assert any("文件数量" in s for s in suggestions)
 
 
-def test_generate_suggestions_many_lines(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_suggestions_many_lines(temp_dir: Path):
     """测试代码行数多时生成建议 (覆盖 line 341)."""
     skill_dir = temp_dir / "many-lines"
     skill_dir.mkdir(parents=True)
@@ -140,9 +147,9 @@ def test_generate_suggestions_many_lines(temp_dir: Path):
     large_content = "\n".join([f"# Line {i}" for i in range(1200)])
     (skill_dir / "large.py").write_text(large_content)
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = _generate_suggestions(structure, complexity, quality)
 
@@ -153,7 +160,8 @@ def test_generate_suggestions_many_lines(temp_dir: Path):
 # ==================== _generate_analysis_summary 测试 ====================
 
 
-def test_generate_analysis_summary_good_quality(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_analysis_summary_good_quality(temp_dir: Path):
     """测试质量评级为 "良好" 时生成摘要 (覆盖 line 363)."""
     skill_dir = temp_dir / "good-quality"
     skill_dir.mkdir(parents=True)
@@ -169,8 +177,8 @@ def test_generate_analysis_summary_good_quality(temp_dir: Path):
     (skill_dir / "references" / "doc1.md").write_text("# Doc\n" + "\n".join(["Content"] * 50))
     (skill_dir / "references" / "doc2.md").write_text("# Doc2\n" + "\n".join(["Content"] * 50))
 
-    quality = _analyze_quality(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
 
     summary = _generate_analysis_summary(quality, complexity)
 
@@ -179,7 +187,8 @@ def test_generate_analysis_summary_good_quality(temp_dir: Path):
         assert "良好" in summary
 
 
-def test_generate_analysis_summary_excellent_quality(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_analysis_summary_excellent_quality(temp_dir: Path):
     """测试质量评级为 "优秀" 时生成摘要."""
     skill_dir = temp_dir / "excellent-quality"
     skill_dir.mkdir(parents=True)
@@ -202,8 +211,8 @@ def test_generate_analysis_summary_excellent_quality(temp_dir: Path):
     for i in range(4):
         (skill_dir / "tests" / f"test_{i}.py").write_text("def test(): pass")
 
-    quality = _analyze_quality(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
 
     summary = _generate_analysis_summary(quality, complexity)
 
@@ -212,14 +221,15 @@ def test_generate_analysis_summary_excellent_quality(temp_dir: Path):
         assert "优秀" in summary
 
 
-def test_generate_analysis_summary_poor_quality(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_analysis_summary_poor_quality(temp_dir: Path):
     """测试质量评级为 "需要改进" 时生成摘要."""
     skill_dir = temp_dir / "poor-quality"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Minimal")
 
-    quality = _analyze_quality(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
 
     summary = _generate_analysis_summary(quality, complexity)
 
@@ -228,15 +238,16 @@ def test_generate_analysis_summary_poor_quality(temp_dir: Path):
         assert "需要改进" in summary
 
 
-def test_generate_analysis_summary_average_quality(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_analysis_summary_average_quality(temp_dir: Path):
     """测试质量评级为 "一般" 时生成摘要."""
     skill_dir = temp_dir / "average-quality"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Average")
     (skill_dir / "references").mkdir()
 
-    quality = _analyze_quality(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
 
     summary = _generate_analysis_summary(quality, complexity)
 

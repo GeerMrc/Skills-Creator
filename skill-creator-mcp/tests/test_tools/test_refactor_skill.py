@@ -1,5 +1,6 @@
 """测试 refactor_skill 重构函数."""
 
+import pytest
 from pathlib import Path
 
 from skill_creator_mcp.utils.analyzers import (
@@ -16,7 +17,8 @@ from skill_creator_mcp.utils.refactorors import (
 # ==================== generate_refactor_suggestions 测试 ====================
 
 
-def test_generate_refactor_suggestions_all_good(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_all_good(temp_dir: Path):
     """测试质量良好时没有建议."""
     # 创建完整的项目结构
     skill_dir = temp_dir / "good-skill"
@@ -33,9 +35,9 @@ def test_generate_refactor_suggestions_all_good(temp_dir: Path):
     (skill_dir / "tests" / "test_three.py").write_text("def test_three(): pass")
 
     # 运行分析
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -43,15 +45,16 @@ def test_generate_refactor_suggestions_all_good(temp_dir: Path):
     assert len(suggestions) <= 2
 
 
-def test_generate_refactor_suggestions_missing_structure(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_missing_structure(temp_dir: Path):
     """测试缺少结构时生成建议."""
     skill_dir = temp_dir / "poor-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Minimal")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -61,15 +64,16 @@ def test_generate_refactor_suggestions_missing_structure(temp_dir: Path):
     assert "structure" in categories
 
 
-def test_generate_refactor_suggestions_with_focus(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_with_focus(temp_dir: Path):
     """测试关注领域过滤."""
     skill_dir = temp_dir / "focus-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Skill" * 100)  # 长文件
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 只关注文档相关
     suggestions = generate_refactor_suggestions(
@@ -81,7 +85,8 @@ def test_generate_refactor_suggestions_with_focus(temp_dir: Path):
         assert "documentation" in s["category"] or "token" in s["category"]
 
 
-def test_generate_refactor_suggestions_low_test_coverage(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_low_test_coverage(temp_dir: Path):
     """测试低测试覆盖率时生成建议."""
     skill_dir = temp_dir / "no-tests-skill"
     skill_dir.mkdir(parents=True)
@@ -92,9 +97,9 @@ def test_generate_refactor_suggestions_low_test_coverage(temp_dir: Path):
     (skill_dir / ".claude").mkdir()
     # 不创建 tests 目录
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -103,7 +108,8 @@ def test_generate_refactor_suggestions_low_test_coverage(temp_dir: Path):
     assert len(test_related) > 0
 
 
-def test_generate_refactor_suggestions_high_complexity(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_high_complexity(temp_dir: Path):
     """测试高复杂度时生成建议."""
     skill_dir = temp_dir / "complex-skill"
     skill_dir.mkdir(parents=True)
@@ -116,9 +122,9 @@ def test_generate_refactor_suggestions_high_complexity(temp_dir: Path):
 
     (skill_dir / "complex.py").write_text(complex_code)
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -128,7 +134,8 @@ def test_generate_refactor_suggestions_high_complexity(temp_dir: Path):
         assert len(complexity_related) > 0
 
 
-def test_generate_refactor_suggestions_long_skill_md(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_long_skill_md(temp_dir: Path):
     """测试 SKILL.md 过长时的建议."""
     skill_dir = temp_dir / "long-md-skill"
     skill_dir.mkdir(parents=True)
@@ -137,9 +144,9 @@ def test_generate_refactor_suggestions_long_skill_md(temp_dir: Path):
     long_content = "# Long Skill\n" + "\n".join(["Content"] * 500)
     (skill_dir / "SKILL.md").write_text(long_content)
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -148,7 +155,8 @@ def test_generate_refactor_suggestions_long_skill_md(temp_dir: Path):
     assert len(token_related) > 0
 
 
-def test_generate_refactor_suggestions_many_files(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_many_files(temp_dir: Path):
     """测试文件数量过多时的建议."""
     skill_dir = temp_dir / "many-files-skill"
     skill_dir.mkdir(parents=True)
@@ -158,9 +166,9 @@ def test_generate_refactor_suggestions_many_files(temp_dir: Path):
     for i in range(25):
         (skill_dir / f"file_{i}.py").write_text("# File " + str(i))
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -169,15 +177,16 @@ def test_generate_refactor_suggestions_many_files(temp_dir: Path):
     assert len(modularity_related) > 0
 
 
-def test_generate_refactor_suggestions_priority_levels(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_priority_levels(temp_dir: Path):
     """测试建议优先级分级."""
     skill_dir = temp_dir / "priority-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Skill")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -194,15 +203,16 @@ def test_generate_refactor_suggestions_priority_levels(temp_dir: Path):
 # ==================== generate_refactor_report 测试 ====================
 
 
-def test_generate_refactor_report_basic(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_report_basic(temp_dir: Path):
     """测试基本重构报告生成."""
     skill_dir = temp_dir / "report-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Test Skill")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
     suggestions = [
         {"priority": "P0", "category": "structure", "issue": "问题", "suggestion": "建议", "impact": "high", "effort": "medium"}
     ]
@@ -216,15 +226,16 @@ def test_generate_refactor_report_basic(temp_dir: Path):
     assert "## 实施计划" in report
 
 
-def test_generate_refactor_report_with_p0_issues(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_report_with_p0_issues(temp_dir: Path):
     """测试包含 P0 问题的报告."""
     skill_dir = temp_dir / "p0-skill"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Skill")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
     suggestions = [
         {"priority": "P0", "category": "testing", "issue": "无测试", "suggestion": "添加测试", "impact": "high", "effort": "high"}
     ]
@@ -236,7 +247,8 @@ def test_generate_refactor_report_with_p0_issues(temp_dir: Path):
     assert "无测试" in report
 
 
-def test_generate_refactor_report_no_issues(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_report_no_issues(temp_dir: Path):
     """测试没有问题时的报告."""
     skill_dir = temp_dir / "perfect-skill"
     skill_dir.mkdir(parents=True)
@@ -265,9 +277,9 @@ def test_generate_refactor_report_no_issues(temp_dir: Path):
     for i in range(3):
         (skill_dir / "tests" / f"test_{i}.py").write_text("def test(): pass")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
     report = generate_refactor_report(str(skill_dir), structure, complexity, quality, suggestions)
@@ -319,7 +331,8 @@ def test_estimate_refactor_effort_default_medium():
     assert effort["p0_hours"] == 4  # 默认 medium
 
 
-def test_generate_refactor_suggestions_low_maintainability(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_low_maintainability(temp_dir: Path):
     """测试低可维护性指数时生成建议 (覆盖 line 87)."""
     skill_dir = temp_dir / "low-maintainability"
     skill_dir.mkdir(parents=True)
@@ -345,9 +358,9 @@ def test_generate_refactor_suggestions_low_maintainability(temp_dir: Path):
 
     (skill_dir / "very_complex.py").write_text("\n".join(complex_code))
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -362,7 +375,8 @@ def test_generate_refactor_suggestions_low_maintainability(temp_dir: Path):
         assert any("可维护性指数低" in s["issue"] for s in maintainability_suggestions)
 
 
-def test_generate_refactor_suggestions_large_code_size(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_large_code_size(temp_dir: Path):
     """测试代码行数过多时生成建议 (覆盖 line 109)."""
     skill_dir = temp_dir / "large-code"
     skill_dir.mkdir(parents=True)
@@ -372,9 +386,9 @@ def test_generate_refactor_suggestions_large_code_size(temp_dir: Path):
     large_content = "\n".join([f"# Line {i}" for i in range(2100)])
     (skill_dir / "large.py").write_text(large_content)
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -384,7 +398,8 @@ def test_generate_refactor_suggestions_large_code_size(temp_dir: Path):
     assert "2100" in size_suggestions[0]["issue"]
 
 
-def test_generate_refactor_suggestions_long_reference_file(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_long_reference_file(temp_dir: Path):
     """测试参考文档过长时生成建议 (覆盖 line 138)."""
     skill_dir = temp_dir / "long-ref"
     skill_dir.mkdir(parents=True)
@@ -395,9 +410,9 @@ def test_generate_refactor_suggestions_long_reference_file(temp_dir: Path):
     long_doc = "\n".join([f"Content line {i}" for i in range(450)])
     (skill_dir / "references" / "long_doc.md").write_text(long_doc)
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 
@@ -409,15 +424,16 @@ def test_generate_refactor_suggestions_long_reference_file(temp_dir: Path):
     assert len(long_ref_suggestions) > 0
 
 
-def test_generate_refactor_suggestions_focus_filtering_with_matches(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_focus_filtering_with_matches(temp_dir: Path):
     """测试关注领域过滤 (覆盖 lines 188-191)."""
     skill_dir = temp_dir / "focus-match"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text("# Skill")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     # 只关注结构相关问题
     # 通过指定一个会匹配到 "structure" 类别的关注词
@@ -431,7 +447,8 @@ def test_generate_refactor_suggestions_focus_filtering_with_matches(temp_dir: Pa
     assert isinstance(suggestions, list)
 
 
-def test_generate_refactor_suggestions_too_many_reference_files(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_generate_refactor_suggestions_too_many_reference_files(temp_dir: Path):
     """测试参考文档文件过多时生成建议 (覆盖 line 208)."""
     skill_dir = temp_dir / "many-refs"
     skill_dir.mkdir(parents=True)
@@ -442,9 +459,9 @@ def test_generate_refactor_suggestions_too_many_reference_files(temp_dir: Path):
     for i in range(7):
         (skill_dir / "references" / f"doc{i}.md").write_text(f"# Doc {i}")
 
-    structure = _analyze_structure(skill_dir)
-    complexity = _analyze_complexity(skill_dir)
-    quality = _analyze_quality(skill_dir)
+    structure = await _analyze_structure(skill_dir)
+    complexity = await _analyze_complexity(skill_dir)
+    quality = await _analyze_quality(skill_dir)
 
     suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality)
 

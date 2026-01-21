@@ -3,6 +3,14 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ..constants import (
+    CODE_SIZE_LARGE_THRESHOLD,
+    REFERENCE_FILE_LONG_THRESHOLD,
+    REFERENCE_FILE_MAX_LINES,
+    REFERENCE_FILE_MIN_LINES,
+    SKILL_MD_RECOMMENDED_MAX_LINES,
+)
+
 if TYPE_CHECKING:
     from ..models.skill_config import (
         ComplexityMetrics,
@@ -105,7 +113,7 @@ def generate_refactor_suggestions(
         })
 
     # 7. 基于代码行数生成建议
-    if structure.total_lines > 2000:
+    if structure.total_lines > CODE_SIZE_LARGE_THRESHOLD:
         suggestions.append({
             "priority": "P2",
             "category": "size",
@@ -124,7 +132,7 @@ def generate_refactor_suggestions(
                 "priority": "P2",
                 "category": "token-efficiency",
                 "issue": "SKILL.md 过长",
-                "suggestion": "将详细内容移至 references/ 目录，保持 SKILL.md 在 150 行以内",
+                "suggestion": f"将详细内容移至 references/ 目录，保持 SKILL.md 在 {SKILL_MD_RECOMMENDED_MAX_LINES} 行以内",
                 "impact": "medium",
                 "effort": "low",
             })
@@ -134,12 +142,12 @@ def generate_refactor_suggestions(
     if refs_dir.exists():
         for ref_file in refs_dir.glob("*.md"):
             content = ref_file.read_text(encoding="utf-8")
-            if len(content.split("\n")) > 400:
+            if len(content.split("\n")) > REFERENCE_FILE_LONG_THRESHOLD:
                 suggestions.append({
                     "priority": "P2",
                     "category": "documentation",
                     "issue": f"参考文档过长: {ref_file.name}",
-                    "suggestion": f"拆分 {ref_file.name} 为多个小文件（每个 200-300 行）",
+                    "suggestion": f"拆分 {ref_file.name} 为多个小文件（每个 {REFERENCE_FILE_MIN_LINES}-{REFERENCE_FILE_MAX_LINES} 行）",
                     "impact": "low",
                     "effort": "low",
                 })

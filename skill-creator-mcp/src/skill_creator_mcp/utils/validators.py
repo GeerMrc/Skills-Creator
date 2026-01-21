@@ -3,6 +3,10 @@
 import re
 from pathlib import Path
 
+from skill_creator_mcp.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 # 模板特定必需文件映射
 TEMPLATE_REQUIREMENTS = {
     "minimal": [],
@@ -97,19 +101,27 @@ def _validate_structure(skill_dir: Path) -> list[str]:
     Returns:
         错误列表，空列表表示无错误
     """
+    logger.debug("Validating structure for: %s", skill_dir)
     errors = []
 
     # 检查必需文件
     required_files = ["SKILL.md"]
     for file_name in required_files:
         if not (skill_dir / file_name).exists():
-            errors.append(f"缺少必需文件: {file_name}")
+            error_msg = f"缺少必需文件: {file_name}"
+            logger.warning(error_msg)
+            errors.append(error_msg)
 
     # 检查必需目录
     required_dirs = ["references", "examples", "scripts", ".claude"]
     for dir_name in required_dirs:
         if not (skill_dir / dir_name).exists():
-            errors.append(f"缺少必需目录: {dir_name}")
+            error_msg = f"缺少必需目录: {dir_name}"
+            logger.warning(error_msg)
+            errors.append(error_msg)
+
+    if not errors:
+        logger.info("Structure validation passed for: %s", skill_dir)
 
     return errors
 

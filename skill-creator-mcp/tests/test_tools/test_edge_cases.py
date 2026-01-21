@@ -8,6 +8,7 @@
 5. .venv 目录跳过逻辑
 """
 
+import pytest
 from pathlib import Path
 
 from skill_creator_mcp.utils.analyzers import (
@@ -20,7 +21,8 @@ from skill_creator_mcp.utils.analyzers import (
 # ==================== __pycache__ 跳过测试 ====================
 
 
-def test_analyze_structure_skips_pycache(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_skips_pycache(temp_dir: Path):
     """测试结构分析时跳过 __pycache__ 目录."""
     # 创建项目结构，包含 __pycache__
     src_dir = temp_dir / "test_skill"
@@ -35,14 +37,15 @@ def test_analyze_structure_skips_pycache(temp_dir: Path):
     (pycache_dir / "server.pyc").write_text("compiled")
     (pycache_dir / "helper.py").write_text("# Cached file")
 
-    result = _analyze_structure(temp_dir / "test_skill")
+    result = await _analyze_structure(temp_dir / "test_skill")
 
     # 应该只统计 server.py，跳过 __pycache__ 中的所有文件
     assert result.total_files == 1
     assert result.file_breakdown.get("server") == 1
 
 
-def test_analyze_structure_nested_pycache(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_nested_pycache(temp_dir: Path):
     """测试嵌套 __pycache__ 目录的处理."""
     src_dir = temp_dir / "test_skill"
     src_dir.mkdir(parents=True)
@@ -56,7 +59,7 @@ def test_analyze_structure_nested_pycache(temp_dir: Path):
     pycache_dir.mkdir()
     (pycache_dir / "cached.pyc").write_text("compiled")
 
-    result = _analyze_structure(temp_dir / "test_skill")
+    result = await _analyze_structure(temp_dir / "test_skill")
 
     # 只统计 __init__.py，不统计 __pycache__ 中的文件
     assert result.total_files == 1
@@ -65,7 +68,8 @@ def test_analyze_structure_nested_pycache(temp_dir: Path):
 # ==================== 文件读取异常处理测试 ====================
 
 
-def test_analyze_structure_handles_unreadable_files(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_handles_unreadable_files(temp_dir: Path):
     """测试处理不可读文件的异常情况."""
     src_dir = temp_dir / "test_skill"
     src_dir.mkdir(parents=True)
@@ -77,13 +81,14 @@ def test_analyze_structure_handles_unreadable_files(temp_dir: Path):
     (src_dir / "fake_file.py").mkdir()
 
     # 分析应该正常进行，不会抛出异常
-    result = _analyze_structure(temp_dir / "test_skill")
+    result = await _analyze_structure(temp_dir / "test_skill")
 
     # 应该至少统计了可读文件
     assert result.total_files >= 1
 
 
-def test_analyze_structure_empty_files(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_empty_files(temp_dir: Path):
     """测试空文件的处理."""
     src_dir = temp_dir / "test_skill"
     src_dir.mkdir(parents=True)
@@ -92,7 +97,7 @@ def test_analyze_structure_empty_files(temp_dir: Path):
     (src_dir / "empty.py").write_text("")
     (src_dir / "normal.py").write_text("# Normal")
 
-    result = _analyze_structure(temp_dir / "test_skill")
+    result = await _analyze_structure(temp_dir / "test_skill")
 
     # 空文件也应该被统计
     assert result.total_files == 2
@@ -150,19 +155,21 @@ def test_categorize_file_examples(temp_dir: Path):
 # ==================== 空目录和边界情况 ====================
 
 
-def test_analyze_structure_nonexistent_path(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_nonexistent_path(temp_dir: Path):
     """测试分析不存在的路径."""
     nonexistent = temp_dir / "does_not_exist"
 
     # 空目录分析应该正常处理
-    result = _analyze_structure(nonexistent)
+    result = await _analyze_structure(nonexistent)
 
     # 不存在的路径应该返回空结果
     assert result.total_files == 0
     assert result.total_lines == 0
 
 
-def test_analyze_structure_only_pycache(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_structure_only_pycache(temp_dir: Path):
     """测试只有 __pycache__ 的目录."""
     src_dir = temp_dir / "test_skill"
     src_dir.mkdir(parents=True)
@@ -172,7 +179,7 @@ def test_analyze_structure_only_pycache(temp_dir: Path):
     pycache_dir.mkdir()
     (pycache_dir / "file.pyc").write_text("compiled")
 
-    result = _analyze_structure(temp_dir / "test_skill")
+    result = await _analyze_structure(temp_dir / "test_skill")
 
     # 应该返回空结果
     assert result.total_files == 0
@@ -199,7 +206,8 @@ def test_categorize_file_test_prefix(temp_dir: Path):
 # ==================== .venv 跳过测试 ====================
 
 
-def test_analyze_complexity_skips_venv(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_complexity_skips_venv(temp_dir: Path):
     """测试复杂度分析时跳过 .venv 目录."""
     src_dir = temp_dir / "test_skill"
     src_dir.mkdir(parents=True)
@@ -223,7 +231,7 @@ def complex_function():
     return "done"
 """)
 
-    result = _analyze_complexity(temp_dir / "test_skill")
+    result = await _analyze_complexity(temp_dir / "test_skill")
 
     # 应该只分析 normal.py，跳过 .venv 中的文件
     assert result.cyclomatic_complexity is not None
@@ -272,7 +280,8 @@ def process(items):
     assert complexity >= 2
 
 
-def test_analyze_complexity_with_syntax_error(temp_dir: Path):
+@pytest.mark.asyncio
+async def test_analyze_complexity_with_syntax_error(temp_dir: Path):
     """测试包含语法错误的文件的处理."""
     src_dir = temp_dir / "test_skill"
     src_dir.mkdir(parents=True)
@@ -284,7 +293,7 @@ def test_analyze_complexity_with_syntax_error(temp_dir: Path):
     (src_dir / "broken.py").write_text("def broken(\n")  # 不完整的代码
 
     # 应该跳过语法错误的文件，不会抛出异常
-    result = _analyze_complexity(temp_dir / "test_skill")
+    result = await _analyze_complexity(temp_dir / "test_skill")
 
     # 应该至少分析了正常文件
     assert result.cyclomatic_complexity is not None

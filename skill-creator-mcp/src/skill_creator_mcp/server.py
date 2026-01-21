@@ -28,7 +28,7 @@ from .utils.analyzers import (
     _generate_suggestions,
 )
 from .utils.file_ops import create_directory_structure_async, write_file_async
-from .utils.packagers import package_skill
+from .utils.packagers import package_skill as package_skill_impl
 from .utils.refactorors import (
     estimate_refactor_effort,
     generate_refactor_report,
@@ -128,43 +128,51 @@ async def init_skill(
     Returns:
         包含创建结果的字典
     """
-    try:
-        # 1. 验证输入参数
-        validate_skill_name(name)
-        validate_template_type(template)
+    from .models.skill_config import InitSkillInput
 
-        # 2. 创建目录结构
+    try:
+        # 使用 Pydantic model_validate 方法进行输入验证
+        # 这种方法可以处理类型转换和验证，避免静态类型检查错误
+        input_data = InitSkillInput.model_validate({
+            "name": name,
+            "template": template,
+            "output_dir": output_dir,
+            "with_scripts": with_scripts,
+            "with_examples": with_examples,
+        })
+
+        # 使用验证后的数据
         skill_dir = await create_directory_structure_async(
-            name=name,
-            template_type=template,
-            output_dir=Path(output_dir),
+            name=input_data.name,
+            template_type=input_data.template,
+            output_dir=Path(input_data.output_dir),
         )
 
         # 3. 生成 SKILL.md 内容
-        skill_md_content = _generate_skill_md_content(name, template)
+        skill_md_content = _generate_skill_md_content(input_data.name, input_data.template)
         await write_file_async(
             skill_dir / "SKILL.md",
             skill_md_content,
         )
 
         # 4. 创建引用文件（非 minimal 模板）
-        if template != "minimal":
-            await _create_reference_files(skill_dir, template)
+        if input_data.template != "minimal":
+            await _create_reference_files(skill_dir, input_data.template)
 
         # 5. 创建示例脚本
-        if with_scripts:
+        if input_data.with_scripts:
             await _create_example_scripts(skill_dir)
 
         # 6. 创建使用示例
-        if with_examples:
-            await _create_example_examples(skill_dir, name)
+        if input_data.with_examples:
+            await _create_example_examples(skill_dir, input_data.name)
 
         return {
             "success": True,
             "skill_path": str(skill_dir),
-            "skill_name": name,
-            "template": template,
-            "message": f"技能 '{name}' 已创建在：{skill_dir}",
+            "skill_name": input_data.name,
+            "template": input_data.template,
+            "message": f"技能 '{input_data.name}' 已创建在：{skill_dir}",
             "next_steps": [
                 f"1. 编辑 {skill_dir / 'SKILL.md'} 完善技能描述",
                 f"2. 运行验证：python scripts/validate.py {skill_dir}",
@@ -204,8 +212,17 @@ async def validate_skill(
     Returns:
         包含验证结果的字典
     """
+    from .models.skill_config import ValidateSkillInput
+
     try:
-        skill_dir = Path(skill_path)
+        # 使用 Pydantic 验证输入参数
+        input_data = ValidateSkillInput.model_validate({
+            "skill_path": skill_path,
+            "check_structure": check_structure,
+            "check_content": check_content,
+        })
+
+        skill_dir = Path(input_data.skill_path)
 
         # 初始化结果
         errors = []
@@ -235,7 +252,7 @@ async def validate_skill(
             }
 
         # 1. 检查目录结构
-        if check_structure:
+        if input_data.check_structure:
             structure_errors = _validate_structure(skill_dir)
             errors.extend(structure_errors)
             checks["structure"] = len(structure_errors) == 0
@@ -246,7 +263,7 @@ async def validate_skill(
         checks["naming"] = len(naming_errors) == 0
 
         # 3. 检查内容格式
-        if check_content:
+        if input_data.check_content:
             content_errors, content_warnings, detected_template = _validate_skill_md(skill_dir)
             errors.extend(content_errors)
             warnings.extend(content_warnings)
@@ -310,11 +327,20 @@ async def analyze_skill(
         包含分析结果的字典
     """
     from .models.skill_config import (
+        AnalyzeSkillInput,
         QualityScore,
     )
 
     try:
-        skill_dir = Path(skill_path)
+        # 使用 Pydantic 验证输入参数
+        input_data = AnalyzeSkillInput.model_validate({
+            "skill_path": skill_path,
+            "analyze_structure": analyze_structure,
+            "analyze_complexity": analyze_complexity,
+            "analyze_quality": analyze_quality,
+        })
+
+        skill_dir = Path(input_data.skill_path)
 
         # 检查目录是否存在
         if not skill_dir.exists():
@@ -331,23 +357,23 @@ async def analyze_skill(
                 "error_type": "path_error",
             }
 
-        # 1. 结构分析
-        if analyze_structure:
-            structure = _analyze_structure(skill_dir)
+        # 1. 结构分析（异步）
+        if input_data.analyze_structure:
+            structure = await _analyze_structure(skill_dir)
         else:
             from .models.skill_config import StructureAnalysis
             structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
 
-        # 2. 复杂度分析
-        if analyze_complexity:
-            complexity = _analyze_complexity(skill_dir)
+        # 2. 复杂度分析（异步）
+        if input_data.analyze_complexity:
+            complexity = await _analyze_complexity(skill_dir)
         else:
             from .models.skill_config import ComplexityMetrics
             complexity = ComplexityMetrics(cyclomatic_complexity=None, maintainability_index=None, code_duplication=None)
 
-        # 3. 质量分析
-        if analyze_quality:
-            quality = _analyze_quality(skill_dir)
+        # 3. 质量分析（异步）
+        if input_data.analyze_quality:
+            quality = await _analyze_quality(skill_dir)
         else:
             # 如果不分析质量，使用默认值
             quality = QualityScore(overall_score=0.0, structure_score=0.0, documentation_score=0.0, test_coverage_score=0.0)
@@ -412,8 +438,19 @@ async def refactor_skill(
     Returns:
         包含重构建议的字典
     """
+    from .models.skill_config import RefactorSkillInput
+
     try:
-        skill_dir = Path(skill_path)
+        # 使用 Pydantic 验证输入参数
+        input_data = RefactorSkillInput.model_validate({
+            "skill_path": skill_path,
+            "focus": focus,
+            "analyze_structure": analyze_structure,
+            "analyze_complexity": analyze_complexity,
+            "analyze_quality": analyze_quality,
+        })
+
+        skill_dir = Path(input_data.skill_path)
 
         # 检查目录是否存在
         if not skill_dir.exists():
@@ -430,29 +467,29 @@ async def refactor_skill(
                 "error_type": "path_error",
             }
 
-        # 1. 结构分析
-        if analyze_structure:
-            structure = _analyze_structure(skill_dir)
+        # 1. 结构分析（异步）
+        if input_data.analyze_structure:
+            structure = await _analyze_structure(skill_dir)
         else:
             from .models.skill_config import StructureAnalysis
             structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
 
-        # 2. 复杂度分析
-        if analyze_complexity:
-            complexity = _analyze_complexity(skill_dir)
+        # 2. 复杂度分析（异步）
+        if input_data.analyze_complexity:
+            complexity = await _analyze_complexity(skill_dir)
         else:
             from .models.skill_config import ComplexityMetrics
             complexity = ComplexityMetrics(cyclomatic_complexity=None, maintainability_index=None, code_duplication=None)
 
-        # 3. 质量分析
-        if analyze_quality:
-            quality = _analyze_quality(skill_dir)
+        # 3. 质量分析（异步）
+        if input_data.analyze_quality:
+            quality = await _analyze_quality(skill_dir)
         else:
             from .models.skill_config import QualityScore
             quality = QualityScore(overall_score=0.0, structure_score=0.0, documentation_score=0.0, test_coverage_score=0.0)
 
         # 4. 生成重构建议
-        suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality, focus)
+        suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality, input_data.focus)
 
         # 5. 生成重构报告
         report = generate_refactor_report(str(skill_dir), structure, complexity, quality, suggestions)
@@ -494,7 +531,7 @@ async def refactor_skill(
 
 
 @mcp.tool()
-async def package_skill_tool(
+async def package_skill(
     ctx: Context,
     skill_path: str,
     output_dir: str = ".",
@@ -518,14 +555,27 @@ async def package_skill_tool(
     Returns:
         包含打包结果的字典
     """
+    from .models.skill_config import PackageSkillInput
+    from pydantic import ValidationError
+
     try:
+        # 使用 Pydantic 验证输入参数
+        # 注意：format 是 Python 保留字，在模型中映射到 format 字段
+        input_data = PackageSkillInput.model_validate({
+            "skill_path": skill_path,
+            "output_dir": output_dir,
+            "format": format,
+            "include_tests": include_tests,
+            "validate_before_package": validate_before_package,
+        })
+
         # 调用打包函数
-        result = package_skill(
-            skill_path=skill_path,
-            output_dir=output_dir,
-            package_format=format,
-            include_tests=include_tests,
-            validate_before_package=validate_before_package,
+        result = package_skill_impl(
+            skill_path=input_data.skill_path,
+            output_dir=input_data.output_dir,
+            package_format=input_data.format,
+            include_tests=input_data.include_tests,
+            validate_before_package=input_data.validate_before_package,
         )
 
         # 转换为字典格式返回
@@ -542,6 +592,22 @@ async def package_skill_tool(
             "error_type": result.error_type,
         }
 
+    except ValidationError as e:
+        # 检查是否是 format 字段的验证错误
+        errors = e.errors()
+        for error in errors:
+            if error.get("loc") == ("format",):
+                return {
+                    "success": False,
+                    "error": f"无效的打包格式: {format}",
+                    "error_type": "format_error",
+                }
+        # 其他验证错误
+        return {
+            "success": False,
+            "error": f"输入验证失败: {e}",
+            "error_type": "validation_error",
+        }
     except Exception as e:
         return {
             "success": False,
@@ -726,7 +792,7 @@ async def _create_example_examples(skill_dir: Path, name: str) -> None:
 # ==================== MCP Resources ====================
 
 
-@mcp.resource("skill://templates")
+@mcp.resource("http://skills/schema/templates")
 def list_templates_resource() -> str:
     """列出所有可用的技能模板."""
     templates = list_templates()
@@ -737,7 +803,7 @@ def list_templates_resource() -> str:
     return result
 
 
-@mcp.resource("skill://templates/{type}")
+@mcp.resource("http://skills/schema/templates/{type}")
 def get_template_resource(type: str) -> str:
     """获取指定类型的技能模板内容."""
     from .resources.templates import TemplateType
@@ -750,13 +816,13 @@ def get_template_resource(type: str) -> str:
     return get_template_content(TemplateType(type))  # type: ignore
 
 
-@mcp.resource("skill://best-practices")
+@mcp.resource("http://skills/schema/best-practices")
 def best_practices_resource() -> str:
     """获取 Agent-Skills 开发最佳实践."""
     return get_best_practices()
 
 
-@mcp.resource("skill://validation-rules")
+@mcp.resource("http://skills/schema/validation-rules")
 def validation_rules_resource() -> str:
     """获取 Agent-Skills 验证规则."""
     return get_validation_rules()

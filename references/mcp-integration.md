@@ -2,7 +2,9 @@
 
 ## 概述
 
-Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skill 负责工作流编排。本文档说明如何使用 MCP 组件。
+Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skill 负责工作流编排。本文档说明如何配置和使用 MCP 组件。
+
+> **示例代码**：查看 [MCP 使用示例](../examples/mcp-usage-examples.md) 获取完整的代码示例和用法。
 
 ## MCP Server 配置
 
@@ -28,17 +30,48 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 }
 ```
 
+**配置说明**：
+- `command`: 使用 `uv` 作为命令运行器
+- `--directory`: 指向 skill-creator-mcp 项目目录
+- `run python -m`: 运行 Python 模块
+- `skill_creator_mcp`: MCP Server 入口模块
+
+### 环境变量配置
+
+可通过环境变量自定义行为：
+
+| 环境变量 | 说明 | 默认值 |
+|---------|------|--------|
+| `SKILL_CREATOR_LOG_LEVEL` | 日志级别 | INFO |
+| `SKILL_CREATOR_LOG_FORMAT` | 日志格式 | default |
+| `SKILL_CREATOR_LOG_FILE` | 日志文件路径 | 无（输出到 stderr） |
+| `SKILL_CREATOR_OUTPUT_DIR` | 默认输出目录 | 当前目录 |
+
 ### 验证连接
 
-启动 Claude Code 后，MCP Server 会自动连接。可通过 MCP Inspector 验证：
+启动 Claude Code 后，MCP Server 会自动连接。验证方法：
 
+**方法 1：MCP Inspector**
 ```bash
 npx @modelcontextprotocol/inspector /path/to/skill-creator-mcp/src/skill_creator_mcp
 ```
 
-## MCP 工具使用
+**方法 2：检查工具可用性**
+在 Claude Code 对话中尝试调用 MCP 工具。
 
-### init_skill - 初始化技能
+## MCP 工具
+
+### 可用工具列表
+
+| 工具 | 功能 |
+|------|------|
+| `init_skill` | 初始化新技能结构 |
+| `validate_skill` | 验证技能规范 |
+| `analyze_skill` | 分析技能质量 |
+| `refactor_skill` | 生成重构建议 |
+| `package_skill` | 打包技能为分发格式 |
+
+### init_skill
 
 **功能**：创建符合规范的技能目录结构
 
@@ -49,51 +82,18 @@ npx @modelcontextprotocol/inspector /path/to/skill-creator-mcp/src/skill_creator
 
 **返回**：创建的文件列表
 
-**示例**：
-```python
-# 创建最小技能
-init_skill(name="git-helper", template="minimal")
-
-# 创建工具集成型技能
-init_skill(name="container-manager", template="tool-based", path="./skills")
-```
-
-### validate_skill - 验证技能
+### validate_skill
 
 **功能**：检查技能是否符合最佳实践
 
 **参数**：
 - `skill_path` (string): 技能目录路径
-- `template` (string, 可选): 验证使用的模板类型
+- `check_structure` (bool, 可选): 是否检查目录结构（默认 True）
+- `check_content` (bool, 可选): 是否检查内容格式（默认 True）
 
 **返回**：验证报告，包含问题列表和建议
 
-**示例**：
-```python
-# 验证技能
-validate_skill(skill_path="/path/to/skill")
-
-# 验证特定模板类型
-validate_skill(skill_path="/path/to/skill", template="tool-based")
-```
-
-**报告结构**：
-```json
-{
-  "valid": true,
-  "issues": [],
-  "warnings": [
-    {
-      "category": "description",
-      "message": "描述缺少使用场景",
-      "suggestion": "添加 '何时使用' 章节"
-    }
-  ],
-  "score": 85
-}
-```
-
-### analyze_skill - 分析技能
+### analyze_skill
 
 **功能**：分析技能的 token 效率和结构质量
 
@@ -102,19 +102,13 @@ validate_skill(skill_path="/path/to/skill", template="tool-based")
 
 **返回**：分析报告，包含指标和改进建议
 
-**示例**：
-```python
-# 分析技能
-analyze_skill(skill_path="/path/to/skill")
-```
-
 **报告内容**：
 - Token 效率评分
 - 文件大小统计
 - 反模式识别
 - 优化建议
 
-### refactor_skill - 重构建议
+### refactor_skill
 
 **功能**：基于最佳实践生成重构建议
 
@@ -124,23 +118,30 @@ analyze_skill(skill_path="/path/to/skill")
 
 **返回**：重构建议报告
 
-**示例**：
-```python
-# 获取全面重构建议
-refactor_skill(skill_path="/path/to/skill")
+### package_skill
 
-# 专注特定领域
-refactor_skill(
-    skill_path="/path/to/skill",
-    focus=["structure", "token-efficiency"]
-)
-```
+**功能**：打包 Agent-Skill 为分发格式
 
-## MCP 资源访问
+**参数**：
+- `skill_path` (string): 技能目录路径
+- `output_dir` (string, 可选): 输出目录路径（默认：当前目录）
+- `format` (string, 可选): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
+- `include_tests` (bool, 可选): 是否包含测试文件（默认：True）
+- `validate_before_package` (bool, 可选): 打包前是否验证（默认：True）
+
+**返回**：打包结果
+
+## MCP 资源
+
+### 可用资源
+
+| URI | 内容 |
+|-----|------|
+| `http://skills/schema/templates/{type}` | 技能模板内容 |
+| `http://skills/schema/best-practices` | 最佳实践指南 |
+| `http://skills/schema/validation-rules` | 验证规则详情 |
 
 ### 技能模板
-
-**URI 格式**：`skill://templates/{type}`
 
 **可用类型**：
 - `minimal` - 最小技能模板
@@ -148,66 +149,29 @@ refactor_skill(
 - `workflow-based` - 工作流型模板
 - `analyzer-based` - 分析型模板
 
-**使用方式**：
-```python
-# 通过 MCP Client 读取模板
-resource = await session.read_resource("skill://templates/minimal")
-template_content = resource.contents[0].text
-```
+## MCP Prompts
 
-### 最佳实践指南
+### 可用 Prompts
 
-**URI**：`skill://best-practices`
+| Prompt | 用途 |
+|--------|------|
+| `create-skill` | 指导 AI 创建新技能 |
+| `validate-skill` | 指导 AI 验证技能质量 |
+| `refactor-skill` | 指导 AI 生成重构建议 |
 
-**内容**：渐进式披露、描述写作、组织原则等最佳实践
-
-**使用方式**：
-```python
-resource = await session.read_resource("skill://best-practices")
-practices = resource.contents[0].text
-```
-
-### 验证规则
-
-**URI**：`skill://validation-rules`
-
-**内容**：命名规则、描述标准、结构检查清单
-
-**使用方式**：
-```python
-resource = await session.read_resource("skill://validation-rules")
-rules = resource.contents[0].text
-```
-
-## MCP Prompts 使用
-
-### create-skill 提示
-
-**用途**：指导 AI 创建新技能
+### create-skill Prompt
 
 **参数**：
 - `name` - 技能名称
 - `template` - 模板类型
 
-**使用方式**：
-```python
-prompt = await session.get_prompt("create-skill", arguments={
-    "name": "my-skill",
-    "template": "tool-based"
-})
-```
-
-### validate-skill 提示
-
-**用途**：指导 AI 验证技能质量
+### validate-skill Prompt
 
 **参数**：
 - `skill_path` - 技能路径
 - `template` - 模板类型（可选）
 
-### refactor-skill 提示
-
-**用途**：指导 AI 生成重构建议
+### refactor-skill Prompt
 
 **参数**：
 - `skill_path` - 技能路径
@@ -215,7 +179,7 @@ prompt = await session.get_prompt("create-skill", arguments={
 
 ## 工作流集成
 
-### 完整开发流程
+### 标准开发流程
 
 ```
 1. init_skill(name, template)    # 初始化结构
@@ -228,62 +192,56 @@ prompt = await session.get_prompt("create-skill", arguments={
 
 ### Claude Code 中使用
 
-在 Claude Code 对话中直接使用：
-
+**创建技能**：
 ```
 你：创建一个名为 pdf-helper 的技能
-
 Claude：[调用 init_skill 工具]
-已创建 pdf-helper 技能结构...
+```
 
-你：验证这个技能
-
+**验证技能**：
+```
+你：验证 /path/to/skill
 Claude：[调用 validate_skill 工具]
-验证报告：命名规范 ✓，描述完整 ✓，结构良好 ✓
+```
+
+**分析质量**：
+```
+你：分析 /path/to/skill 的质量
+Claude：[调用 analyze_skill 工具]
 ```
 
 ## 错误处理
 
-### 常见错误
+### 常见错误及解决
 
-**1. MCP Server 未连接**
-```
-错误：Tool 'init_skill' not found
-解决：检查 Claude Code 配置，确保 MCP Server 已启动
+| 错误 | 原因 | 解决方案 |
+|------|------|----------|
+| `Tool 'init_skill' not found` | MCP Server 未连接 | 检查配置，确保 MCP Server 已启动 |
+| `Skill path not found` | 技能路径不存在 | 确认路径正确，使用绝对路径 |
+| `Unknown template type` | 模板类型无效 | 使用有效模板：minimal/tool-based/workflow-based/analyzer-based |
+
+### 故障排除
+
+**检查 MCP Server 状态**：
+```bash
+# 启动服务器测试
+uv run python -m skill_creator_mcp
+
+# 使用 Inspector 检查
+npx @modelcontextprotocol/inspector ./skill-creator-mcp/src/skill_creator_mcp
 ```
 
-**2. 技能路径不存在**
-```
-错误：Skill path not found: /path/to/skill
-解决：确认路径正确，使用绝对路径
-```
+**查看日志**：
+MCP Server 日志输出到 stderr，可在 Claude Code 日志中查看。
 
-**3. 模板类型无效**
-```
-错误：Unknown template type: custom
-解决：使用 valid 模板：minimal/tool-based/workflow-based/analyzer-based
-```
+**重启 MCP Server**：
+如果遇到连接问题，重启 Claude Code 会自动重连 MCP Server。
 
 ## 高级用法
 
-### 自定义模板
-
-基于现有模板创建自定义变体：
-
-```python
-# 1. 初始化基础模板
-init_skill(name="my-skill", template="tool-based")
-
-# 2. 修改 SKILL.md
-# 3. 添加自定义引用文件
-# 4. 验证修改后的技能
-validate_skill(skill_path="./my-skill")
-```
-
 ### 批量验证
 
-验证多个技能：
-
+验证多个技能的脚本模式：
 ```python
 skills = ["skill1", "skill2", "skill3"]
 for skill in skills:
@@ -291,26 +249,10 @@ for skill in skills:
     print(f"{skill}: {result['score']}/100")
 ```
 
-## 性能优化
-
-### 缓存资源
-
-频繁访问的资源可以缓存：
-
-```python
-# 首次读取
-best_practices = await session.read_resource("skill://best-practices")
-
-# 后续使用缓存内容
-cached_practices = best_practices.contents[0].text
-```
-
 ### 并发操作
 
 独立操作可以并发执行：
-
 ```python
-# 并发验证多个技能
 import asyncio
 
 results = await asyncio.gather(
@@ -320,22 +262,20 @@ results = await asyncio.gather(
 )
 ```
 
-## 故障排除
+### 缓存资源
 
-### 检查 MCP Server 状态
+频繁访问的资源可以缓存：
+```python
+# 首次读取
+best_practices = await session.read_resource("skill://best-practices")
 
-```bash
-# 启动服务器测试
-uv run python -m skill_creator_mcp
-
-# 使用 Inspector 检查
-npx @modelcontextprotocol/inspector ./skill-creator-mcp/src/skill_creator_mcp
+# 后续使用缓存内容
+cached_practices = best_practices.contents[0].text
 ```
 
-### 查看日志
+## 相关文档
 
-MCP Server 日志输出到 stderr，可在 Claude Code 日志中查看。
-
-### 重启 MCP Server
-
-如果遇到连接问题，重启 Claude Code 会自动重连 MCP Server。
+- **[MCP 使用示例](../examples/mcp-usage-examples.md)** - 完整代码示例
+- **[最佳实践](best-practices.md)** - 开发规范
+- **[验证规范](validation.md)** - 验证规则
+- **[验证实施指南](validation-guide.md)** - 等级划分和 CI/CD 集成

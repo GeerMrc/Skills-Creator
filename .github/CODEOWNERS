@@ -1,0 +1,24 @@
+# Code Owners
+
+# This file defines the code owners for this repository.
+# See https://help.github.com/articles/about-codeowners/
+
+# 全局默认审核者（可选）
+* @skill-creator/maintainers
+
+# 核心代码需要核心团队审核
+src/skill_creator_mcp/ @skill-creator/core-team
+
+# 文档变更需要文档团队审核
+references/ @skill-creator/docs-team
+*.md @skill-creator/docs-team
+
+# 测试文件需要测试团队审核
+tests/ @skill-creator/test-team
+
+# CI/CD 配置需要 DevOps 团队审核
+.github/workflows/ @skill-creator/devops-team
+
+# 模板和资源文件
+src/skill_creator_mcp/templates/ @skill-creator/core-team
+src/skill_creator_mcp/resources/ @skill-creator/core-team

@@ -1,8 +1,17 @@
 """代码分析工具函数."""
 
+import asyncio
 import ast
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from ..constants import (
+    CODE_SIZE_MANY_LINES_THRESHOLD,
+    MI_AVG_COMPLEXITY_COEFFICIENT,
+    MI_BASE_CONSTANT,
+    MI_COMPLEXITY_SCALE,
+    MI_TOTAL_COMPLEXITY_COEFFICIENT,
+)
 
 if TYPE_CHECKING:
     from ..models.skill_config import (
@@ -12,7 +21,7 @@ if TYPE_CHECKING:
     )
 
 
-def _analyze_structure(skill_dir: Path) -> "StructureAnalysis":
+async def _analyze_structure(skill_dir: Path) -> "StructureAnalysis":
     """分析代码结构.
 
     Args:
@@ -34,9 +43,9 @@ def _analyze_structure(skill_dir: Path) -> "StructureAnalysis":
 
         total_files += 1
         try:
-            with open(py_file, encoding="utf-8") as f:
-                lines = f.readlines()
-                total_lines += len(lines)
+            # 使用 asyncio.to_thread 避免阻塞事件循环
+            lines = await asyncio.to_thread(py_file.read_text, encoding="utf-8")
+            total_lines += len(lines.splitlines())
         except Exception:
             pass
 
@@ -81,7 +90,7 @@ def _categorize_file(file_path: Path, base_dir: Path) -> str:
         return "other"
 
 
-def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
+async def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
     """分析代码复杂度.
 
     Args:
@@ -100,8 +109,8 @@ def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
             continue
 
         try:
-            with open(py_file, encoding="utf-8") as f:
-                content = f.read()
+            # 使用 asyncio.to_thread 避免阻塞事件循环
+            content = await asyncio.to_thread(py_file.read_text, encoding="utf-8")
 
             # 使用 AST 分析圈复杂度
             tree = ast.parse(content)
@@ -114,7 +123,12 @@ def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
     avg_complexity = total_complexity / file_count if file_count > 0 else 0
 
     # 可维护性指数（简化计算）
-    maintainability = max(0, 171 - 0.23 * avg_complexity - 16.2 * (total_complexity / 1000))
+    maintainability = max(
+        0,
+        MI_BASE_CONSTANT
+        - MI_AVG_COMPLEXITY_COEFFICIENT * avg_complexity
+        - MI_TOTAL_COMPLEXITY_COEFFICIENT * (total_complexity / MI_COMPLEXITY_SCALE),
+    )
 
     return ComplexityMetrics(
         cyclomatic_complexity=int(avg_complexity) if avg_complexity > 0 else None,
@@ -147,7 +161,7 @@ def _calculate_cyclomatic_complexity(tree: ast.AST) -> int:
     return complexity
 
 
-def _analyze_quality(skill_dir: Path) -> "QualityScore":
+async def _analyze_quality(skill_dir: Path) -> "QualityScore":
     """分析代码质量.
 
     Args:
@@ -161,8 +175,8 @@ def _analyze_quality(skill_dir: Path) -> "QualityScore":
     # 结构评分 (0-40)
     structure_score = _calculate_structure_score(skill_dir)
 
-    # 文档评分 (0-30)
-    documentation_score = _calculate_documentation_score(skill_dir)
+    # 文档评分 (0-30) - 现在是异步的
+    documentation_score = await _calculate_documentation_score(skill_dir)
 
     # 测试覆盖率评分 (0-30)
     test_score = _calculate_test_score(skill_dir)
@@ -227,7 +241,7 @@ def _calculate_structure_score(skill_dir: Path) -> float:
     return min(score, 40.0)
 
 
-def _calculate_documentation_score(skill_dir: Path) -> float:
+async def _calculate_documentation_score(skill_dir: Path) -> float:
     """计算文档评分 (0-30).
 
     Args:
@@ -241,7 +255,8 @@ def _calculate_documentation_score(skill_dir: Path) -> float:
     # 检查 SKILL.md 质量 (20 分)
     skill_md = skill_dir / "SKILL.md"
     if skill_md.exists():
-        content = skill_md.read_text(encoding="utf-8")
+        # 使用 asyncio.to_thread 避免阻塞事件循环
+        content = await asyncio.to_thread(skill_md.read_text, encoding="utf-8")
         if len(content) > 200:
             score += 10  # 有足够的内容
         if "##" in content:
@@ -337,7 +352,7 @@ def _generate_suggestions(
     if structure.total_files > 20:
         suggestions.append(f"文件数量较多 ({structure.total_files})，建议考虑模块化拆分")
 
-    if structure.total_lines > 1000:
+    if structure.total_lines > CODE_SIZE_MANY_LINES_THRESHOLD:
         suggestions.append(f"代码行数较多 ({structure.total_lines})，建议考虑拆分模块")
 
     return suggestions
