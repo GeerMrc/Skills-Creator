@@ -57,6 +57,7 @@ Issues = "https://github.com/skill-creator/skill-creator-mcp/issues"
 
 [project.scripts]
 skill-creator-mcp = "skill_creator_mcp:main"
+skill-creator-mcp-http = "skill_creator_mcp.http:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/skill_creator_mcp"]

@@ -230,3 +230,182 @@ class AnalyzeResult(BaseModel):
         default_factory=list,
         description="改进建议列表",
     )
+
+
+# ==================== 重构相关模型 ====================
+
+
+class RefactorSuggestion(BaseModel):
+    """重构建议模型."""
+
+    priority: Literal["P0", "P1", "P2"] = Field(
+        ...,
+        description="优先级（P0=必须，P1=建议，P2=可选）",
+    )
+    category: str = Field(
+        ...,
+        description="问题类别",
+    )
+    issue: str = Field(
+        ...,
+        description="问题描述",
+    )
+    suggestion: str = Field(
+        ...,
+        description="改进建议",
+    )
+    impact: Literal["high", "medium", "low"] = Field(
+        default="medium",
+        description="影响程度",
+    )
+    effort: Literal["low", "medium", "high"] = Field(
+        default="medium",
+        description="工作量",
+    )
+
+
+class RefactorSkillInput(BaseModel):
+    """重构技能输入参数模型."""
+
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    focus: list[str] | None = Field(
+        default=None,
+        description="重点关注领域（如 structure、documentation、testing）",
+    )
+    analyze_structure: bool = Field(
+        default=True,
+        description="是否分析代码结构",
+    )
+    analyze_complexity: bool = Field(
+        default=True,
+        description="是否分析代码复杂度",
+    )
+    analyze_quality: bool = Field(
+        default=True,
+        description="是否分析代码质量",
+    )
+
+
+class RefactorResult(BaseModel):
+    """重构结果模型."""
+
+    success: bool = Field(
+        ...,
+        description="操作是否成功",
+    )
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    skill_name: str | None = Field(
+        default=None,
+        description="技能名称",
+    )
+    structure: StructureAnalysis = Field(
+        default_factory=StructureAnalysis,
+        description="结构分析结果",
+    )
+    complexity: ComplexityMetrics = Field(
+        default_factory=ComplexityMetrics,
+        description="复杂度指标",
+    )
+    quality: QualityScore | None = Field(
+        default=None,
+        description="质量评分",
+    )
+    suggestions: list[RefactorSuggestion] = Field(
+        default_factory=list,
+        description="重构建议列表",
+    )
+    report: str = Field(
+        default="",
+        description="重构报告（Markdown 格式）",
+    )
+    effort_estimate: dict[str, int] = Field(
+        default_factory=dict,
+        description="工作量估算（小时）",
+    )
+    error: str | None = Field(
+        default=None,
+        description="错误信息",
+    )
+    error_type: str | None = Field(
+        default=None,
+        description="错误类型",
+    )
+
+
+# ==================== 打包相关模型 ====================
+
+
+class PackageSkillInput(BaseModel):
+    """打包技能输入参数模型."""
+
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    output_dir: str = Field(
+        default=".",
+        description="输出目录路径",
+    )
+    format: Literal["zip", "tar.gz", "tar.bz2"] = Field(
+        default="zip",
+        description="打包格式",
+    )
+    include_tests: bool = Field(
+        default=True,
+        description="是否包含测试文件",
+    )
+    validate_before_package: bool = Field(
+        default=True,
+        description="打包前是否验证",
+    )
+
+
+class PackageResult(BaseModel):
+    """打包结果模型."""
+
+    success: bool = Field(
+        ...,
+        description="操作是否成功",
+    )
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    package_path: str | None = Field(
+        default=None,
+        description="生成的包文件路径",
+    )
+    format: str | None = Field(
+        default=None,
+        description="打包格式",
+    )
+    files_included: int = Field(
+        default=0,
+        description="包含的文件数量",
+    )
+    package_size: int | None = Field(
+        default=None,
+        description="包大小（字节）",
+    )
+    validation_passed: bool | None = Field(
+        default=None,
+        description="打包前验证是否通过",
+    )
+    validation_errors: list[str] = Field(
+        default_factory=list,
+        description="验证错误列表",
+    )
+    error: str | None = Field(
+        default=None,
+        description="错误信息",
+    )
+    error_type: str | None = Field(
+        default=None,
+        description="错误类型",
+    )

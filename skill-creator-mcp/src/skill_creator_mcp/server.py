@@ -28,6 +28,12 @@ from .utils.analyzers import (
     _generate_suggestions,
 )
 from .utils.file_ops import create_directory_structure_async, write_file_async
+from .utils.packagers import package_skill
+from .utils.refactorors import (
+    estimate_refactor_effort,
+    generate_refactor_report,
+    generate_refactor_suggestions,
+)
 from .utils.validators import (
     _validate_naming,
     _validate_skill_md,
@@ -43,7 +49,7 @@ mcp = FastMCP(
     instructions="""
     Skill Creator MCP Server - Agent-Skills 开发工具
 
-    这个服务器提供创建、验证、分析和重构 Agent-Skills 的工具。
+    这个服务器提供创建、验证、分析、重构和打包 Agent-Skills 的工具。
 
     ## 可用工具
 
@@ -74,9 +80,25 @@ mcp = FastMCP(
     - analyze_complexity (bool): 是否分析代码复杂度（默认 True）
     - analyze_quality (bool): 是否分析代码质量（默认 True）
 
-    ## TODO: 更多工具正在开发中
+    ### refactor_skill
+    生成 Agent-Skill 的重构建议。
 
-    当前处于开发阶段，其他工具和资源正在逐步实现中。
+    参数：
+    - skill_path (str): 技能目录路径
+    - focus (list[str]): 重点关注领域（可选，如 structure、documentation、testing）
+    - analyze_structure (bool): 是否分析代码结构（默认 True）
+    - analyze_complexity (bool): 是否分析代码复杂度（默认 True）
+    - analyze_quality (bool): 是否分析代码质量（默认 True）
+
+    ### package_skill
+    打包 Agent-Skill 为分发格式。
+
+    参数：
+    - skill_path (str): 技能目录路径
+    - output_dir (str): 输出目录路径（默认：当前目录）
+    - format (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
+    - include_tests (bool): 是否包含测试文件（默认：True）
+    - validate_before_package (bool): 打包前是否验证（默认：True）
     """
 )
 
@@ -361,6 +383,169 @@ async def analyze_skill(
         return {
             "success": False,
             "error": f"分析过程出错: {e}",
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def refactor_skill(
+    ctx: Context,
+    skill_path: str,
+    focus: list[str] | None = None,
+    analyze_structure: bool = True,
+    analyze_complexity: bool = True,
+    analyze_quality: bool = True,
+) -> dict[str, Any]:
+    """
+    生成 Agent-Skill 的重构建议.
+
+    基于代码分析生成具体的重构建议，包括优先级、影响评估和工作量估算。
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: 技能目录路径
+        focus: 重点关注领域（可选，如 structure、documentation、testing）
+        analyze_structure: 是否分析代码结构
+        analyze_complexity: 是否分析代码复杂度
+        analyze_quality: 是否分析代码质量
+
+    Returns:
+        包含重构建议的字典
+    """
+    try:
+        skill_dir = Path(skill_path)
+
+        # 检查目录是否存在
+        if not skill_dir.exists():
+            return {
+                "success": False,
+                "error": f"目录不存在: {skill_path}",
+                "error_type": "path_error",
+            }
+
+        if not skill_dir.is_dir():
+            return {
+                "success": False,
+                "error": f"路径不是目录: {skill_path}",
+                "error_type": "path_error",
+            }
+
+        # 1. 结构分析
+        if analyze_structure:
+            structure = _analyze_structure(skill_dir)
+        else:
+            from .models.skill_config import StructureAnalysis
+            structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
+
+        # 2. 复杂度分析
+        if analyze_complexity:
+            complexity = _analyze_complexity(skill_dir)
+        else:
+            from .models.skill_config import ComplexityMetrics
+            complexity = ComplexityMetrics(cyclomatic_complexity=None, maintainability_index=None, code_duplication=None)
+
+        # 3. 质量分析
+        if analyze_quality:
+            quality = _analyze_quality(skill_dir)
+        else:
+            from .models.skill_config import QualityScore
+            quality = QualityScore(overall_score=0.0, structure_score=0.0, documentation_score=0.0, test_coverage_score=0.0)
+
+        # 4. 生成重构建议
+        suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality, focus)
+
+        # 5. 生成重构报告
+        report = generate_refactor_report(str(skill_dir), structure, complexity, quality, suggestions)
+
+        # 6. 估算工作量
+        effort = estimate_refactor_effort(suggestions)
+
+        return {
+            "success": True,
+            "skill_path": str(skill_dir),
+            "skill_name": skill_dir.name,
+            "structure": {
+                "total_files": structure.total_files,
+                "total_lines": structure.total_lines,
+                "file_breakdown": structure.file_breakdown,
+            },
+            "complexity": {
+                "cyclomatic_complexity": complexity.cyclomatic_complexity,
+                "maintainability_index": complexity.maintainability_index,
+                "code_duplication": complexity.code_duplication,
+            },
+            "quality": {
+                "overall_score": quality.overall_score,
+                "structure_score": quality.structure_score,
+                "documentation_score": quality.documentation_score,
+                "test_coverage_score": quality.test_coverage_score,
+            },
+            "suggestions": suggestions,
+            "report": report,
+            "effort_estimate": effort,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"重构分析出错: {e}",
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def package_skill_tool(
+    ctx: Context,
+    skill_path: str,
+    output_dir: str = ".",
+    format: str = "zip",
+    include_tests: bool = True,
+    validate_before_package: bool = True,
+) -> dict[str, Any]:
+    """
+    打包 Agent-Skill 为分发格式.
+
+    创建包含技能文件的压缩包，支持 zip、tar.gz 和 tar.bz2 格式。
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: 技能目录路径
+        output_dir: 输出目录路径
+        format: 打包格式（zip/tar.gz/tar.bz2）
+        include_tests: 是否包含测试文件
+        validate_before_package: 打包前是否验证
+
+    Returns:
+        包含打包结果的字典
+    """
+    try:
+        # 调用打包函数
+        result = package_skill(
+            skill_path=skill_path,
+            output_dir=output_dir,
+            package_format=format,
+            include_tests=include_tests,
+            validate_before_package=validate_before_package,
+        )
+
+        # 转换为字典格式返回
+        return {
+            "success": result.success,
+            "skill_path": result.skill_path,
+            "package_path": result.package_path,
+            "format": result.format,
+            "files_included": result.files_included,
+            "package_size": result.package_size,
+            "validation_passed": result.validation_passed,
+            "validation_errors": result.validation_errors,
+            "error": result.error,
+            "error_type": result.error_type,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"打包过程出错: {e}",
             "error_type": "internal_error",
         }
 

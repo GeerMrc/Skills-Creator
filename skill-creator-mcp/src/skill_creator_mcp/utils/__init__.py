@@ -15,6 +15,12 @@ from .file_ops import (
     write_file,
     write_file_async,
 )
+from .packagers import package_skill
+from .refactorors import (
+    estimate_refactor_effort,
+    generate_refactor_report,
+    generate_refactor_suggestions,
+)
 from .validators import (
     _validate_naming,
     _validate_skill_md,
@@ -44,4 +50,8 @@ __all__ = [
     "write_file",
     "read_file_async",
     "read_file",
+    "generate_refactor_suggestions",
+    "generate_refactor_report",
+    "estimate_refactor_effort",
+    "package_skill",
 ]
