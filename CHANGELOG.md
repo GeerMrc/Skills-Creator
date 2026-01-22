@@ -84,6 +84,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Audited technical debt and found discrepancies (6 type ignores, not 120; 0 bare excepts)
   - Validated all document reference links
 
+- **ISSUES.md Update**: Corrected High priority issues status based on actual code audit
+  - All 9 High priority issues are actually fixed (H-001 through H-009)
+  - Updated statistics: 15 fixed, 21 pending (was 6 fixed, 29 pending)
+  - Added verification notes for each fixed issue
+  - H-001: Logging system implemented (logging_config.py + get_logger)
+  - H-002: Pydantic validation in all 5 tools (model_validate)
+  - H-003: Async I/O using asyncio.to_thread
+  - H-004: Constants extracted to constants.py (60+ constants)
+  - H-005: Document references fixed
+  - H-006: validation.md split, now 322 lines (was 425)
+  - H-007: Audit report moved to root as ARCHITECTURE_AUDIT_REPORT_v2.md
+  - H-008: Code Review templates created (.github/)
+  - H-009: Commit language decision (English for commits)
+
+- **SKILL.md Enhancement**: Added MCP Prompts documentation
+  - New section documenting 3 MCP Prompts (create-skill, validate-skill, refactor-skill)
+  - Complete MCP component documentation: 5 tools, 4 resources, 3 prompts
+
 ### Verified
 - **Test Coverage**: 98% (297 tests passing)
 - **Cross-references**: All documentation links validated

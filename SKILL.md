@@ -89,6 +89,14 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 | `http://skills/schema/best-practices` | 最佳实践指南 |
 | `http://skills/schema/validation-rules` | 验证规则详情 |
 
+## MCP Prompts 模板
+
+| Prompt 名称 | 功能 |
+|-------------|------|
+| `create-skill` | 创建新技能的引导提示模板 |
+| `validate-skill` | 验证技能的引导提示模板 |
+| `refactor-skill` | 重构技能的引导提示模板 |
+
 ## 详细文档
 
 - **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
