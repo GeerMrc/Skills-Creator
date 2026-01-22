@@ -3,10 +3,7 @@
 测试 __main__.py (STDIO) 和 http.py (HTTP/SSE) 入口点.
 """
 
-import sys
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from skill_creator_mcp.__main__ import main as stdio_main
 from skill_creator_mcp.http import main as http_main

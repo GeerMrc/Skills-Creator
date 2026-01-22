@@ -8,8 +8,9 @@
 5. .venv 目录跳过逻辑
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from skill_creator_mcp.utils.analyzers import (
     _analyze_complexity,

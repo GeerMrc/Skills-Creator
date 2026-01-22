@@ -1,19 +1,15 @@
 """测试日志配置模块."""
 
 import logging
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from skill_creator_mcp.logging_config import (
     DEFAULT_FORMAT,
-    SIMPLE_FORMAT,
     DETAILED_FORMAT,
-    setup_logging,
+    SIMPLE_FORMAT,
     get_logger,
     logger,
-    LogLevel,
+    setup_logging,
 )
 
 
@@ -78,12 +74,12 @@ class TestSetupLogging:
         assert log_file.parent.is_dir()
 
     @patch("skill_creator_mcp.logging_config.logging.basicConfig")
-    def test_setup_logging_force_reset(self, mock_basicConfig):
+    def test_setup_logging_force_reset(self, mock_basicconfig):
         """测试强制重置日志配置."""
         setup_logging()
 
-        mock_basicConfig.assert_called_once()
-        call_kwargs = mock_basicConfig.call_args.kwargs
+        mock_basicconfig.assert_called_once()
+        call_kwargs = mock_basicconfig.call_args.kwargs
         assert call_kwargs["force"] is True
 
 

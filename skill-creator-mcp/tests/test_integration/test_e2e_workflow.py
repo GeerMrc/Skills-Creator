@@ -10,9 +10,7 @@ import pytest
 
 from skill_creator_mcp.server import _generate_skill_md_content
 from skill_creator_mcp.utils.analyzers import (
-    _analyze_complexity,
     _analyze_quality,
-    _analyze_structure,
 )
 from skill_creator_mcp.utils.file_ops import create_directory_structure_async, write_file_async
 from skill_creator_mcp.utils.validators import validate_skill_name, validate_template_type
