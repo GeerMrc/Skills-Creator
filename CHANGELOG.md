@@ -40,6 +40,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Documentation**: 更新 README.md 测试数据徽章 (297 passed, 98% coverage)
+- **Documentation**: 拆分 best-practices.md 为两个文件以符合推荐行数标准
+  - `best-practices-core.md` (206行) - 核心原则
+  - `best-practices-advanced.md` (232行) - 高级技巧
+- **Documentation**: 统一 SKILL.md 触发词格式为名词形式
+- **Documentation**: 更新 SKILL.md 引用链接指向新的最佳实践文件
+- **Documentation**: 扩展 SKILL.md 架构说明章节 (111行 → 138行)
+
+### Added
+- **Documentation**: 添加 MCP 与 Agent-Skill 协同示例文档
+  - `examples/mcp-skill-collaboration.md` - 协同工作流示例
+- **Documentation**: 添加混合架构决策记录 (ADR)
+  - `docs/adr/001-hybrid-architecture.md` - 架构决策和理由
+
+### Changed
 - **Branch Strategy**: Updated to reflect simplified main + feature/* structure
   - Removed outdated `develop` branch references
   - Updated audit report Git workflow score from 70/100 to 95/100
