@@ -26,12 +26,13 @@ class Config:
     def __init__(self) -> None:
         """初始化配置，从环境变量读取所有设置."""
         # 日志配置
-        self._log_level: LogLevel = os.getenv(
+        # 默认值已提供，但类型检查器无法推断 Literal 类型
+        self._log_level: LogLevel = os.getenv(  # type: ignore[assignment]
             "SKILL_CREATOR_LOG_LEVEL", "INFO"
-        )  # type: ignore[assignment]
-        self._log_format: LogFormat = os.getenv(
+        )
+        self._log_format: LogFormat = os.getenv(  # type: ignore[assignment]
             "SKILL_CREATOR_LOG_FORMAT", "default"
-        )  # type: ignore[assignment]
+        )
         self._log_file: str | None = os.getenv("SKILL_CREATOR_LOG_FILE")
 
         # 工作目录配置
