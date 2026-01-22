@@ -49,6 +49,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - 修复 SKILL.md 中的相对链接路径（使用 `references/...` 而非 `skill-creator/references/...`）
+- 统一项目版本号到 v0.2.0:
+  - `skill-creator-mcp/pyproject.toml`: 0.1.0 → 0.2.0
+  - `skill-creator-mcp/README.md`: v0.1.0-alpha → v0.2.0-alpha
+  - `CLAUDE.md`: v0.1.0-alpha → v0.2.0-alpha
+  - `README.md`: v0.1.0-alpha → v0.2.0-alpha
+- 更新测试徽章数据: 297 → 307 个测试
+- 更新 CLAUDE.md 测试覆盖率: 96% (262) → 99% (307)
+- 更新 MCP Resources 数量: 3 → 4
 
 ### Added
 - **MIGRATION.md**: 用户迁移指南，说明 v0.1.0 → v0.2.0 的迁移步骤

@@ -225,7 +225,7 @@ uv run python -m skill_creator_mcp.http
 
 ## 路线图
 
-当前版本为 v0.1.0-alpha，主要开发计划参见 [ROADMAP.md](ROADMAP.md)。
+当前版本为 v0.2.0-alpha，主要开发计划参见 [ROADMAP.md](ROADMAP.md)。
 
 ---
 
