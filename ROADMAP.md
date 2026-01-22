@@ -43,7 +43,7 @@
 
 **Day 3: 文档修复**
 - [ ] 修复 `best-practices.md` 示例引用
-- [ ] 创建 `examples/` 目录结构
+- [ ] 创建 `skill-creator/examples/` 目录结构
 - [ ] 更新 `mcp-integration.md` 示例
 
 **Day 4-5: Code Review 流程**

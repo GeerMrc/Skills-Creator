@@ -58,6 +58,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Branch Strategy**: Updated to reflect simplified main + feature/* structure
   - Removed outdated `develop` branch references
   - Updated audit report Git workflow score from 70/100 to 95/100
+- **Project Structure**: 统一 Agent-Skill 代码到 skill-creator/ 目录
+  - Moved `SKILL.md` → `skill-creator/SKILL.md`
+  - Moved `examples/*` → `skill-creator/examples/*`
+  - Moved `scripts/*` → `skill-creator/scripts/*`
+  - Moved `references/*` → `skill-creator/references/*`
+  - Updated all internal reference links
+  - Updated CLAUDE.md and README.md directory structure documentation
 
 ### Fixed
 - **Documentation**: Fixed broken reference in `best-practices.md`

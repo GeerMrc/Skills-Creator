@@ -83,6 +83,11 @@ uv sync --dev
 
 ```
 Skills-Creator/
+├── skill-creator/              # Agent-Skill 代码统一目录
+│   ├── SKILL.md                # Agent-Skill 入口
+│   ├── examples/               # 使用示例
+│   ├── scripts/                # 辅助脚本
+│   └── references/             # 引用文档
 ├── skill-creator-mcp/          # MCP Server (Python)
 │   ├── src/skill_creator_mcp/
 │   │   ├── server.py           # MCP Server 入口
@@ -92,9 +97,9 @@ Skills-Creator/
 │   │   └── utils/              # 工具函数
 │   ├── tests/                  # 测试套件 (98% 覆盖率)
 │   └── pyproject.toml          # 项目配置
-├── SKILL.md                    # Agent-Skill 入口
-├── references/                 # 详细文档
-├── examples/                   # 使用示例
+├── docs/                       # 项目文档
+│   └── adr/
+│       └── 001-hybrid-architecture.md
 ├── CLAUDE.md                   # 开发指南
 ├── ARCHITECTURE_AUDIT_REPORT_v2.md
 ├── ROADMAP.md
@@ -112,7 +117,7 @@ Skills-Creator/
 
 | 文档 | 说明 |
 |------|------|
-| [SKILL.md](SKILL.md) | Agent-Skill 主入口 |
+| [SKILL.md](skill-creator/SKILL.md) | Agent-Skill 主入口 |
 | [CLAUDE.md](CLAUDE.md) | 项目开发指南和规范 |
 | [skill-creator-mcp/README.md](skill-creator-mcp/README.md) | MCP Server 文档 |
 
@@ -120,19 +125,19 @@ Skills-Creator/
 
 | 文档 | 说明 |
 |------|------|
-| [MCP 集成指南](references/mcp-integration.md) | MCP 工具和资源使用 |
-| [最佳实践](references/best-practices.md) | 渐进式披露和描述规范 |
-| [验证规范](references/validation.md) | 命名、结构、内容验证规则 |
-| [验证指南](references/validation-guide.md) | 详细验证指南 |
+| [MCP 集成指南](skill-creator/references/mcp-integration.md) | MCP 工具和资源使用 |
+| [最佳实践](skill-creator/references/best-practices.md) | 渐进式披露和描述规范 |
+| [验证规范](skill-creator/references/validation.md) | 命名、结构、内容验证规则 |
+| [验证指南](skill-creator/references/validation-guide.md) | 详细验证指南 |
 
 ### 示例文档
 
 | 文档 | 说明 |
 |------|------|
-| [创建技能](examples/creating-a-skill.md) | 如何创建新技能 |
-| [验证技能](examples/validating-a-skill.md) | 如何验证技能 |
-| [分析技能](examples/analyzing-a-skill.md) | 如何分析技能 |
-| [MCP 使用示例](examples/mcp-usage-examples.md) | MCP 工具详细示例 |
+| [创建技能](skill-creator/examples/creating-a-skill.md) | 如何创建新技能 |
+| [验证技能](skill-creator/examples/validating-a-skill.md) | 如何验证技能 |
+| [分析技能](skill-creator/examples/analyzing-a-skill.md) | 如何分析技能 |
+| [MCP 使用示例](skill-creator/examples/mcp-usage-examples.md) | MCP 工具详细示例 |
 
 ---
 

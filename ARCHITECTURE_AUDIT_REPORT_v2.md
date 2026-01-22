@@ -100,9 +100,11 @@
 
 **包含**：
 - `skill-creator-mcp/` 目录（MCP Server）
-- `SKILL.md` 和 `references/` 目录（Agent-Skill）
+- `skill-creator/` 目录（Agent-Skill，包含 SKILL.md、references/、examples/、scripts/）
 - 开发规范文档（`.claude/plans/`）
 - 测试代码和配置
+
+> **注**: 此审计报告基于 2026-01-21 的项目状态。2026-01-22 已完成目录结构重构，Agent-Skill 相关文件已移至 `skill-creator/` 目录。
 
 **排除**：
 - `.github/` 配置（待创建）
@@ -132,8 +134,8 @@
 
 审计基于以下开发规范：
 - `.claude/plans/federated-sprouting-pelican.md` (677行)
-- `references/best-practices.md` (403行)
-- `references/validation.md` (原430行，现已优化)
+- `skill-creator/references/best-practices.md` (403行)
+- `skill-creator/references/validation.md` (原430行，现已优化)
 
 #### 关键要求
 

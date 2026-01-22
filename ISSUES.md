@@ -2,6 +2,7 @@
 
 > **生成日期**：2026-01-21
 > **基于审计报告**：ARCHITECTURE_AUDIT_REPORT_v2.md
+> **目录重构说明**（2026-01-22）：Agent-Skill 相关文件（SKILL.md、references/、examples/、scripts/）已移至 `skill-creator/` 目录。本文档记录的历史问题中的文件路径可能已变更，但问题本身均已解决。
 
 ---
 

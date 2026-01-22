@@ -45,6 +45,11 @@
 
 ```
 /models/claude-glm/Skills-Creator/
+├── skill-creator/              # Agent-Skill 代码统一目录
+│   ├── SKILL.md                # Agent-Skill 入口
+│   ├── examples/               # 使用示例
+│   ├── scripts/                # 辅助脚本
+│   └── references/             # 引用文档
 ├── skill-creator-mcp/          # MCP Server (Python)
 │   ├── src/skill_creator_mcp/
 │   │   ├── server.py           # MCP Server 入口
@@ -52,11 +57,12 @@
 │   │   ├── utils/              # 工具函数
 │   │   ├── prompts/            # Prompt 模板
 │   │   └── resources/          # 资源内容
-│   ├── tests/                  # 测试套件 (96% 覆盖率)
+│   ├── tests/                  # 测试套件 (99% 覆盖率)
 │   ├── pyproject.toml          # 项目配置
 │   └── README.md
-├── references/                 # Agent-Skill 引用文档
-├── SKILL.md                    # Agent-Skill 入口
+├── docs/                       # 项目文档
+│   └── adr/
+│       └── 001-hybrid-architecture.md
 ├── ARCHITECTURE_AUDIT_REPORT_v2.md
 ├── ROADMAP.md
 ├── ISSUES.md
@@ -587,17 +593,18 @@ cat /models/claude-glm/Skills-Creator/EXISTING.md
 **目录组织原则**:
 ```
 /models/claude-glm/Skills-Creator/
+├── skill-creator/              # Agent-Skill 代码
+│   ├── SKILL.md                # Agent-Skill 入口
+│   ├── examples/               # 使用示例
+│   ├── scripts/                # 辅助脚本
+│   └── references/             # 引用文档
 ├── skill-creator-mcp/          # MCP Server 代码
 │   ├── src/                    # 源代码
 │   ├── tests/                  # 测试代码
-│   └── examples/               # 使用示例
-├── references/                 # Agent-Skill 引用文档
-├── examples/                   # 用户使用示例
 ├── .claude/
 │   └── plans/                  # 开发计划
 ├── .github/                    # GitHub 配置
 └── [根目录文档]                 # 项目级文档
-    ├── SKILL.md
     ├── README.md
     ├── CHANGELOG.md
     ├── ROADMAP.md
@@ -605,8 +612,10 @@ cat /models/claude-glm/Skills-Creator/EXISTING.md
 ```
 
 **文档放置规则**:
-- Agent-Skill 相关 → `references/`
-- 用户示例 → `examples/`
+- Agent-Skill 相关 → `skill-creator/`
+- Agent-Skill 引用文档 → `skill-creator/references/`
+- Agent-Skill 用户示例 → `skill-creator/examples/`
+- Agent-Skill 脚本 → `skill-creator/scripts/`
 - 开发计划 → `.claude/plans/`
 - 项目文档 → 根目录
 - 代码内文档 → 代码目录
@@ -670,8 +679,8 @@ grep -r "v0.0.1" . --include="*.md"
 **示例**:
 ```bash
 # 1. 检查现有文档
-ls references/
-cat references/validation.md
+ls skill-creator/references/
+cat skill-creator/references/validation.md
 
 # 2. 评估必要性
 # 决定: 需要拆分为两个文件
@@ -1009,7 +1018,7 @@ planning → in_progress → completed → archived
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| Agent-Skill 入口 | `SKILL.md` | 技能概览和快速开始 |
+| Agent-Skill 入口 | `skill-creator/SKILL.md` | 技能概览和快速开始 |
 | MCP Server README | `skill-creator-mcp/README.md` | MCP Server 使用说明 |
 | 架构审计报告 | `ARCHITECTURE_AUDIT_REPORT_v2.md` | 完整架构审计结果 |
 | 问题清单 | `ISSUES.md` | 已知问题和改进计划 |
@@ -1020,9 +1029,9 @@ planning → in_progress → completed → archived
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| MCP 集成指南 | `references/mcp-integration.md` | MCP 工具使用和资源访问 |
-| 最佳实践 | `references/best-practices.md` | 渐进式披露和描述规范 |
-| 验证规范 | `references/validation.md` | 命名、结构、内容验证规则 |
+| MCP 集成指南 | `skill-creator/references/mcp-integration.md` | MCP 工具使用和资源访问 |
+| 最佳实践 | `skill-creator/references/best-practices.md` | 渐进式披露和描述规范 |
+| 验证规范 | `skill-creator/references/validation.md` | 命名、结构、内容验证规则 |
 
 ### 9.3 计划文档
 
@@ -1035,9 +1044,9 @@ planning → in_progress → completed → archived
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| 创建技能示例 | `examples/creating-a-skill.md` | 如何创建新技能 |
-| 验证技能示例 | `examples/validating-a-skill.md` | 如何验证技能 |
-| 分析技能示例 | `examples/analyzing-a-skill.md` | 如何分析技能 |
+| 创建技能示例 | `skill-creator/examples/creating-a-skill.md` | 如何创建新技能 |
+| 验证技能示例 | `skill-creator/examples/validating-a-skill.md` | 如何验证技能 |
+| 分析技能示例 | `skill-creator/examples/analyzing-a-skill.md` | 如何分析技能 |
 
 ### 9.5 外部参考
 
