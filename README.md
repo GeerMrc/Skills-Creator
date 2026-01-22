@@ -30,18 +30,32 @@
 
 - Python >= 3.10
 - uv (推荐) 或 pip
-- Claude Code / Desktop (用于使用 Agent-Skill)
+- Claude Code / Desktop
 
-### 安装 MCP Server
+### 使用模式
+
+本项目支持两种使用模式：
+
+#### 模式1：仅使用 MCP Server（独立模式）
+
+直接调用 MCP 工具，手动控制工作流。
+
+#### 模式2：完整模式（Agent-Skill + MCP Server）推荐
+
+使用 Agent-Skill 编排工作流，获得渐进式披露的知识传递和最佳实践指导。
+
+### 安装步骤
+
+#### 步骤1：安装 MCP Server（必需）
 
 ```bash
 cd skill-creator-mcp
 uv sync --dev
 ```
 
-### 配置 Claude Code
+#### 步骤2：配置 Claude Code（必需）
 
-在 Claude Code 配置文件中添加：
+在 Claude Code 配置文件中添加 MCP Server：
 
 ```json
 {
@@ -61,15 +75,28 @@ uv sync --dev
 }
 ```
 
+#### 步骤3：安装 Agent-Skill（完整模式必需）
+
+如果想要使用完整的工作流编排功能，需要安装 Agent-Skill：
+
+```bash
+# 复制 Agent-Skill 到 Claude skills 目录
+cp -r /path/to/Skills-Creator/skill-creator \
+      ~/.claude/skills/skill-creator
+
+# 验证安装
+ls ~/.claude/skills/skill-creator/SKILL.md
+```
+
 ### 基本使用
 
-在 Claude Code 中使用：
+**完整模式（Agent-Skill + MCP Server）**：
 
 ```
 使用 skill-creator 创建一个名为 "docker-manager" 的技能
 ```
 
-或直接调用 MCP 工具：
+**独立模式（仅 MCP Server）**：
 
 ```
 调用 mcp__skill_creator__init_skill，参数：
@@ -77,12 +104,19 @@ uv sync --dev
 - template: "tool-based"
 ```
 
+**推荐使用完整模式**，Agent-Skill 会自动编排工作流程并提供最佳实践指导。
+
 ---
 
 ## 项目结构
 
 ```
 Skills-Creator/
+├── skill-creator/              # Agent-Skill 代码统一目录
+│   ├── SKILL.md                # Agent-Skill 入口
+│   ├── examples/               # 使用示例
+│   ├── scripts/                # 辅助脚本
+│   └── references/             # 引用文档
 ├── skill-creator-mcp/          # MCP Server (Python)
 │   ├── src/skill_creator_mcp/
 │   │   ├── server.py           # MCP Server 入口
@@ -92,9 +126,9 @@ Skills-Creator/
 │   │   └── utils/              # 工具函数
 │   ├── tests/                  # 测试套件 (98% 覆盖率)
 │   └── pyproject.toml          # 项目配置
-├── SKILL.md                    # Agent-Skill 入口
-├── references/                 # 详细文档
-├── examples/                   # 使用示例
+├── docs/                       # 项目文档
+│   └── adr/
+│       └── 001-hybrid-architecture.md
 ├── CLAUDE.md                   # 开发指南
 ├── ARCHITECTURE_AUDIT_REPORT_v2.md
 ├── ROADMAP.md
@@ -112,7 +146,7 @@ Skills-Creator/
 
 | 文档 | 说明 |
 |------|------|
-| [SKILL.md](SKILL.md) | Agent-Skill 主入口 |
+| [SKILL.md](skill-creator/SKILL.md) | Agent-Skill 主入口 |
 | [CLAUDE.md](CLAUDE.md) | 项目开发指南和规范 |
 | [skill-creator-mcp/README.md](skill-creator-mcp/README.md) | MCP Server 文档 |
 
@@ -120,19 +154,19 @@ Skills-Creator/
 
 | 文档 | 说明 |
 |------|------|
-| [MCP 集成指南](references/mcp-integration.md) | MCP 工具和资源使用 |
-| [最佳实践](references/best-practices.md) | 渐进式披露和描述规范 |
-| [验证规范](references/validation.md) | 命名、结构、内容验证规则 |
-| [验证指南](references/validation-guide.md) | 详细验证指南 |
+| [MCP 集成指南](skill-creator/references/mcp-integration.md) | MCP 工具和资源使用 |
+| [最佳实践](skill-creator/references/best-practices.md) | 渐进式披露和描述规范 |
+| [验证规范](skill-creator/references/validation.md) | 命名、结构、内容验证规则 |
+| [验证指南](skill-creator/references/validation-guide.md) | 详细验证指南 |
 
 ### 示例文档
 
 | 文档 | 说明 |
 |------|------|
-| [创建技能](examples/creating-a-skill.md) | 如何创建新技能 |
-| [验证技能](examples/validating-a-skill.md) | 如何验证技能 |
-| [分析技能](examples/analyzing-a-skill.md) | 如何分析技能 |
-| [MCP 使用示例](examples/mcp-usage-examples.md) | MCP 工具详细示例 |
+| [创建技能](skill-creator/examples/creating-a-skill.md) | 如何创建新技能 |
+| [验证技能](skill-creator/examples/validating-a-skill.md) | 如何验证技能 |
+| [分析技能](skill-creator/examples/analyzing-a-skill.md) | 如何分析技能 |
+| [MCP 使用示例](skill-creator/examples/mcp-usage-examples.md) | MCP 工具详细示例 |
 
 ---
 

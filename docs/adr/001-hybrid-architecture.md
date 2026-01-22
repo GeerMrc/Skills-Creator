@@ -228,5 +228,5 @@ mcp_servers: ["skill-creator"]
 
 - [MCP 协议规范](https://modelcontextprotocol.io/)
 - [FastMCP 文档](https://jlowin.github.io/fastmcp/)
-- [协同示例文档](../examples/mcp-skill-collaboration.md)
-- [MCP 集成指南](../references/mcp-integration.md)
+- [协同示例文档](../../skill-creator/examples/mcp-skill-collaboration.md)
+- [MCP 集成指南](../../skill-creator/references/mcp-integration.md)

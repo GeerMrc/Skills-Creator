@@ -248,7 +248,7 @@ SKILL.md (100行)
 
 ## 详细文档
 
-- **[验证规范详解](references/validation.md)**
+- **[验证规范详解](validation.md)**
 ```
 
 ### 4. 控制引用深度
