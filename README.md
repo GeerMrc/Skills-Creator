@@ -30,18 +30,32 @@
 
 - Python >= 3.10
 - uv (推荐) 或 pip
-- Claude Code / Desktop (用于使用 Agent-Skill)
+- Claude Code / Desktop
 
-### 安装 MCP Server
+### 使用模式
+
+本项目支持两种使用模式：
+
+#### 模式1：仅使用 MCP Server（独立模式）
+
+直接调用 MCP 工具，手动控制工作流。
+
+#### 模式2：完整模式（Agent-Skill + MCP Server）推荐
+
+使用 Agent-Skill 编排工作流，获得渐进式披露的知识传递和最佳实践指导。
+
+### 安装步骤
+
+#### 步骤1：安装 MCP Server（必需）
 
 ```bash
 cd skill-creator-mcp
 uv sync --dev
 ```
 
-### 配置 Claude Code
+#### 步骤2：配置 Claude Code（必需）
 
-在 Claude Code 配置文件中添加：
+在 Claude Code 配置文件中添加 MCP Server：
 
 ```json
 {
@@ -61,21 +75,36 @@ uv sync --dev
 }
 ```
 
+#### 步骤3：安装 Agent-Skill（完整模式必需）
+
+如果想要使用完整的工作流编排功能，需要安装 Agent-Skill：
+
+```bash
+# 复制 Agent-Skill 到 Claude skills 目录
+cp -r /path/to/Skills-Creator/skill-creator \
+      ~/.claude/skills/skill-creator
+
+# 验证安装
+ls ~/.claude/skills/skill-creator/SKILL.md
+```
+
 ### 基本使用
 
-在 Claude Code 中使用：
+**完整模式（Agent-Skill + MCP Server）**：
 
 ```
 使用 skill-creator 创建一个名为 "docker-manager" 的技能
 ```
 
-或直接调用 MCP 工具：
+**独立模式（仅 MCP Server）**：
 
 ```
 调用 mcp__skill_creator__init_skill，参数：
 - name: "docker-manager"
 - template: "tool-based"
 ```
+
+**推荐使用完整模式**，Agent-Skill 会自动编排工作流程并提供最佳实践指导。
 
 ---
 
