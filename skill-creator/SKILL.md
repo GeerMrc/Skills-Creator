@@ -99,11 +99,11 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 详细文档
 
-- **[MCP 集成指南](skill-creator/references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
-- **[最佳实践 - 核心原则](skill-creator/references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
-- **[最佳实践 - 高级技巧](skill-creator/references/best-practices-advanced.md)** - Token 优化、脚本黑盒化、反模式
-- **[验证规范](skill-creator/references/validation.md)** - 命名规则、描述标准、结构检查清单
-- **[验证实施指南](skill-creator/references/validation-guide.md)** - 等级划分、常见问题、自动化验证示例
+- **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
+- **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
+- **[最佳实践 - 高级技巧](references/best-practices-advanced.md)** - Token 优化、脚本黑盒化、反模式
+- **[验证规范](references/validation.md)** - 命名规则、描述标准、结构检查清单
+- **[验证实施指南](references/validation-guide.md)** - 等级划分、常见问题、自动化验证示例
 
 ## 架构说明
 
@@ -134,5 +134,5 @@ Skill-Creator 采用混合架构，结合 MCP Server 和 Agent-Skill 的优势�
 - **Agent-Skill**: 工作流编排、知识传递、最佳实践指导
 
 **详细文档**:
-- **[混合架构 ADR](docs/adr/001-hybrid-architecture.md)** - 架构决策记录
-- **[协同示例](skill-creator/examples/mcp-skill-collaboration.md)** - 协同工作流示例
+- **[混合架构 ADR](../docs/adr/001-hybrid-architecture.md)** - 架构决策记录
+- **[协同示例](examples/mcp-skill-collaboration.md)** - 协同工作流示例
