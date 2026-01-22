@@ -162,3 +162,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - MCP Inspector guide
 - Performance benchmarks
+
+### Test Coverage Improvements
+- **server.py**: 覆盖率从 90% 提升到 99%（188 行中仅 1 行未覆盖）
+  - 新增错误处理测试：路径类型验证、文件非目录检查
+  - 新增 MCP 资源函数测试：5 个资源函数覆盖测试
+  - 新增 MCP Prompt 函数测试：3 个 Prompt 函数覆盖测试
+- **Total**: 307 tests passing, 99% overall coverage
