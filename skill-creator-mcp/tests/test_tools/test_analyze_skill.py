@@ -1,7 +1,8 @@
 """测试 analyze_skill 分析函数."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from skill_creator_mcp.utils.analyzers import (
     _analyze_complexity,

@@ -11,11 +11,11 @@ description: |
   - 访问技能模板和最佳实践指南
 
   触发词：
-  - 创建技能
-  - 初始化技能
-  - 验证技能
-  - 分析技能
-  - 重构技能
+  - 技能创建
+  - 技能初始化
+  - 技能验证
+  - 技能分析
+  - 技能重构
   - 技能模板
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 mcp_servers: ["skill-creator"]
@@ -84,18 +84,55 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 | 资源 URI | 内容 |
 |----------|------|
-| `http://skills/schema/templates/{type}` | 技能模板内容 |
+| `http://skills/schema/templates` | 所有可用模板列表 |
+| `http://skills/schema/templates/{type}` | 指定类型技能模板内容 |
 | `http://skills/schema/best-practices` | 最佳实践指南 |
 | `http://skills/schema/validation-rules` | 验证规则详情 |
+
+## MCP Prompts 模板
+
+| Prompt 名称 | 功能 |
+|-------------|------|
+| `create-skill` | 创建新技能的引导提示模板 |
+| `validate-skill` | 验证技能的引导提示模板 |
+| `refactor-skill` | 重构技能的引导提示模板 |
 
 ## 详细文档
 
 - **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
-- **[最佳实践](references/best-practices.md)** - 渐进式披露、描述写作、组织原则
+- **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
+- **[最佳实践 - 高级技巧](references/best-practices-advanced.md)** - Token 优化、脚本黑盒化、反模式
 - **[验证规范](references/validation.md)** - 命名规则、描述标准、结构检查清单
+- **[验证实施指南](references/validation-guide.md)** - 等级划分、常见问题、自动化验证示例
 
 ## 架构说明
 
-Skill-Creator 采用混合架构：
-- **skill-creator-mcp** - MCP Server，提供可执行的工具和只读资源
-- **skill-creator** - Agent-Skill，编排 MCP 工具，提供工作流和知识组织
+Skill-Creator 采用混合架构，结合 MCP Server 和 Agent-Skill 的优势：
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Claude Code / Desktop                    │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │          Agent-Skill (skill-creator)                   │ │
+│  │  - 编排工作流程                                        │ │
+│  │  - 渐进式披露知识                                      │ │
+│  │  - 最佳实践指导                                        │ │
+│  └────────────────────┬───────────────────────────────────┘ │
+│                         │ 调用                                │
+│  ┌────────────────────▼───────────────────────────────────┐ │
+│  │         MCP Server (skill-creator-mcp)                 │ │
+│  │  - 5 Tools: 原子操作 (init/validate/analyze/refactor)  │ │
+│  │  - 4 Resources: 只读数据 (模板/规范/最佳实践)          │ │
+│  │  - 3 Prompts: 可重用模板 (create/validate/refactor)    │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**职责边界**:
+- **MCP Server**: 执行原子操作、文件 I/O、数据验证
+- **Agent-Skill**: 工作流编排、知识传递、最佳实践指导
+
+**详细文档**:
+- **[混合架构 ADR](docs/adr/001-hybrid-architecture.md)** - 架构决策记录
+- **[协同示例](examples/mcp-skill-collaboration.md)** - 协同工作流示例

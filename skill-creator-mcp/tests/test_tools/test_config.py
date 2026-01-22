@@ -1,11 +1,11 @@
 """测试配置模块."""
 
 import os
-
-import pytest
 from pathlib import Path
 
-from skill_creator_mcp.config import Config, LogLevel, LogFormat, get_config, reload_config
+import pytest
+
+from skill_creator_mcp.config import Config, LogFormat, LogLevel, get_config, reload_config
 
 
 @pytest.fixture(autouse=True)

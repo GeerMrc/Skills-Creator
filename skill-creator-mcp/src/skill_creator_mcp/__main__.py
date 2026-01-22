@@ -10,7 +10,10 @@
         "mcpServers": {
             "skill-creator": {
                 "command": "uv",
-                "args": ["--directory", "/path/to/skill-creator-mcp", "run", "python", "-m", "skill_creator_mcp"]
+                "args": [
+                    "--directory", "/path/to/skill-creator-mcp",
+                    "run", "python", "-m", "skill_creator_mcp"
+                ]
             }
         }
     }

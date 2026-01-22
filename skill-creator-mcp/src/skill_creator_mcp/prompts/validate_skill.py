@@ -118,4 +118,6 @@ def get_validate_skill_prompt(
             f"\n**{template_type} 模板**：使用标准模板要求"
         )
 
-    return VALIDATE_SKILL_PROMPT.replace("{{skill_path}}", skill_path).replace("{{template_requirements}}", template_requirements)
+    result = VALIDATE_SKILL_PROMPT.replace("{{skill_path}}", skill_path)
+    result = result.replace("{{template_requirements}}", template_requirements)
+    return result

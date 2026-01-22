@@ -8,8 +8,9 @@
 5. .venv 目录跳过逻辑
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from skill_creator_mcp.utils.analyzers import (
     _analyze_complexity,
@@ -297,3 +298,206 @@ async def test_analyze_complexity_with_syntax_error(temp_dir: Path):
 
     # 应该至少分析了正常文件
     assert result.cyclomatic_complexity is not None
+
+
+# ==================== analyze_skill 错误处理测试 ====================
+
+
+@pytest.mark.asyncio
+async def test_analyze_skill_with_file_not_directory(temp_dir: Path):
+    """测试 analyze_skill 当路径是文件而非目录时的错误处理 (server.py:352)."""
+    from unittest.mock import MagicMock
+
+    from skill_creator_mcp.server import mcp
+
+    # 获取 analyze_skill 工具
+    analyze_skill_tool = None
+    for tool in mcp._tool_manager._tools.values():
+        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+            analyze_skill_tool = tool
+            break
+
+    assert analyze_skill_tool is not None, "analyze_skill tool not found"
+
+    # 创建一个文件而非目录
+    test_file = temp_dir / "not_a_dir.md"
+    test_file.write_text("# This is a file, not a directory")
+
+    # 创建模拟的 MCP Context
+    ctx = MagicMock()
+    ctx.log = MagicMock()
+
+    # 调用 analyze_skill，传入文件路径
+    result = await analyze_skill_tool.fn(
+        ctx=ctx,
+        skill_path=str(test_file),
+        analyze_structure=False,
+        analyze_complexity=False,
+        analyze_quality=False,
+    )
+
+    # 应该返回错误，表明路径不是目录
+    assert result["success"] is False
+    assert "路径不是目录" in result["error"]
+    assert result["error_type"] == "path_error"
+
+
+@pytest.mark.asyncio
+async def test_analyze_skill_with_valid_empty_directory(temp_dir: Path):
+    """测试 analyze_skill 对有效空目录的处理."""
+    from unittest.mock import MagicMock
+
+    from skill_creator_mcp.server import mcp
+
+    # 获取 analyze_skill 工具
+    analyze_skill_tool = None
+    for tool in mcp._tool_manager._tools.values():
+        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+            analyze_skill_tool = tool
+            break
+
+    assert analyze_skill_tool is not None, "analyze_skill tool not found"
+
+    # 创建一个有效的空目录
+    src_dir = temp_dir / "test_skill"
+    src_dir.mkdir()
+
+    # 创建模拟的 MCP Context
+    ctx = MagicMock()
+    ctx.log = MagicMock()
+
+    # 调用 analyze_skill
+    result = await analyze_skill_tool.fn(
+        ctx=ctx,
+        skill_path=str(src_dir),
+        analyze_structure=False,
+        analyze_complexity=False,
+        analyze_quality=False,
+    )
+
+    # 验证返回结果结构
+    assert "success" in result
+    assert "skill_path" in result or "error" in result
+
+
+@pytest.mark.asyncio
+async def test_package_skill_with_invalid_skill_path_type(temp_dir: Path):
+    """测试 package_skill 当 skill_path 参数类型无效时的错误处理 (server.py:627)."""
+    from unittest.mock import MagicMock
+
+    from skill_creator_mcp.server import mcp
+
+    # 获取 package_skill 工具
+    package_skill_tool = None
+    for tool in mcp._tool_manager._tools.values():
+        if hasattr(tool, 'name') and tool.name == 'package_skill':
+            package_skill_tool = tool
+            break
+
+    assert package_skill_tool is not None, "package_skill tool not found"
+
+    # 创建模拟的 MCP Context
+    ctx = MagicMock()
+    ctx.log = MagicMock()
+
+    # 调用 package_skill，传入无效类型的 skill_path（整数而非字符串）
+    # 这会触发 Pydantic 验证错误，但不是 format 字段错误
+    result = await package_skill_tool.fn(
+        ctx=ctx,
+        skill_path=12345,  # 传入整数而非字符串
+        output_dir=str(temp_dir),
+        format="zip",
+    )
+
+    # 应该返回通用验证错误
+    assert result["success"] is False
+    assert result["error_type"] == "validation_error"
+    assert "输入验证失败" in result["error"]
+
+
+# ==================== MCP 资源函数测试 ====================
+
+
+@pytest.mark.asyncio
+async def test_list_templates_resource():
+    """测试 list_templates_resource 函数返回正确格式 (server.py:819-824)."""
+    from skill_creator_mcp.server import mcp
+
+    # 通过 read_resource 方法调用资源函数
+    result = await mcp._resource_manager.read_resource("http://skills/schema/templates")
+    assert "# 技能模板列表" in result
+    assert "minimal" in result
+
+
+@pytest.mark.asyncio
+async def test_get_template_resource_invalid():
+    """测试 get_template_resource 函数处理无效类型 (server.py:830-837)."""
+    from skill_creator_mcp.server import mcp
+
+    # 测试无效类型
+    result = await mcp._resource_manager.read_resource("http://skills/schema/templates/invalid-type")
+    assert "# 错误" in result
+    assert "未知的模板类型" in result
+
+
+@pytest.mark.asyncio
+async def test_best_practices_resource():
+    """测试 best_practices_resource 函数 (server.py:843)."""
+    from skill_creator_mcp.server import mcp
+
+    result = await mcp._resource_manager.read_resource("http://skills/schema/best-practices")
+    assert len(result) > 0
+
+
+@pytest.mark.asyncio
+async def test_validation_rules_resource():
+    """测试 validation_rules_resource 函数 (server.py:849)."""
+    from skill_creator_mcp.server import mcp
+
+    result = await mcp._resource_manager.read_resource("http://skills/schema/validation-rules")
+    assert len(result) > 0
+
+
+# ==================== MCP Prompt 函数测试 ====================
+
+
+def test_create_skill_prompt():
+    """测试 create_skill_prompt 函数 (server.py:869)."""
+    from skill_creator_mcp.server import mcp
+
+    # 获取 prompt 并调用其函数
+    for prompt in mcp._prompt_manager._prompts.values():
+        if prompt.name == "create-skill":
+            result = prompt.fn(name="test-skill", template="minimal")
+            assert "test-skill" in result
+            return
+
+    pytest.fail("create_skill_prompt not found")
+
+
+def test_validate_skill_prompt():
+    """测试 validate_skill_prompt 函数 (server.py:886)."""
+    from skill_creator_mcp.server import mcp
+
+    # 获取 prompt 并调用其函数
+    for prompt in mcp._prompt_manager._prompts.values():
+        if prompt.name == "validate-skill":
+            result = prompt.fn(skill_path="/path/to/skill", template=None)
+            assert len(result) > 0
+            return
+
+    pytest.fail("validate_skill_prompt not found")
+
+
+def test_refactor_skill_prompt():
+    """测试 refactor_skill_prompt 函数 (server.py:903)."""
+    from skill_creator_mcp.server import mcp
+
+    # 获取 prompt 并调用其函数
+    for prompt in mcp._prompt_manager._prompts.values():
+        if prompt.name == "refactor-skill":
+            result = prompt.fn(skill_path="/path/to/skill", focus=None)
+            assert len(result) > 0
+            return
+
+    pytest.fail("refactor_skill_prompt not found")
