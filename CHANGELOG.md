@@ -37,6 +37,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] - 2026-01-22
+
+### Changed
+- **目录结构重构**: 统一 Agent-Skill 代码到 `skill-creator/` 目录
+  - 移动 `SKILL.md` → `skill-creator/SKILL.md`
+  - 移动 `examples/*` → `skill-creator/examples/*`
+  - 移动 `references/*` → `skill-creator/references/*`
+  - 移动 `scripts/*` → `skill-creator/scripts/*`
+  - 更新所有交叉引用链接
+
+### Fixed
+- 修复 SKILL.md 中的相对链接路径（使用 `references/...` 而非 `skill-creator/references/...`）
+
+### Added
+- **MIGRATION.md**: 用户迁移指南，说明 v0.1.0 → v0.2.0 的迁移步骤
+- 更新 README.md 添加迁移通知
+
+### Improved
+- 测试覆盖率提升: 96% → 99% (307 个测试用例)
+- 文档与实际代码状态保持一致
+
+### Technical Details
+- 所有 37 个已知问题均已解决（Critical: 4, High: 9, Medium: 11, Low: 11）
+- 代码质量: Ruff 0 错误, Mypy 0 错误
+- 项目状态: 优秀，可以继续后续开发工作
+
+---
+
 ## [Unreleased]
 
 ### Changed
