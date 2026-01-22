@@ -39,8 +39,6 @@ from .utils.validators import (
     _validate_skill_md,
     _validate_structure,
     _validate_template_requirements,
-    validate_skill_name,
-    validate_template_type,
 )
 
 # 创建 MCP Server
@@ -369,14 +367,23 @@ async def analyze_skill(
             complexity = await _analyze_complexity(skill_dir)
         else:
             from .models.skill_config import ComplexityMetrics
-            complexity = ComplexityMetrics(cyclomatic_complexity=None, maintainability_index=None, code_duplication=None)
+            complexity = ComplexityMetrics(
+                cyclomatic_complexity=None,
+                maintainability_index=None,
+                code_duplication=None,
+            )
 
         # 3. 质量分析（异步）
         if input_data.analyze_quality:
             quality = await _analyze_quality(skill_dir)
         else:
             # 如果不分析质量，使用默认值
-            quality = QualityScore(overall_score=0.0, structure_score=0.0, documentation_score=0.0, test_coverage_score=0.0)
+            quality = QualityScore(
+                overall_score=0.0,
+                structure_score=0.0,
+                documentation_score=0.0,
+                test_coverage_score=0.0,
+            )
 
         # 4. 生成改进建议
         suggestions = _generate_suggestions(structure, complexity, quality)
@@ -479,20 +486,33 @@ async def refactor_skill(
             complexity = await _analyze_complexity(skill_dir)
         else:
             from .models.skill_config import ComplexityMetrics
-            complexity = ComplexityMetrics(cyclomatic_complexity=None, maintainability_index=None, code_duplication=None)
+            complexity = ComplexityMetrics(
+                cyclomatic_complexity=None,
+                maintainability_index=None,
+                code_duplication=None,
+            )
 
         # 3. 质量分析（异步）
         if input_data.analyze_quality:
             quality = await _analyze_quality(skill_dir)
         else:
             from .models.skill_config import QualityScore
-            quality = QualityScore(overall_score=0.0, structure_score=0.0, documentation_score=0.0, test_coverage_score=0.0)
+            quality = QualityScore(
+                overall_score=0.0,
+                structure_score=0.0,
+                documentation_score=0.0,
+                test_coverage_score=0.0,
+            )
 
         # 4. 生成重构建议
-        suggestions = generate_refactor_suggestions(skill_dir, structure, complexity, quality, input_data.focus)
+        suggestions = generate_refactor_suggestions(
+            skill_dir, structure, complexity, quality, input_data.focus
+        )
 
         # 5. 生成重构报告
-        report = generate_refactor_report(str(skill_dir), structure, complexity, quality, suggestions)
+        report = generate_refactor_report(
+            str(skill_dir), structure, complexity, quality, suggestions
+        )
 
         # 6. 估算工作量
         effort = estimate_refactor_effort(suggestions)
@@ -555,8 +575,9 @@ async def package_skill(
     Returns:
         包含打包结果的字典
     """
-    from .models.skill_config import PackageSkillInput
     from pydantic import ValidationError
+
+    from .models.skill_config import PackageSkillInput
 
     try:
         # 使用 Pydantic 验证输入参数

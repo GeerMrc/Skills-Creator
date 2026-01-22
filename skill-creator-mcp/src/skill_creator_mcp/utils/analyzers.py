@@ -1,7 +1,7 @@
 """代码分析工具函数."""
 
-import asyncio
 import ast
+import asyncio
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -343,10 +343,16 @@ def _generate_suggestions(
 
     # 基于复杂度生成建议
     if complexity.cyclomatic_complexity and complexity.cyclomatic_complexity > 10:
-        suggestions.append(f"代码圈复杂度为 {complexity.cyclomatic_complexity}，建议重构简化复杂逻辑")
+        suggestions.append(
+            f"代码圈复杂度为 {complexity.cyclomatic_complexity}，"
+            f"建议重构简化复杂逻辑"
+        )
 
     if complexity.maintainability_index and complexity.maintainability_index < 50:
-        suggestions.append(f"可维护性指数为 {complexity.maintainability_index:.1f}，建议优化代码结构")
+        suggestions.append(
+            f"可维护性指数为 {complexity.maintainability_index:.1f}，"
+            f"建议优化代码结构"
+        )
 
     # 基于结构生成建议
     if structure.total_files > 20:

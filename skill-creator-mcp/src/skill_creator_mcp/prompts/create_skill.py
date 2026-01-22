@@ -114,4 +114,7 @@ def get_create_skill_prompt(name: str, template: str = "minimal") -> str:
         "\n**未知模板类型**，请使用：minimal, tool-based, workflow-based, analyzer-based"
     )
 
-    return CREATE_SKILL_PROMPT.replace("{{name}}", name).replace("{{template}}", template).replace("{{template_requirements}}", template_requirements)
+    result = CREATE_SKILL_PROMPT.replace("{{name}}", name)
+    result = result.replace("{{template}}", template)
+    result = result.replace("{{template_requirements}}", template_requirements)
+    return result

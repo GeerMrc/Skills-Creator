@@ -52,7 +52,10 @@ def generate_refactor_suggestions(
             "priority": "P0",
             "category": "structure",
             "issue": "项目结构不完整",
-            "suggestion": "完善项目结构，添加必需的目录和文件（references、examples、scripts、.claude）",
+            "suggestion": (
+                "完善项目结构，添加必需的目录和文件"
+                "（references、examples、scripts、.claude）"
+            ),
             "impact": "high",
             "effort": "medium",
         })
@@ -132,7 +135,10 @@ def generate_refactor_suggestions(
                 "priority": "P2",
                 "category": "token-efficiency",
                 "issue": "SKILL.md 过长",
-                "suggestion": f"将详细内容移至 references/ 目录，保持 SKILL.md 在 {SKILL_MD_RECOMMENDED_MAX_LINES} 行以内",
+                "suggestion": (
+                    f"将详细内容移至 references/ 目录，"
+                    f"保持 SKILL.md 在 {SKILL_MD_RECOMMENDED_MAX_LINES} 行以内"
+                ),
                 "impact": "medium",
                 "effort": "low",
             })
@@ -147,7 +153,11 @@ def generate_refactor_suggestions(
                     "priority": "P2",
                     "category": "documentation",
                     "issue": f"参考文档过长: {ref_file.name}",
-                    "suggestion": f"拆分 {ref_file.name} 为多个小文件（每个 {REFERENCE_FILE_MIN_LINES}-{REFERENCE_FILE_MAX_LINES} 行）",
+                    "suggestion": (
+                        f"拆分 {ref_file.name} 为多个小文件"
+                        f"（每个 {REFERENCE_FILE_MIN_LINES}-"
+                        f"{REFERENCE_FILE_MAX_LINES} 行）"
+                    ),
                     "impact": "low",
                     "effort": "low",
                 })
@@ -155,7 +165,8 @@ def generate_refactor_suggestions(
     # 10. 检查是否有重复的模式或代码
     _check_duplication_patterns(skill_dir, suggestions)
 
-    return _filter_suggestions_by_focus(suggestions, set(area.lower() for area in (focus_areas or [])))
+    focus_areas_set = set(area.lower() for area in (focus_areas or []))
+    return _filter_suggestions_by_focus(suggestions, focus_areas_set)
 
 
 def _filter_suggestions_by_focus(
@@ -195,7 +206,12 @@ def _filter_suggestions_by_focus(
     for suggestion in suggestions:
         category_lower = suggestion["category"].lower()
         issue_lower = suggestion["issue"].lower()
-        if any(keyword in category_lower or keyword in issue_lower for keyword in matched_categories):
+        # 检查是否有匹配的关注领域
+        has_match = any(
+            keyword in category_lower or keyword in issue_lower
+            for keyword in matched_categories
+        )
+        if has_match:
             filtered.append(suggestion)
 
     return filtered
@@ -335,9 +351,18 @@ def estimate_refactor_effort(suggestions: list[dict]) -> dict[str, int]:
     """
     effort_map = {"low": 1, "medium": 4, "high": 8}
 
-    p0_effort = sum(effort_map.get(s.get("effort", "medium"), 4) for s in suggestions if s["priority"] == "P0")
-    p1_effort = sum(effort_map.get(s.get("effort", "medium"), 4) for s in suggestions if s["priority"] == "P1")
-    p2_effort = sum(effort_map.get(s.get("effort", "medium"), 4) for s in suggestions if s["priority"] == "P2")
+    p0_effort = sum(
+        effort_map.get(s.get("effort", "medium"), 4)
+        for s in suggestions if s["priority"] == "P0"
+    )
+    p1_effort = sum(
+        effort_map.get(s.get("effort", "medium"), 4)
+        for s in suggestions if s["priority"] == "P1"
+    )
+    p2_effort = sum(
+        effort_map.get(s.get("effort", "medium"), 4)
+        for s in suggestions if s["priority"] == "P2"
+    )
 
     return {
         "p0_hours": p0_effort,
