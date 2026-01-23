@@ -4,6 +4,7 @@
 分析和重构 Agent-Skills。
 """
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -634,6 +635,511 @@ async def package_skill(
             "success": False,
             "error": f"打包过程出错: {e}",
             "error_type": "internal_error",
+        }
+
+
+# ==================== 需求收集相关常量 ====================
+
+
+# 基础模式需求收集步骤（5步）
+BASIC_REQUIREMENT_STEPS = [
+    {
+        "key": "skill_name",
+        "title": "技能名称",
+        "prompt": "请输入技能名称（小写字母、数字、连字符，如：pdf-parser、git-helper）",
+        "validation": {
+            "field": "skill_name",
+            "required": True,
+            "pattern": r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "min_length": 1,
+            "max_length": 64,
+            "help_text": "技能名称只能包含小写字母、数字和连字符，不能以连字符开头或结尾",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "skill_function",
+        "title": "主要功能",
+        "prompt": "请描述这个技能的主要功能是什么？",
+        "validation": {
+            "field": "skill_function",
+            "required": True,
+            "min_length": 10,
+            "help_text": "请详细描述技能的主要功能，至少10个字符",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "use_cases",
+        "title": "使用场景",
+        "prompt": "请描述这个技能的使用场景（至少2个）",
+        "validation": {
+            "field": "use_cases",
+            "required": True,
+            "min_length": 20,
+            "help_text": "请提供至少2个具体的使用场景",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "template_type",
+        "title": "模板类型",
+        "prompt": "选择技能模板类型：minimal（最小化）、tool-based（工具封装）、workflow-based（工作流）、analyzer-based（分析器）",
+        "validation": {
+            "field": "template_type",
+            "required": True,
+            "options": ["minimal", "tool-based", "workflow-based", "analyzer-based"],
+            "help_text": "请选择一个有效的模板类型",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "additional_features",
+        "title": "额外需求",
+        "prompt": "是否有其他额外功能需求？（可选）",
+        "validation": {
+            "field": "additional_features",
+            "required": False,
+            "help_text": "可选：描述任何额外功能需求",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+]
+
+# 完整模式额外步骤（5步）
+COMPLETE_REQUIREMENT_STEPS = [
+    {
+        "key": "target_users",
+        "title": "目标用户",
+        "prompt": "这个技能的目标用户是谁？",
+        "validation": {
+            "field": "target_users",
+            "required": True,
+            "min_length": 10,
+            "help_text": "请描述目标用户群体",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "tech_stack",
+        "title": "技术栈偏好",
+        "prompt": "是否有技术栈偏好或限制？（可选）",
+        "validation": {
+            "field": "tech_stack",
+            "required": False,
+            "help_text": "可选：描述技术栈偏好",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "dependencies",
+        "title": "外部依赖",
+        "prompt": "是否需要外部依赖或 API？（可选）",
+        "validation": {
+            "field": "dependencies",
+            "required": False,
+            "help_text": "可选：列出所需的外部依赖",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "testing_requirements",
+        "title": "测试要求",
+        "prompt": "有什么特殊的测试要求？（可选）",
+        "validation": {
+            "field": "testing_requirements",
+            "required": False,
+            "help_text": "可选：描述测试要求",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "documentation_level",
+        "title": "文档级别",
+        "prompt": "期望的文档详细程度？基础/标准/详细",
+        "validation": {
+            "field": "documentation_level",
+            "required": False,
+            "options": ["基础", "标准", "详细"],
+            "help_text": "选择文档详细程度",
+        },
+        "modes": ["complete"],
+    },
+]
+
+
+@mcp.tool()
+async def collect_requirements(
+    ctx: Context,
+    action: str = "start",
+    mode: str = "basic",
+    session_id: str | None = None,
+    user_input: str | None = None,
+) -> dict[str, Any]:
+    """
+    AI 驱动的需求澄清/收集工具.
+
+    通过对话方式逐步收集创建 Agent-Skill 所需的关键信息。
+    支持 session state 管理，可以中断后恢复。
+
+    Args:
+        ctx: MCP 上下文
+        action: 执行动作（start=开始，next=下一步，previous=上一步，status=查询状态，complete=完成）
+        mode: 收集模式（basic=基础5步，complete=完整10步，brainstorm=头脑风暴，progressive=渐进式）
+        session_id: 会话ID（自动生成，用于多轮对话）
+        user_input: 用户输入（用于 next/complete 动作）
+
+    Returns:
+        包含收集结果的字典
+    """
+    from datetime import datetime
+    from datetime import timezone as tz
+
+    from .models.skill_config import (
+        RequirementCollectionInput,
+        RequirementStep,
+        SessionState,
+        ValidationRule,
+    )
+
+    try:
+        # 1. 验证输入参数
+        input_data = RequirementCollectionInput.model_validate({
+            "action": action,
+            "mode": mode,
+            "session_id": session_id,
+            "user_input": user_input,
+        })
+
+        # 2. 确定步骤列表
+        all_steps = BASIC_REQUIREMENT_STEPS.copy()
+        if input_data.mode == "complete":
+            all_steps.extend(COMPLETE_REQUIREMENT_STEPS)
+
+        # 3. 处理会话ID
+        current_session_id = input_data.session_id or ctx.session_id or f"req_{datetime.now(tz.utc).isoformat()}"
+
+        # 4. 获取或创建会话状态
+        state_data = await ctx.get_state(f"requirement_{current_session_id}")
+        if state_data:
+            session_state = SessionState.model_validate(state_data)
+        else:
+            session_state = SessionState(
+                current_step_index=0,
+                answers={},
+                started_at=datetime.now(tz.utc).isoformat(),
+                completed=False,
+                mode=input_data.mode,
+                total_steps=len(all_steps),
+            )
+
+        # 5. 处理不同的 action
+        if input_data.action == "status":
+            return {
+                "success": True,
+                "session_id": current_session_id,
+                "action": input_data.action,
+                "mode": session_state.mode,
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": (session_state.current_step_index / session_state.total_steps) * 100,
+                "answers": session_state.answers,
+                "completed": session_state.completed,
+                "message": "会话状态查询成功",
+            }
+
+        elif input_data.action == "previous":
+            # 上一步
+            if session_state.current_step_index > 0:
+                session_state.current_step_index -= 1
+                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+                current_step_data = all_steps[session_state.current_step_index]
+                validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
+                step = RequirementStep(
+                    key=str(current_step_data["key"]),
+                    title=str(current_step_data["title"]),
+                    prompt=str(current_step_data["prompt"]),
+                    validation=ValidationRule(**validation_data),
+                )
+
+                return {
+                    "success": True,
+                    "session_id": current_session_id,
+                    "action": input_data.action,
+                    "mode": session_state.mode,
+                    "current_step": step.model_dump(),
+                    "step_index": session_state.current_step_index,
+                    "total_steps": session_state.total_steps,
+                    "progress": (session_state.current_step_index / session_state.total_steps) * 100,
+                    "answers": session_state.answers,
+                    "message": f"返回到步骤: {step.title}",
+                    "completed": False,
+                }
+            else:
+                return {
+                    "success": False,
+                    "session_id": current_session_id,
+                    "action": input_data.action,
+                    "error": "已经是第一步了",
+                    "message": "无法返回上一步",
+                }
+
+        elif input_data.action == "start":
+            # 开始新会话或重置
+            session_state = SessionState(
+                current_step_index=0,
+                answers={},
+                started_at=datetime.now(tz.utc).isoformat(),
+                completed=False,
+                mode=input_data.mode,
+                total_steps=len(all_steps),
+            )
+            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+        # 6. 获取当前步骤
+        if session_state.current_step_index >= len(all_steps):
+            # 所有步骤已完成
+            session_state.completed = True
+            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+            return {
+                "success": True,
+                "session_id": current_session_id,
+                "action": input_data.action,
+                "mode": session_state.mode,
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": 100.0,
+                "answers": session_state.answers,
+                "completed": True,
+                "message": "所有步骤已完成！可以使用 'complete' action 获取最终结果。",
+            }
+
+        current_step_data = all_steps[session_state.current_step_index]
+        validation_data2: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
+        current_step = RequirementStep(
+            key=str(current_step_data["key"]),
+            title=str(current_step_data["title"]),
+            prompt=str(current_step_data["prompt"]),
+            validation=ValidationRule(**validation_data2),
+        )
+
+        # 7. 处理用户输入（next/complete action）
+        if input_data.action in ("next", "complete") and input_data.user_input:
+            # 验证用户输入
+            validation_result = _validate_requirement_answer(
+                input_data.user_input,
+                current_step.validation,
+            )
+
+            if not validation_result["valid"]:
+                return {
+                    "success": False,
+                    "session_id": current_session_id,
+                    "action": input_data.action,
+                    "error": validation_result["error"],
+                    "message": f"输入验证失败: {validation_result['error']}",
+                }
+
+            # 保存答案
+            session_state.answers[current_step.key] = input_data.user_input
+
+            # 移动到下一步
+            if input_data.action == "next":
+                session_state.current_step_index += 1
+
+            # 检查是否完成
+            if input_data.action == "complete" or session_state.current_step_index >= len(all_steps):
+                session_state.completed = True
+
+            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+            # 如果完成，使用 LLM 生成总结
+            if session_state.completed:
+                completeness_check = await _check_requirement_completeness(ctx, session_state.answers)
+
+                return {
+                    "success": True,
+                    "session_id": current_session_id,
+                    "action": input_data.action,
+                    "mode": session_state.mode,
+                    "step_index": session_state.current_step_index,
+                    "total_steps": session_state.total_steps,
+                    "progress": 100.0,
+                    "answers": session_state.answers,
+                    "completed": True,
+                    "is_complete": completeness_check["is_complete"],
+                    "missing_info": completeness_check["missing_info"],
+                    "suggestions": completeness_check["suggestions"],
+                    "message": "需求收集完成！",
+                }
+
+        # 8. 返回当前步骤信息
+        progress = (session_state.current_step_index / session_state.total_steps) * 100
+
+        return {
+            "success": True,
+            "session_id": current_session_id,
+            "action": input_data.action,
+            "mode": session_state.mode,
+            "current_step": current_step.model_dump(),
+            "step_index": session_state.current_step_index,
+            "total_steps": session_state.total_steps,
+            "progress": progress,
+            "answers": session_state.answers,
+            "completed": session_state.completed,
+            "message": f"步骤 {session_state.current_step_index + 1}/{session_state.total_steps}: {current_step.title}",
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"需求收集出错: {e}",
+            "error_type": "internal_error",
+            "message": f"内部错误: {e}",
+        }
+
+
+def _validate_requirement_answer(
+    answer: str,
+    validation: Any,
+) -> dict[str, Any]:
+    """验证需求收集的用户答案.
+
+    Args:
+        answer: 用户输入的答案
+        validation: 验证规则（dict 或 ValidationRule 对象）
+
+    Returns:
+        包含验证结果的字典
+    """
+    import re
+
+    # 提取验证字段
+    field = validation.get("field") if isinstance(validation, dict) else validation.field
+    required = validation.get("required") if isinstance(validation, dict) else validation.required
+    min_length = validation.get("min_length") if isinstance(validation, dict) else validation.min_length
+    max_length = validation.get("max_length") if isinstance(validation, dict) else validation.max_length
+    options = validation.get("options") if isinstance(validation, dict) else validation.options
+    pattern = validation.get("pattern") if isinstance(validation, dict) else validation.pattern
+    help_text = validation.get("help_text") if isinstance(validation, dict) else validation.help_text
+
+    # 检查必填
+    if required and not answer.strip():
+        return {
+            "valid": False,
+            "error": f"{field} 是必填项",
+        }
+
+    # 如果答案为空且非必填，直接通过
+    if not answer.strip():
+        return {"valid": True}
+
+    # 检查长度
+    if min_length and len(answer) < min_length:
+        return {
+            "valid": False,
+            "error": help_text or f"最少需要 {min_length} 个字符",
+        }
+
+    if max_length and len(answer) > max_length:
+        return {
+            "valid": False,
+            "error": help_text or f"最多允许 {max_length} 个字符",
+        }
+
+    # 检查选项
+    if options:
+        normalized_answer = answer.strip().lower()
+        valid_options = [opt.lower() for opt in options]
+        if normalized_answer not in valid_options:
+            return {
+                "valid": False,
+                "error": f"无效的选项，请选择: {', '.join(options)}",
+            }
+
+    # 检查正则表达式
+    if pattern:
+        if not re.match(pattern, answer.strip()):
+            return {
+                "valid": False,
+                "error": help_text or "格式不正确",
+            }
+
+    return {"valid": True}
+
+
+async def _check_requirement_completeness(
+    ctx: Context,
+    answers: dict[str, str],
+) -> dict[str, Any]:
+    """使用 LLM 检查需求完整性.
+
+    Args:
+        ctx: MCP 上下文
+        answers: 已收集的答案
+
+    Returns:
+        包含完整性检查结果的字典
+    """
+
+    try:
+        prompt = f"""分析以下技能创建需求，判断是否包含所有必要信息：
+
+已收集的信息：
+{json.dumps(answers, indent=2, ensure_ascii=False)}
+
+必要信息包括：
+1. skill_name - 技能名称
+2. skill_function - 主要功能
+3. use_cases - 使用场景
+4. template_type - 模板类型
+
+请返回 JSON 格式，包含：
+- is_complete: bool（是否完整）
+- missing_info: list[str]（缺失的信息列表）
+- suggestions: list[str]（补充建议列表）
+
+只返回 JSON，不要其他内容。"""
+
+        result = await ctx.sample(
+            messages=prompt,
+            system_prompt="你是一个技能创建顾问，负责评估需求的完整性。",
+            temperature=0.3,
+        )
+
+        if result.text:
+            try:
+                # 提取 JSON 部分
+                json_start = result.text.find("{")
+                json_end = result.text.rfind("}") + 1
+                if json_start >= 0 and json_end > json_start:
+                    json_str = result.text[json_start:json_end]
+                    parsed = json.loads(json_str)
+                    return parsed  # type: ignore[no-any-return]
+            except json.JSONDecodeError:
+                pass
+
+        # 默认返回（如果 LLM 解析失败）
+        required_keys = ["skill_name", "skill_function", "use_cases", "template_type"]
+        missing = [k for k in required_keys if k not in answers or not answers[k]]
+
+        return {
+            "is_complete": len(missing) == 0,
+            "missing_info": missing,
+            "suggestions": [] if len(missing) == 0 else ["请补充缺失的关键信息"],
+        }
+
+    except Exception:
+        # 如果 LLM 调用失败，进行简单的完整性检查
+        required_keys = ["skill_name", "skill_function", "use_cases", "template_type"]
+        missing = [k for k in required_keys if k not in answers or not answers[k]]
+
+        return {
+            "is_complete": len(missing) == 0,
+            "missing_info": missing,
+            "suggestions": ["请补充缺失的关键信息"] if missing else [],
         }
 
 

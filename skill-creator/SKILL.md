@@ -1,9 +1,10 @@
 ---
 name: skill-creator
 description: |
-  Agent-Skills 开发与质量保证工具。通过 MCP 工具提供技能初始化、规范验证、结构分析、重构建议和模板生成功能。
+  Agent-Skills 开发与质量保证工具。通过 MCP 工具提供技能初始化、需求澄清、规范验证、结构分析、重构建议和模板生成功能。
 
   何时使用：
+  - 需求澄清：通过 AI 对话收集技能创建所需信息
   - 创建新的 Agent-Skill 项目结构
   - 验证技能是否符合渐进式披露规范
   - 分析技能的 token 效率和结构质量
@@ -11,6 +12,7 @@ description: |
   - 访问技能模板和最佳实践指南
 
   触发词：
+  - 需求澄清
   - 技能创建
   - 技能初始化
   - 技能验证
@@ -29,14 +31,23 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 核心能力
 
-1. **技能初始化** - 一键生成符合渐进式披露架构的技能目录结构
-2. **规范验证** - 自动检查命名、描述、结构是否符合最佳实践
-3. **结构分析** - 分析 token 效率、识别常见反模式
-4. **重构建议** - 基于官方规范提供具体的改进建议
-5. **模板资源** - 访问四种预定义技能模板（minimal/tool-based/workflow-based/analyzer-based）
-6. **最佳实践** - 内置完整的开发规范和验证标准
+1. **需求澄清** - AI 驱动的对话式需求收集，支持会话恢复和进度跟踪
+2. **技能初始化** - 一键生成符合渐进式披露架构的技能目录结构
+3. **规范验证** - 自动检查命名、描述、结构是否符合最佳实践
+4. **结构分析** - 分析 token 效率、识别常见反模式
+5. **重构建议** - 基于官方规范提供具体的改进建议
+6. **模板资源** - 访问四种预定义技能模板（minimal/tool-based/workflow-based/analyzer-based）
+7. **最佳实践** - 内置完整的开发规范和验证标准
 
 ## 快速开始
+
+### 需求澄清（推荐）
+
+```
+"我想创建一个技能，帮我梳理需求"
+```
+
+通过 AI 对话逐步收集技能名称、功能、使用场景、模板类型等关键信息。
 
 ### 创建新技能
 
@@ -65,8 +76,24 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 ## 工作流程
 
 ```
-初始化 → 选择模板 → 生成结构 → 开发内容 → 验证规范 → 分析优化 → 重构改进
+需求澄清 → 技能初始化 → 选择模板 → 生成结构 → 开发内容 → 验证规范 → 分析优化 → 重构改进
 ```
+
+### 需求澄清流程
+
+**新增功能**：AI 驱动的需求澄清工具 `collect_requirements`
+
+**支持模式**：
+- **基础模式**（5 步）：技能名称、主要功能、使用场景、模板类型、额外需求
+- **完整模式**（10 步）：基础模式 + 目标用户、技术栈、外部依赖、测试要求、文档级别
+- **头脑风暴模式**：AI 引导的创意发散和需求探索
+- **渐进式模式**：快速开始，逐步完善
+
+**特点**：
+- ✅ AI 对话引导（使用 LLM 动态生成问题）
+- ✅ 会话状态管理（支持中断后恢复）
+- ✅ 输入验证（实时检查格式和完整性）
+- ✅ 进度跟踪（可视化完成百分比）
 
 ## MCP 工具集成
 
@@ -74,6 +101,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 | 工具 | 功能 |
 |------|------|
+| `collect_requirements` | **需求澄清** - AI 对话式收集技能创建信息 |
 | `init_skill` | 初始化新技能结构 |
 | `validate_skill` | 验证技能规范 |
 | `analyze_skill` | 分析技能质量 |
@@ -99,6 +127,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 详细文档
 
+- **[需求澄清指南](references/requirement-collection.md)** - AI 对话式需求收集流程详解
 - **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
 - **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
 - **[最佳实践 - 高级技巧](references/best-practices-advanced.md)** - Token 优化、脚本黑盒化、反模式
@@ -122,7 +151,7 @@ Skill-Creator 采用混合架构，结合 MCP Server 和 Agent-Skill 的优势�
 │                         │ 调用                                │
 │  ┌────────────────────▼───────────────────────────────────┐ │
 │  │         MCP Server (skill-creator-mcp)                 │ │
-│  │  - 5 Tools: 原子操作 (init/validate/analyze/refactor)  │ │
+│  │  - 6 Tools: 原子操作 (collect/init/validate/analyze/refactor/package) │ │
 │  │  - 4 Resources: 只读数据 (模板/规范/最佳实践)          │ │
 │  │  - 3 Prompts: 可重用模板 (create/validate/refactor)    │ │
 │  └─────────────────────────────────────────────────────────┘ │
@@ -130,9 +159,10 @@ Skill-Creator 采用混合架构，结合 MCP Server 和 Agent-Skill 的优势�
 ```
 
 **职责边界**:
-- **MCP Server**: 执行原子操作、文件 I/O、数据验证
+- **MCP Server**: 执行原子操作、文件 I/O、数据验证、Session State 管理
 - **Agent-Skill**: 工作流编排、知识传递、最佳实践指导
 
 **详细文档**:
 - **[混合架构 ADR](../docs/adr/001-hybrid-architecture.md)** - 架构决策记录
 - **[协同示例](examples/mcp-skill-collaboration.md)** - 协同工作流示例
+- **[需求收集示例](examples/requirement-collection-basic.md)** - 需求澄清使用示例

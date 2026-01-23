@@ -75,6 +75,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **collect_requirements**: AI 驱动的需求澄清工具
+  - 支持 4 种收集模式：basic (5步)、complete (10步)、brainstorm、progressive
+  - 支持 5 种动作：start、next、previous、status、complete
+  - Session State 管理（支持中断后恢复）
+  - 输入验证（必填、长度、格式、选项）
+  - LLM 驱动的完整性检查
+  - 进度跟踪（0-100%）
+  - 新增数据模型：
+    - `RequirementCollectionMode` - 收集模式字面量
+    - `RequirementAction` - 动作类型字面量
+    - `ValidationRule` - 验证规则模型
+    - `RequirementStep` - 需求收集步骤模型
+    - `SessionState` - 会话状态模型
+    - `RequirementCollectionInput` - 输入参数模型
+    - `RequirementCollectionResult` - 返回结果模型
+  - 新增辅助函数：
+    - `_validate_requirement_answer()` - 验证用户答案
+    - `_check_requirement_completeness()` - LLM 完整性检查
+  - 新增测试用例：35 个（22 单元测试 + 13 集成测试）
+
+- **Documentation**: 需求澄清相关文档
+  - `references/requirement-collection.md` - 需求澄清指南（300+ 行）
+  - `examples/requirement-collection-basic.md` - 使用示例（200+ 行）
+
+- **SKILL.md Updates**: 添加需求澄清流程
+  - 新增核心能力：需求澄清
+  - 新增触发词：需求澄清
+  - 新增快速开始：需求澄清示例
+  - 更新工作流程：添加需求澄清为第一步
+  - 更新 MCP 工具表：添加 collect_requirements
+  - 更新架构图：6 工具
+
 ### Changed
 - **Documentation**: 更新 README.md 测试数据徽章 (297 passed, 98% coverage)
 - **Documentation**: 拆分 best-practices.md 为两个文件以符合推荐行数标准

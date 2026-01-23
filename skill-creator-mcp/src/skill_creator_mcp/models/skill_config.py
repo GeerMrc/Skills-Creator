@@ -409,3 +409,191 @@ class PackageResult(BaseModel):
         default=None,
         description="错误类型",
     )
+
+
+# ==================== 需求收集相关模型 ====================
+
+
+RequirementCollectionMode = Literal["basic", "complete", "brainstorm", "progressive"]
+RequirementAction = Literal["start", "next", "previous", "status", "complete"]
+
+
+class ValidationRule(BaseModel):
+    """验证规则模型."""
+
+    field: str = Field(
+        ...,
+        description="字段名称",
+    )
+    required: bool = Field(
+        default=True,
+        description="是否必填",
+    )
+    validator: str | None = Field(
+        default=None,
+        description="验证函数名称",
+    )
+    options: list[str] | None = Field(
+        default=None,
+        description="可选项列表",
+    )
+    min_length: int | None = Field(
+        default=None,
+        description="最小长度",
+    )
+    max_length: int | None = Field(
+        default=None,
+        description="最大长度",
+    )
+    pattern: str | None = Field(
+        default=None,
+        description="正则表达式模式",
+    )
+    help_text: str = Field(
+        ...,
+        description="帮助文本",
+    )
+
+
+class RequirementStep(BaseModel):
+    """需求收集步骤模型."""
+
+    key: str = Field(
+        ...,
+        description="步骤键名",
+    )
+    title: str = Field(
+        ...,
+        description="步骤标题",
+    )
+    prompt: str = Field(
+        ...,
+        description="询问用户的提示文本",
+    )
+    validation: ValidationRule = Field(
+        ...,
+        description="验证规则",
+    )
+    depends_on: list[str] | None = Field(
+        default=None,
+        description="依赖的其他步骤键名",
+    )
+    modes: list[RequirementCollectionMode] = Field(
+        default_factory=list,
+        description="适用的收集模式",
+    )
+
+
+class SessionState(BaseModel):
+    """需求收集会话状态模型."""
+
+    current_step_index: int = Field(
+        default=0,
+        description="当前步骤索引",
+    )
+    answers: dict[str, str] = Field(
+        default_factory=dict,
+        description="已收集的答案",
+    )
+    started_at: str | None = Field(
+        default=None,
+        description="会话开始时间（ISO 8601）",
+    )
+    completed: bool = Field(
+        default=False,
+        description="是否已完成",
+    )
+    mode: RequirementCollectionMode = Field(
+        default="basic",
+        description="收集模式",
+    )
+    total_steps: int = Field(
+        default=0,
+        description="总步骤数",
+    )
+
+
+class RequirementCollectionInput(BaseModel):
+    """需求收集输入参数模型."""
+
+    action: RequirementAction = Field(
+        default="start",
+        description="执行动作：start=开始，next=下一步，previous=上一步，status=查询状态，complete=完成",
+    )
+    mode: RequirementCollectionMode = Field(
+        default="basic",
+        description="收集模式：basic=基础（5步），complete=完整（10步），brainstorm=头脑风暴，progressive=渐进式",
+    )
+    session_id: str | None = Field(
+        default=None,
+        description="会话ID（自动生成，用于多轮对话）",
+    )
+    user_input: str | None = Field(
+        default=None,
+        description="用户输入（用于 next/complete 动作）",
+    )
+
+
+class RequirementCollectionResult(BaseModel):
+    """需求收集结果模型."""
+
+    success: bool = Field(
+        ...,
+        description="操作是否成功",
+    )
+    session_id: str = Field(
+        ...,
+        description="会话ID",
+    )
+    action: RequirementAction = Field(
+        ...,
+        description="执行的Action",
+    )
+    mode: RequirementCollectionMode = Field(
+        ...,
+        description="收集模式",
+    )
+    current_step: RequirementStep | None = Field(
+        default=None,
+        description="当前步骤信息",
+    )
+    step_index: int = Field(
+        default=0,
+        description="当前步骤索引",
+    )
+    total_steps: int = Field(
+        default=0,
+        description="总步骤数",
+    )
+    progress: float = Field(
+        default=0.0,
+        description="进度百分比（0-100）",
+    )
+    answers: dict[str, str] = Field(
+        default_factory=dict,
+        description="已收集的答案",
+    )
+    message: str = Field(
+        ...,
+        description="响应消息",
+    )
+    completed: bool = Field(
+        default=False,
+        description="是否已完成收集",
+    )
+    is_complete: bool = Field(
+        default=False,
+        description="需求是否完整（用于 LLM 判断）",
+    )
+    missing_info: list[str] = Field(
+        default_factory=list,
+        description="缺失的关键信息列表",
+    )
+    suggestions: list[str] = Field(
+        default_factory=list,
+        description="补充建议列表",
+    )
+    error: str | None = Field(
+        default=None,
+        description="错误信息",
+    )
