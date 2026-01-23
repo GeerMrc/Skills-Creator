@@ -1,7 +1,7 @@
 """MCP 客户端能力检测."""
 
 from typing import Any
-import inspect
+
 from fastmcp import Context
 
 
@@ -15,7 +15,7 @@ async def check_sampling_capability(ctx: Context) -> dict[str, Any]:
         包含检测结果和详细信息的字典
     """
     try:
-        result = await ctx.sample(
+        await ctx.sample(
             messages="test",
             max_tokens=1,
         )

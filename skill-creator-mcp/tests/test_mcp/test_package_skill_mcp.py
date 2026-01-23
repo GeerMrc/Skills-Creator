@@ -13,7 +13,8 @@ async def test_package_skill_mcp_basic_zip(temp_dir):
     """测试通过 MCP Server 打包技能为 ZIP 格式."""
     # 获取 package_skill 工具
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -58,7 +59,8 @@ async def test_package_skill_mcp_basic_zip(temp_dir):
 async def test_package_skill_mcp_with_validation(temp_dir):
     """测试通过 MCP Server 打包技能（带验证）."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -105,7 +107,8 @@ async def test_package_skill_mcp_with_validation(temp_dir):
 async def test_package_skill_mcp_validation_fails(temp_dir):
     """测试通过 MCP Server 打包技能（验证失败）."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -143,7 +146,8 @@ async def test_package_skill_mcp_validation_fails(temp_dir):
 async def test_package_skill_mcp_tar_gz(temp_dir):
     """测试通过 MCP Server 打包技能为 tar.gz 格式."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -185,7 +189,8 @@ async def test_package_skill_mcp_tar_gz(temp_dir):
 async def test_package_skill_mcp_exclude_tests(temp_dir):
     """测试通过 MCP Server 打包技能（排除测试文件）."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -231,7 +236,8 @@ async def test_package_skill_mcp_exclude_tests(temp_dir):
 async def test_package_skill_mcp_nonexistent_directory(temp_dir):
     """测试通过 MCP Server 打包不存在的目录."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -263,7 +269,8 @@ async def test_package_skill_mcp_nonexistent_directory(temp_dir):
 async def test_package_skill_mcp_invalid_format(temp_dir):
     """测试通过 MCP Server 打包技能（无效格式）."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -300,7 +307,8 @@ async def test_package_skill_mcp_invalid_format(temp_dir):
 async def test_package_skill_mcp_internal_error(temp_dir):
     """测试通过 MCP Server 打包技能时的内部错误."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -332,7 +340,8 @@ async def test_package_skill_mcp_internal_error(temp_dir):
 async def test_package_skill_mcp_with_size_info(temp_dir):
     """测试通过 MCP Server 打包技能（包大小信息）."""
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break

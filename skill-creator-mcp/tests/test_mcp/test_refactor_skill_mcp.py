@@ -12,7 +12,8 @@ async def test_refactor_skill_mcp_basic(temp_dir):
     """测试通过 MCP Server 重构基本技能."""
     # 获取 refactor_skill 工具
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -66,7 +67,8 @@ This is a test skill.
 async def test_refactor_skill_mcp_with_focus(temp_dir):
     """测试通过 MCP Server 重构技能（关注领域过滤）."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -104,7 +106,8 @@ async def test_refactor_skill_mcp_with_focus(temp_dir):
 async def test_refactor_skill_mcp_no_analysis(temp_dir):
     """测试通过 MCP Server 重构技能（关闭所有分析）."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -143,7 +146,8 @@ async def test_refactor_skill_mcp_no_analysis(temp_dir):
 async def test_refactor_skill_mcp_directory_not_exists(temp_dir):
     """测试通过 MCP Server 重构不存在的目录."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -169,7 +173,8 @@ async def test_refactor_skill_mcp_directory_not_exists(temp_dir):
 async def test_refactor_skill_mcp_path_not_directory(temp_dir):
     """测试通过 MCP Server 重构非目录路径."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -199,7 +204,8 @@ async def test_refactor_skill_mcp_path_not_directory(temp_dir):
 async def test_refactor_skill_mcp_internal_error(temp_dir):
     """测试通过 MCP Server 重构技能时的内部错误."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -227,7 +233,8 @@ async def test_refactor_skill_mcp_internal_error(temp_dir):
 async def test_refactor_skill_mcp_with_complex_skill(temp_dir):
     """测试通过 MCP Server 重构复杂技能."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -278,7 +285,8 @@ async def test_refactor_skill_mcp_with_complex_skill(temp_dir):
 async def test_refactor_skill_mcp_generates_report(temp_dir):
     """测试通过 MCP Server 重构技能生成完整报告."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
@@ -314,7 +322,8 @@ async def test_refactor_skill_mcp_generates_report(temp_dir):
 async def test_refactor_skill_mcp_effort_estimate(temp_dir):
     """测试通过 MCP Server 重构技能时的工作量估算."""
     refactor_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break

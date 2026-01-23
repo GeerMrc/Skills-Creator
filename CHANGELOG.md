@@ -75,6 +75,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Dependencies**: 升级到 FastMCP 3.0.0b1
+  - 支持最新的 MCP 协议特性
+  - 添加客户端能力检测功能 (`capability_detection.py`)
+  - 新增工具: `check_client_capabilities()` 检测 sampling 和 elicitation 支持
+  - 更新 pyproject.toml 依赖要求: `fastmcp>=3.0.0b1`
+  - 同步 .venv 虚拟环境开发依赖 (pytest, ruff, mypy)
+  - 修复代码风格问题 (ruff 自动修复)
+  - 验证测试套件通过 (369 passed, 85% coverage)
+
 ### Added
 - **collect_requirements**: AI 驱动的需求澄清工具
   - 支持 4 种收集模式：basic (5步)、complete (10步)、brainstorm、progressive

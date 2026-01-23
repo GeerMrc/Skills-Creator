@@ -12,7 +12,8 @@ async def test_analyze_skill_mcp_basic(temp_dir):
     """测试通过 MCP Server 分析基本技能."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -72,7 +73,8 @@ async def test_analyze_skill_mcp_analyze_structure_false(temp_dir):
     """测试通过 MCP Server 分析技能（不分析结构）."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -109,7 +111,8 @@ async def test_analyze_skill_mcp_analyze_complexity_false(temp_dir):
     """测试通过 MCP Server 分析技能（不分析复杂度）."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -146,7 +149,8 @@ async def test_analyze_skill_mcp_analyze_quality_false(temp_dir):
     """测试通过 MCP Server 分析技能（不分析质量）."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -184,7 +188,8 @@ async def test_analyze_skill_mcp_all_false(temp_dir):
     """测试通过 MCP Server 分析技能（所有分析选项都关闭）."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -222,7 +227,8 @@ async def test_analyze_skill_mcp_directory_not_exists(temp_dir):
     """测试通过 MCP Server 分析不存在的目录."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -249,7 +255,8 @@ async def test_analyze_skill_mcp_internal_error(temp_dir):
     """测试通过 MCP Server 分析技能时的内部错误."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -276,7 +283,8 @@ async def test_analyze_skill_mcp_with_python_files(temp_dir):
     """测试通过 MCP Server 分析包含 Python 文件的技能."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -326,7 +334,8 @@ async def test_analyze_skill_mcp_empty_directory(temp_dir):
     """测试通过 MCP Server 分析空目录."""
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break

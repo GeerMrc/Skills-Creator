@@ -8,20 +8,18 @@
 
 import asyncio
 import json
-from dataclasses import dataclass, field
-from typing import Any
-from unittest.mock import AsyncMock, Mock
 
 # 导入要测试的函数
 import sys
+from dataclasses import dataclass, field
+from typing import Any
+
 sys.path.insert(0, "src")
 
 from skill_creator_mcp.server import (
     _generate_brainstorm_question,
     _generate_progressive_question,
-    _validate_requirement_answer,
 )
-
 
 # ============================================================================
 # 模拟 Context API
@@ -258,7 +256,7 @@ async def test_requirement_completeness():
     if json_match:
         try:
             analysis = json.loads(json_match.group())
-            print(f"✅ JSON 解析成功")
+            print("✅ JSON 解析成功")
             print(f"✅ 是否完整: {analysis.get('is_complete')}")
             print(f"✅ 缺失信息: {analysis.get('missing_info')}")
             print(f"✅ 补充建议: {analysis.get('suggestions')}")
@@ -267,7 +265,7 @@ async def test_requirement_completeness():
             print(f"⚠️ JSON 解析失败: {e}")
             return False
     else:
-        print(f"⚠️ 未找到 JSON 格式输出")
+        print("⚠️ 未找到 JSON 格式输出")
         return False
 
 

@@ -1,5 +1,7 @@
 """测试 MCP 资源访问."""
 
+import pytest
+
 from skill_creator_mcp.resources import (
     get_best_practices,
     get_template_content,
@@ -28,13 +30,17 @@ def test_template_content_accessible():
         assert "name:" in content
 
 
-def test_resources_in_server():
-    """测试资源已在 Server 中注册."""
+@pytest.mark.asyncio
+async def test_resources_in_server():
+    """测试资源已在 Server 中注册 (FastMCP 3.0+ 使用公开 API)."""
     from skill_creator_mcp.server import mcp
 
-    # 检查资源管理器存在
-    assert hasattr(mcp, "_resource_manager")
-
-    # 检查有资源注册
-    resources = list(mcp._resource_manager._resources.values())
+    # 使用公开 API 列出资源
+    resources = await mcp.list_resources()
     assert len(resources) > 0
+
+    # 验证预期资源存在（AnyUrl 需要转换为字符串）
+    resource_uris = [str(r.uri) for r in resources]
+    assert "http://skills/schema/templates" in resource_uris
+    assert "http://skills/schema/best-practices" in resource_uris
+    assert "http://skills/schema/validation-rules" in resource_uris

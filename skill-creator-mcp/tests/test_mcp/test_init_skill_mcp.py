@@ -13,7 +13,8 @@ async def test_init_skill_mcp_tool_minimal(temp_dir):
     """测试通过 MCP Server 调用 init_skill."""
     # 获取 init_skill 工具
     init_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
@@ -49,7 +50,8 @@ async def test_init_skill_mcp_tool_invalid_name(temp_dir):
     """测试通过 MCP Server 调用 init_skill（无效名称）."""
     # 获取 init_skill 工具
     init_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
@@ -78,7 +80,8 @@ async def test_init_skill_mcp_tool_invalid_template(temp_dir):
     """测试通过 MCP Server 调用 init_skill（无效模板）."""
     # 获取 init_skill 工具
     init_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
@@ -107,7 +110,8 @@ async def test_init_skill_mcp_tool_with_all_options(temp_dir):
     """测试通过 MCP Server 调用 init_skill（所有选项）."""
     # 获取 init_skill 工具
     init_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
@@ -144,7 +148,8 @@ async def test_init_skill_mcp_tool_internal_error(temp_dir):
     """测试通过 MCP Server 调用 init_skill（内部错误）."""
     # 获取 init_skill 工具
     init_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break

@@ -21,7 +21,8 @@ async def test_e2e_complete_workflow(temp_dir):
     refactor_skill_tool = None
     package_skill_tool = None
 
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name"):
             if tool.name == "init_skill":
                 init_skill_tool = tool
@@ -107,7 +108,8 @@ async def test_e2e_workflow_with_validation(temp_dir):
     analyze_skill_tool = None
     package_skill_tool = None
 
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name"):
             if tool.name == "init_skill":
                 init_skill_tool = tool
@@ -161,7 +163,8 @@ async def test_e2e_error_recovery(temp_dir):
     init_skill_tool = None
     analyze_skill_tool = None
 
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name"):
             if tool.name == "init_skill":
                 init_skill_tool = tool
@@ -210,7 +213,8 @@ async def test_e2e_iterative_refinement(temp_dir):
     refactor_skill_tool = None
     analyze_skill_tool = None
 
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name"):
             if tool.name == "init_skill":
                 init_skill_tool = tool
@@ -275,7 +279,8 @@ async def test_e2e_multiple_skills(temp_dir):
     init_skill_tool = None
     analyze_skill_tool = None
 
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name"):
             if tool.name == "init_skill":
                 init_skill_tool = tool
@@ -324,7 +329,8 @@ async def test_e2e_package_formats(temp_dir):
     init_skill_tool = None
     package_skill_tool = None
 
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name"):
             if tool.name == "init_skill":
                 init_skill_tool = tool

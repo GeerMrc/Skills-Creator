@@ -310,9 +310,10 @@ async def test_analyze_skill_with_file_not_directory(temp_dir: Path):
 
     from skill_creator_mcp.server import mcp
 
-    # 获取 analyze_skill 工具
+    # 获取 analyze_skill 工具（FastMCP 3.0+ 使用公开 API）
+    tools = await mcp.list_tools()
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -349,9 +350,10 @@ async def test_analyze_skill_with_valid_empty_directory(temp_dir: Path):
 
     from skill_creator_mcp.server import mcp
 
-    # 获取 analyze_skill 工具
+    # 获取 analyze_skill 工具（FastMCP 3.0+ 使用公开 API）
+    tools = await mcp.list_tools()
     analyze_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
@@ -387,9 +389,10 @@ async def test_package_skill_with_invalid_skill_path_type(temp_dir: Path):
 
     from skill_creator_mcp.server import mcp
 
-    # 获取 package_skill 工具
+    # 获取 package_skill 工具（FastMCP 3.0+ 使用公开 API）
+    tools = await mcp.list_tools()
     package_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
@@ -423,10 +426,12 @@ async def test_list_templates_resource():
     """测试 list_templates_resource 函数返回正确格式 (server.py:819-824)."""
     from skill_creator_mcp.server import mcp
 
-    # 通过 read_resource 方法调用资源函数
-    result = await mcp._resource_manager.read_resource("http://skills/schema/templates")
-    assert "# 技能模板列表" in result
-    assert "minimal" in result
+    # 通过 read_resource 方法调用资源函数（FastMCP 3.0+ 使用公开 API）
+    result = await mcp.read_resource("http://skills/schema/templates")
+    # ResourceResult.contents 是 ResourceContent 列表
+    content = result.contents[0].content
+    assert "# 技能模板列表" in content
+    assert "minimal" in content
 
 
 @pytest.mark.asyncio
@@ -434,12 +439,13 @@ async def test_get_template_resource_invalid():
     """测试 get_template_resource 函数处理无效类型 (server.py:830-837)."""
     from skill_creator_mcp.server import mcp
 
-    # 测试无效类型
-    result = await mcp._resource_manager.read_resource(
+    # 测试无效类型（FastMCP 3.0+ 使用公开 API）
+    result = await mcp.read_resource(
         "http://skills/schema/templates/invalid-type"
     )
-    assert "# 错误" in result
-    assert "未知的模板类型" in result
+    content = result.contents[0].content
+    assert "# 错误" in content
+    assert "未知的模板类型" in content
 
 
 @pytest.mark.asyncio
@@ -447,8 +453,9 @@ async def test_best_practices_resource():
     """测试 best_practices_resource 函数 (server.py:843)."""
     from skill_creator_mcp.server import mcp
 
-    result = await mcp._resource_manager.read_resource("http://skills/schema/best-practices")
-    assert len(result) > 0
+    result = await mcp.read_resource("http://skills/schema/best-practices")
+    content = result.contents[0].content
+    assert len(content) > 0
 
 
 @pytest.mark.asyncio
@@ -456,19 +463,22 @@ async def test_validation_rules_resource():
     """测试 validation_rules_resource 函数 (server.py:849)."""
     from skill_creator_mcp.server import mcp
 
-    result = await mcp._resource_manager.read_resource("http://skills/schema/validation-rules")
-    assert len(result) > 0
+    result = await mcp.read_resource("http://skills/schema/validation-rules")
+    content = result.contents[0].content
+    assert len(content) > 0
 
 
 # ==================== MCP Prompt 函数测试 ====================
 
 
-def test_create_skill_prompt():
+@pytest.mark.asyncio
+async def test_create_skill_prompt():
     """测试 create_skill_prompt 函数 (server.py:869)."""
     from skill_creator_mcp.server import mcp
 
-    # 获取 prompt 并调用其函数
-    for prompt in mcp._prompt_manager._prompts.values():
+    # 获取 prompt 并调用其函数（FastMCP 3.0+ 使用公开 API）
+    prompts = await mcp.list_prompts()
+    for prompt in prompts:
         if prompt.name == "create-skill":
             result = prompt.fn(name="test-skill", template="minimal")
             assert "test-skill" in result
@@ -477,12 +487,14 @@ def test_create_skill_prompt():
     pytest.fail("create_skill_prompt not found")
 
 
-def test_validate_skill_prompt():
+@pytest.mark.asyncio
+async def test_validate_skill_prompt():
     """测试 validate_skill_prompt 函数 (server.py:886)."""
     from skill_creator_mcp.server import mcp
 
-    # 获取 prompt 并调用其函数
-    for prompt in mcp._prompt_manager._prompts.values():
+    # 获取 prompt 并调用其函数（FastMCP 3.0+ 使用公开 API）
+    prompts = await mcp.list_prompts()
+    for prompt in prompts:
         if prompt.name == "validate-skill":
             result = prompt.fn(skill_path="/path/to/skill", template=None)
             assert len(result) > 0
@@ -491,12 +503,14 @@ def test_validate_skill_prompt():
     pytest.fail("validate_skill_prompt not found")
 
 
-def test_refactor_skill_prompt():
+@pytest.mark.asyncio
+async def test_refactor_skill_prompt():
     """测试 refactor_skill_prompt 函数 (server.py:903)."""
     from skill_creator_mcp.server import mcp
 
-    # 获取 prompt 并调用其函数
-    for prompt in mcp._prompt_manager._prompts.values():
+    # 获取 prompt 并调用其函数（FastMCP 3.0+ 使用公开 API）
+    prompts = await mcp.list_prompts()
+    for prompt in prompts:
         if prompt.name == "refactor-skill":
             result = prompt.fn(skill_path="/path/to/skill", focus=None)
             assert len(result) > 0

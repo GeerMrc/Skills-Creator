@@ -12,7 +12,8 @@ async def test_validate_skill_mcp_valid_skill(temp_dir):
     """测试通过 MCP Server 验证有效的技能目录."""
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
@@ -60,7 +61,8 @@ async def test_validate_skill_mcp_directory_not_exists():
     """测试通过 MCP Server 验证不存在的目录."""
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
@@ -88,7 +90,8 @@ async def test_validate_skill_mcp_path_not_directory(temp_dir):
     """测试通过 MCP Server 验证非目录路径."""
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
@@ -120,7 +123,8 @@ async def test_validate_skill_mcp_check_structure_false(temp_dir):
     """测试通过 MCP Server 验证技能（不检查结构）."""
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
@@ -161,7 +165,8 @@ async def test_validate_skill_mcp_check_content_false(temp_dir):
     """测试通过 MCP Server 验证技能（不检查内容）."""
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
@@ -199,7 +204,8 @@ async def test_validate_skill_mcp_with_template_type(temp_dir):
     """测试通过 MCP Server 验证带模板类型的技能."""
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
@@ -247,7 +253,8 @@ async def test_validate_skill_mcp_missing_template_files(temp_dir):
     """测试通过 MCP Server 验证缺少模板必需文件的技能."""
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
@@ -294,7 +301,8 @@ async def test_validate_skill_mcp_internal_error(temp_dir):
 
     # 获取 validate_skill 工具
     validate_skill_tool = None
-    for tool in mcp._tool_manager._tools.values():
+    tools = await mcp.list_tools()
+    for tool in tools:
         if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
