@@ -1,0 +1,16 @@
+{
+  "skill-creator": {
+    "command": "uv",
+    "args": [
+      "run",
+      "--directory",
+      "/models/claude-glm/Skills-Creator/skill-creator-mcp",
+      "python",
+      "-m",
+      "skill_creator_mcp"
+    ],
+    "env": {
+      "PYTHONPATH": "/models/claude-glm/Skills-Creator/skill-creator-mcp/src"
+    }
+  }
+}
