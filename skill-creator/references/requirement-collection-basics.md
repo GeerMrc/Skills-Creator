@@ -6,7 +6,9 @@ Skill-Creator 提供 AI 驱动的需求澄清工具 `collect_requirements`，通
 
 > **相关文档**：
 > - [需求收集模式详解](requirement-collection-modes.md) - 各种收集模式的详细说明
-> - [需求收集 API 参考](requirement-collection-api.md) - 完整的 API 文档
+> - [需求收集 API 参考](requirement-collection-api.md) - API 文档索引
+> - [API 核心参考](requirement-collection-api-core.md) - 完整的 API 技术文档
+> - [API 使用示例](requirement-collection-api-examples.md) - 实际使用场景和最佳实践
 > - [需求收集示例](../examples/requirement-collection-basic.md) - 代码示例和用法
 
 ## 核心概念
@@ -133,6 +135,8 @@ result = await collect_requirements(
 ## 相关文档
 
 - **[需求收集模式详解](requirement-collection-modes.md)** - 各种模式的详细说明和对比
-- **[需求收集 API 参考](requirement-collection-api.md)** - 完整的 API 文档和错误处理
+- **[需求收集 API 参考](requirement-collection-api.md)** - API 文档索引
+- **[API 核心参考](requirement-collection-api-core.md)** - 完整的 API 文档和错误处理
+- **[API 使用示例](requirement-collection-api-examples.md)** - 实际使用场景和最佳实践
 - **[需求收集示例](../examples/requirement-collection-basic.md)** - 完整的代码示例
 - **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用和配置

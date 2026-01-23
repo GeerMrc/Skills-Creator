@@ -4,7 +4,9 @@
 
 > **相关文档**：
 > - [需求澄清基础指南](requirement-collection-basics.md) - 核心概念和快速开始
-> - [需求收集 API 参考](requirement-collection-api.md) - 完整的 API 文档
+> - [需求收集 API 参考](requirement-collection-api.md) - API 文档索引
+> - [API 核心参考](requirement-collection-api-core.md) - 完整的 API 技术文档
+> - [API 使用示例](requirement-collection-api-examples.md) - 实际使用场景和最佳实践
 
 ## 目录
 
@@ -287,5 +289,7 @@ result = await collect_requirements(..., use_elicit=True)
 ## 相关文档
 
 - **[需求澄清基础指南](requirement-collection-basics.md)** - 核心概念和快速开始
-- **[需求收集 API 参考](requirement-collection-api.md)** - 完整的 API 文档
+- **[需求收集 API 参考](requirement-collection-api.md)** - API 文档索引
+- **[API 核心参考](requirement-collection-api-core.md)** - 完整的 API 技术文档
+- **[API 使用示例](requirement-collection-api-examples.md)** - 实际使用场景和最佳实践
 - **[需求收集示例](../examples/requirement-collection-basic.md)** - 代码示例

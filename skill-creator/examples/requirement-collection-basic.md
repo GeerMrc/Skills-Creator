@@ -69,5 +69,7 @@
 
 - **[需求澄清指南](../references/requirement-collection.md)** - 详细文档
 - **[需求收集模式详解](../references/requirement-collection-modes.md)** - 模式说明
-- **[需求收集 API 参考](../references/requirement-collection-api.md)** - API 文档
+- **[需求收集 API 参考](../references/requirement-collection-api.md)** - API 文档索引
+- **[API 核心参考](../references/requirement-collection-api-core.md)** - 完整的 API 技术文档
+- **[API 使用示例](../references/requirement-collection-api-examples.md)** - 实际使用场景和最佳实践
 - **[MCP 集成指南](../references/mcp-integration.md)** - MCP 工具配置

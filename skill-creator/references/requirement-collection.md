@@ -25,7 +25,9 @@ result = await collect_requirements(
 |------|------|------|
 | **[需求澄清基础指南](requirement-collection-basics.md)** | 核心概念、模式概览、快速开始 | ~150 |
 | **[需求收集模式详解](requirement-collection-modes.md)** | 各种模式的详细说明和对比 | ~150 |
-| **[需求收集 API 参考](requirement-collection-api.md)** | 完整的 API 文档和错误处理 | ~170 |
+| **[需求收集 API 参考](requirement-collection-api.md)** | API 文档索引 | ~70 |
+| **[API 核心参考](requirement-collection-api-core.md)** | 完整的 API 技术文档 | ~180 |
+| **[API 使用示例](requirement-collection-api-examples.md)** | 实际使用场景和最佳实践 | ~150 |
 
 ## 核心特性
 
