@@ -13,7 +13,7 @@ async def test_analyze_skill_mcp_basic(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -50,7 +50,7 @@ example code here
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -73,7 +73,7 @@ async def test_analyze_skill_mcp_analyze_structure_false(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -88,7 +88,7 @@ async def test_analyze_skill_mcp_analyze_structure_false(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（不分析结构）
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -110,7 +110,7 @@ async def test_analyze_skill_mcp_analyze_complexity_false(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -125,7 +125,7 @@ async def test_analyze_skill_mcp_analyze_complexity_false(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（不分析复杂度）
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -147,7 +147,7 @@ async def test_analyze_skill_mcp_analyze_quality_false(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -162,7 +162,7 @@ async def test_analyze_skill_mcp_analyze_quality_false(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（不分析质量）
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -185,7 +185,7 @@ async def test_analyze_skill_mcp_all_false(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -200,7 +200,7 @@ async def test_analyze_skill_mcp_all_false(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（所有分析都关闭）
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -223,7 +223,7 @@ async def test_analyze_skill_mcp_directory_not_exists(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -234,7 +234,7 @@ async def test_analyze_skill_mcp_directory_not_exists(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（目录不存在）
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(temp_dir / "non-existent-skill"),
@@ -250,7 +250,7 @@ async def test_analyze_skill_mcp_internal_error(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -261,7 +261,7 @@ async def test_analyze_skill_mcp_internal_error(temp_dir):
     ctx.log = MagicMock()
 
     # 模拟 Path 构造函数抛出异常
-    with patch('skill_creator_mcp.server.Path', side_effect=RuntimeError("Simulated error")):
+    with patch("skill_creator_mcp.server.Path", side_effect=RuntimeError("Simulated error")):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path="/some/path",
@@ -277,7 +277,7 @@ async def test_analyze_skill_mcp_with_python_files(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -308,7 +308,7 @@ def hello():
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -327,7 +327,7 @@ async def test_analyze_skill_mcp_empty_directory(temp_dir):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -342,7 +342,7 @@ async def test_analyze_skill_mcp_empty_directory(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),

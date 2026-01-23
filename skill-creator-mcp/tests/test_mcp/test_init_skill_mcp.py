@@ -14,7 +14,7 @@ async def test_init_skill_mcp_tool_minimal(temp_dir):
     # 获取 init_skill 工具
     init_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'init_skill':
+        if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
 
@@ -25,7 +25,7 @@ async def test_init_skill_mcp_tool_minimal(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具的内部函数（FastMCP 包装后，原始函数在 fn 属性）
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         # 直接调用原始函数
         result = await init_skill_tool.fn(
             ctx,
@@ -50,7 +50,7 @@ async def test_init_skill_mcp_tool_invalid_name(temp_dir):
     # 获取 init_skill 工具
     init_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'init_skill':
+        if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
 
@@ -61,7 +61,7 @@ async def test_init_skill_mcp_tool_invalid_name(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具的内部函数
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         result = await init_skill_tool.fn(
             ctx,
             name="Invalid_Name",
@@ -79,7 +79,7 @@ async def test_init_skill_mcp_tool_invalid_template(temp_dir):
     # 获取 init_skill 工具
     init_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'init_skill':
+        if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
 
@@ -90,7 +90,7 @@ async def test_init_skill_mcp_tool_invalid_template(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具的内部函数
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         result = await init_skill_tool.fn(
             ctx,
             name="test-skill",
@@ -108,7 +108,7 @@ async def test_init_skill_mcp_tool_with_all_options(temp_dir):
     # 获取 init_skill 工具
     init_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'init_skill':
+        if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
 
@@ -119,7 +119,7 @@ async def test_init_skill_mcp_tool_with_all_options(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具的内部函数
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         result = await init_skill_tool.fn(
             ctx,
             name="test-mcp-full",
@@ -145,7 +145,7 @@ async def test_init_skill_mcp_tool_internal_error(temp_dir):
     # 获取 init_skill 工具
     init_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'init_skill':
+        if hasattr(tool, "name") and tool.name == "init_skill":
             init_skill_tool = tool
             break
 
@@ -156,7 +156,9 @@ async def test_init_skill_mcp_tool_internal_error(temp_dir):
     ctx.log = MagicMock()
 
     # 模拟 write_file_async 抛出异常
-    with patch('skill_creator_mcp.server.write_file_async', side_effect=RuntimeError("Simulated error")):
+    with patch(
+        "skill_creator_mcp.server.write_file_async", side_effect=RuntimeError("Simulated error")
+    ):
         result = await init_skill_tool.fn(
             ctx,
             name="test-error",

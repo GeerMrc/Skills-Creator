@@ -313,7 +313,7 @@ async def test_analyze_skill_with_file_not_directory(temp_dir: Path):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -352,7 +352,7 @@ async def test_analyze_skill_with_valid_empty_directory(temp_dir: Path):
     # 获取 analyze_skill 工具
     analyze_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'analyze_skill':
+        if hasattr(tool, "name") and tool.name == "analyze_skill":
             analyze_skill_tool = tool
             break
 
@@ -390,7 +390,7 @@ async def test_package_skill_with_invalid_skill_path_type(temp_dir: Path):
     # 获取 package_skill 工具
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -435,7 +435,9 @@ async def test_get_template_resource_invalid():
     from skill_creator_mcp.server import mcp
 
     # 测试无效类型
-    result = await mcp._resource_manager.read_resource("http://skills/schema/templates/invalid-type")
+    result = await mcp._resource_manager.read_resource(
+        "http://skills/schema/templates/invalid-type"
+    )
     assert "# 错误" in result
     assert "未知的模板类型" in result
 

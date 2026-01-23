@@ -1,6 +1,5 @@
 """测试 MCP 资源访问."""
 
-
 from skill_creator_mcp.resources import (
     get_best_practices,
     get_template_content,
@@ -34,7 +33,7 @@ def test_resources_in_server():
     from skill_creator_mcp.server import mcp
 
     # 检查资源管理器存在
-    assert hasattr(mcp, '_resource_manager')
+    assert hasattr(mcp, "_resource_manager")
 
     # 检查有资源注册
     resources = list(mcp._resource_manager._resources.values())

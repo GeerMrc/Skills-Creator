@@ -215,7 +215,14 @@ async def test_generate_refactor_report_basic(temp_dir: Path):
     complexity = await _analyze_complexity(skill_dir)
     quality = await _analyze_quality(skill_dir)
     suggestions = [
-        {"priority": "P0", "category": "structure", "issue": "问题", "suggestion": "建议", "impact": "high", "effort": "medium"}
+        {
+            "priority": "P0",
+            "category": "structure",
+            "issue": "问题",
+            "suggestion": "建议",
+            "impact": "high",
+            "effort": "medium",
+        }
     ]
 
     report = generate_refactor_report(str(skill_dir), structure, complexity, quality, suggestions)
@@ -238,7 +245,14 @@ async def test_generate_refactor_report_with_p0_issues(temp_dir: Path):
     complexity = await _analyze_complexity(skill_dir)
     quality = await _analyze_quality(skill_dir)
     suggestions = [
-        {"priority": "P0", "category": "testing", "issue": "无测试", "suggestion": "添加测试", "impact": "high", "effort": "high"}
+        {
+            "priority": "P0",
+            "category": "testing",
+            "issue": "无测试",
+            "suggestion": "添加测试",
+            "impact": "high",
+            "effort": "high",
+        }
     ]
 
     report = generate_refactor_report(str(skill_dir), structure, complexity, quality, suggestions)
@@ -367,7 +381,8 @@ async def test_generate_refactor_suggestions_low_maintainability(temp_dir: Path)
 
     # 检查是否有可维护性相关的建议
     maintainability_suggestions = [
-        s for s in suggestions
+        s
+        for s in suggestions
         if s["category"] == "maintainability" or "可维护性" in s.get("issue", "")
     ]
     # 如果 MI < 50，应该有建议
@@ -419,7 +434,8 @@ async def test_generate_refactor_suggestions_long_reference_file(temp_dir: Path)
 
     # 应该有参考文档过长的建议
     long_ref_suggestions = [
-        s for s in suggestions
+        s
+        for s in suggestions
         if "long_doc.md" in s.get("issue", "") or "参考文档过长" in s.get("issue", "")
     ]
     assert len(long_ref_suggestions) > 0
@@ -439,8 +455,11 @@ async def test_generate_refactor_suggestions_focus_filtering_with_matches(temp_d
     # 只关注结构相关问题
     # 通过指定一个会匹配到 "structure" 类别的关注词
     suggestions = generate_refactor_suggestions(
-        skill_dir, structure, complexity, quality,
-        focus_areas=["structure"]  # 应该匹配 "structure" 类别
+        skill_dir,
+        structure,
+        complexity,
+        quality,
+        focus_areas=["structure"],  # 应该匹配 "structure" 类别
     )
 
     # 所有返回的建议都应该与结构相关（或者没有任何建议）
@@ -468,7 +487,8 @@ async def test_generate_refactor_suggestions_too_many_reference_files(temp_dir: 
 
     # 应该有文件数量过多的建议
     many_files_suggestions = [
-        s for s in suggestions
+        s
+        for s in suggestions
         if "文件过多" in s.get("issue", "") or s.get("category") == "organization"
     ]
     assert len(many_files_suggestions) > 0

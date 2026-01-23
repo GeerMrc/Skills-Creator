@@ -110,8 +110,7 @@ def get_create_skill_prompt(name: str, template: str = "minimal") -> str:
     }
 
     template_requirements = template_requirements_map.get(
-        template,
-        "\n**未知模板类型**，请使用：minimal, tool-based, workflow-based, analyzer-based"
+        template, "\n**未知模板类型**，请使用：minimal, tool-based, workflow-based, analyzer-based"
     )
 
     result = CREATE_SKILL_PROMPT.replace("{{name}}", name)

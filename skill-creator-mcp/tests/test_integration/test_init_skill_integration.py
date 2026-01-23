@@ -3,7 +3,6 @@
 测试 init_skill 的完整流程，包括所有辅助函数。
 """
 
-
 import pytest
 
 from skill_creator_mcp.server import (

@@ -39,10 +39,7 @@ def list_templates() -> list[dict[str, str]]:
     Returns:
         模板类型列表，包含名称和描述
     """
-    return [
-        {"type": t, "description": TEMPLATE_DESCRIPTIONS[t]}
-        for t in TEMPLATE_DESCRIPTIONS
-    ]
+    return [{"type": t, "description": TEMPLATE_DESCRIPTIONS[t]} for t in TEMPLATE_DESCRIPTIONS]
 
 
 def get_template_content(template_type: TemplateType) -> str:

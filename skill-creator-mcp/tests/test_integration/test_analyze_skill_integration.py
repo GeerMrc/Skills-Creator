@@ -83,28 +83,28 @@ def helper_function(x: int) -> int:
 ''')
 
     # 创建 pyproject.toml
-    (skill_dir / "pyproject.toml").write_text('''[project]
+    (skill_dir / "pyproject.toml").write_text("""[project]
 name = "test-analyze-skill"
 version = "0.1.0"
-''')
+""")
 
     # 创建测试
     tests_dir = skill_dir / "tests"
     tests_dir.mkdir()
     (tests_dir / "__init__.py").write_text("")
-    (tests_dir / "test_main.py").write_text('''
+    (tests_dir / "test_main.py").write_text("""
 def test_main():
     assert True
-''')
-    (tests_dir / "test_utils.py").write_text('''
+""")
+    (tests_dir / "test_utils.py").write_text("""
 def test_utils():
     assert helper_function(5) == 10
-''')
-    (tests_dir / "test_models.py").write_text('''
+""")
+    (tests_dir / "test_models.py").write_text("""
 def test_models():
     model = DataModel("test")
     assert model.process() == "TEST"
-''')
+""")
 
     # 创建 server.py
     (skill_dir / "server.py").write_text('''

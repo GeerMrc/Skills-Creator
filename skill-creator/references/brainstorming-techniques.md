@@ -1,0 +1,352 @@
+# 头脑风暴模式指南
+
+> **版本**: v0.3.0-alpha
+> **更新日期**: 2026-01-23
+> **关联工具**: `collect_requirements`
+
+---
+
+## 概述
+
+头脑风暴（Brainstorm）模式是 `collect_requirements` 工具的一种需求收集模式，专注于通过**开放性探索**和**多角度思考**来帮助用户深入理解他们的技能需求。
+
+### 与其他模式的区别
+
+| 模式 | 特点 | 适用场景 |
+|------|------|----------|
+| **basic** | 5步预定义问题 | 快速收集基本信息 |
+| **complete** | 10步预定义问题 | 全面收集需求信息 |
+| **brainstorm** | LLM 动态生成探索性问题 | 需求不明确、创意探索阶段 |
+| **progressive** | 根据已收集信息动态调整 | 渐进式需求完善 |
+
+---
+
+## 核心特性
+
+### 1. LLM 驱动的动态问题生成
+
+**传统问卷模式**：
+```
+Q1: 技能名称是什么？
+Q2: 主要功能是什么？
+Q3: 使用场景有哪些？
+...
+（固定顺序，固定问题）
+```
+
+**Brainstorm 模式**：
+```
+Q1: 您希望这个技能解决什么核心问题？
+  [用户回答] → LLM 分析 →
+Q2: 有没有考虑过从用户行为数据的角度来解决这个问题？
+  [用户回答] → LLM 分析 →
+Q3: 这个技能与现有的解决方案有什么独特之处？
+...
+（动态调整，根据上下文生成新问题）
+```
+
+### 2. 上下文感知
+
+Brainstorm 模式会维护对话历史，并利用已收集的信息生成更深入的问题：
+
+```python
+# 已收集的信息
+answers = {
+    "skill_name": "data-visualizer",
+    "core_problem": "复杂数据难以理解",
+}
+
+# LLM 基于上下文生成的问题
+question = "您主要处理哪种类型的数据？是时序数据、地理数据还是其他？"
+```
+
+### 3. 开放式探索
+
+不限制问题的类型和范围，鼓励用户思考：
+- 技术可行性
+- 用户痛点
+- 竞争优势
+- 未来扩展方向
+
+---
+
+## 使用方式
+
+### 启动 Brainstorm 模式
+
+```python
+# 开始头脑风暴会话
+result = await collect_requirements(
+    ctx=ctx,
+    action="start",
+    mode="brainstorm",  # 关键参数
+    session_id="my_brainstorm_session"
+)
+
+# 返回结果
+{
+    "success": true,
+    "question": "请描述您希望这个技能实现的核心价值...",
+    "is_dynamic_mode": true,
+    "is_llm_generated": true,
+    "message": "Brainstorm 模式 - 问题 1"
+}
+```
+
+### 提供答案并继续
+
+```python
+# 提供答案，进入下一个问题
+result = await collect_requirements(
+    ctx=ctx,
+    action="next",
+    mode="brainstorm",
+    session_id="my_brainstorm_session",
+    user_input="我希望帮助非技术人员快速理解复杂数据"
+)
+
+# LLM 基于答案生成新的探索性问题
+{
+    "success": true,
+    "question": "您认为什么样的可视化方式最能帮助用户理解？是图表、热力图还是交互式探索？",
+    "is_dynamic_mode": true,
+    "is_llm_generated": true,
+    "message": "Brainstorm 模式 - 问题 2"
+}
+```
+
+### 完成头脑风暴
+
+```python
+# 完成收集，获取总结
+result = await collect_requirements(
+    ctx=ctx,
+    action="complete",
+    mode="brainstorm",
+    session_id="my_brainstorm_session"
+)
+
+# 返回所有收集到的信息
+{
+    "success": true,
+    "answers": {
+        "answer_0": "我希望帮助非技术人员快速理解复杂数据",
+        "answer_1": "交互式图表，支持数据钻取",
+        "answer_2": "主要面向业务分析师",
+        ...
+    },
+    "completed": true,
+    "message": "BRAINSTORM 模式需求收集完成！"
+}
+```
+
+---
+
+## LLM 问题生成策略
+
+### 提示词模板
+
+```python
+prompt = f"""你是一个技能创建顾问，正在帮助用户通过头脑风暴方式探索技能需求。
+
+已收集的信息：
+{context}
+
+请生成一个开放性的探索性问题，帮助用户深入思考他们的技能需求。问题应该：
+1. 基于已收集的信息进行深入
+2. 探索用户可能未曾考虑的角度
+3. 鼓励创造性思考
+4. 避免重复已问过的内容
+
+请只返回问题文本，不要其他内容。"""
+```
+
+### 温度参数
+
+```python
+# brainstorm 模式使用较高的温度以产生多样化的问题
+result = await ctx.sample(
+    messages=prompt,
+    system_prompt="You are a creative skill development consultant...",
+    temperature=0.8,  # 较高温度，更多创造性
+)
+```
+
+### 降级策略
+
+当 LLM 调用失败时，使用预定义的备用问题：
+
+```python
+fallback_questions = [
+    "这个技能的核心价值主张是什么？",
+    "它与现有解决方案有什么不同？",
+    "用户最痛的场景是什么？",
+    "您希望用户使用后有什么感受？",
+]
+```
+
+---
+
+## 最佳实践
+
+### 1. 何时使用 Brainstorm 模式
+
+✅ **适用场景**：
+- 需求模糊，需要探索性讨论
+- 创意型技能，需要多角度思考
+- 不确定技术方案，需要头脑风暴
+- 希望发现未曾考虑的需求点
+
+❌ **不适用场景**：
+- 需求明确，只需要快速收集
+- 时间紧张，需要高效完成
+- 有固定的需求模板
+
+### 2. 如何获得最佳效果
+
+**技巧 1：充分回答问题**
+- 提供详细的答案，而不是简单的"是/否"
+- 解释"为什么"，帮助 LLM 更好理解
+
+**技巧 2：主动提出想法**
+- 不局限于问题本身，主动提出相关想法
+- 分享您对技能的愿景和期待
+
+**技巧 3：保持开放心态**
+- 欢迎意料之外的问题
+- 考虑您未曾想到的方面
+
+### 3. 对话长度建议
+
+| 探索深度 | 建议轮次 | 说明 |
+|----------|---------|------|
+| 浅层探索 | 3-5 轮 | 快速了解核心需求 |
+| 中等探索 | 5-10 轮 | 深入讨论多个方面 |
+| 深度探索 | 10+ 轮 | 全面挖掘需求潜力 |
+
+---
+
+## 与 Progressive 模式的对比
+
+| 特性 | Brainstorm 模式 | Progressive 模式 |
+|------|-----------------|-----------------|
+| **目标** | 开放式探索 | 渐进式完善 |
+| **问题类型** | 创意性、多角度 | 结构化、针对性 |
+| **LLM 温度** | 0.8（高创造性） | 0.3（更精准） |
+| **问题生成** | 基于对话历史 | 基于缺失字段 |
+| **适合阶段** | 需求发现阶段 | 需求整理阶段 |
+
+**示例对比**：
+
+```
+# Brainstorm 模式
+Q: 如果您的技能可以与其他工具集成，您最希望与哪类工具集成？
+  → 探索可能性，鼓励创造性思考
+
+# Progressive 模式
+Q: 根据您的描述，这个技能需要处理哪类数据格式？
+  → 基于已有信息，填补缺失细节
+```
+
+---
+
+## 技术实现
+
+### 代码位置
+
+- **工具实现**: `skill-creator-mcp/src/skill_creator_mcp/server.py`
+- **辅助函数**: `_generate_brainstorm_question()` (第 1146-1222 行)
+- **会话管理**: 使用 FastMCP Session State API
+
+### 关键代码片段
+
+```python
+async def _generate_brainstorm_question(
+    ctx: Context,
+    answers: dict[str, str],
+    conversation_history: list[dict[str, str]] | None = None,
+) -> dict[str, Any]:
+    """使用 LLM 为 brainstorm 模式动态生成探索性问题."""
+
+    # 构建上下文
+    context_parts = []
+    if answers:
+        context_parts.append("已收集的信息:")
+        for key, value in answers.items():
+            context_parts.append(f"- {key}: {value}")
+
+    if conversation_history:
+        context_parts.append("\n之前的对话:")
+        for msg in conversation_history[-4:]:
+            context_parts.append(f"{msg.get('role', '')}: {msg.get('content', '')}")
+
+    # 调用 LLM 生成问题
+    result = await ctx.sample(
+        messages=prompt,
+        system_prompt="You are a creative skill development consultant...",
+        temperature=0.8,
+    )
+
+    return {
+        "success": True,
+        "question": result.text.strip(),
+        "is_dynamic": True,
+        "source": "llm_generated",
+    }
+```
+
+---
+
+## 常见问题
+
+### Q1: Brainstorm 模式会一直持续吗？
+
+**A**: 不会。您可以随时：
+- 使用 `action="complete"` 完成收集
+- 设置轮次限制（推荐 5-10 轮）
+- 当问题开始重复时完成
+
+### Q2: 如何查看对话历史？
+
+**A**: 使用 `action="status"` 查看当前会话状态和已收集的答案：
+
+```python
+result = await collect_requirements(
+    ctx=ctx,
+    action="status",
+    mode="brainstorm",
+    session_id="my_session"
+)
+
+# 返回所有已收集的信息
+{
+    "answers": {...},
+    "step_index": 3,
+    "total_steps": 100,
+    "progress": 15
+}
+```
+
+### Q3: Brainstorm 模式的答案如何映射到正式字段？
+
+**A**: 在完成 Brainstorm 后，可以使用 Progressive 或 Complete 模式将探索性答案结构化：
+
+```python
+# 1. Brainstorm 模式探索
+# 2. 整理关键信息
+# 3. 使用 basic/complete 模式正式记录
+```
+
+---
+
+## 参考资料
+
+- **主文档**: `requirement-collection.md`
+- **示例**: `examples/requirement-collection-basic.md`
+- **工具实现**: `skill-creator-mcp/src/skill_creator_mcp/server.py:772-1123`
+- **FastMCP 文档**: https://gofastmcp.com/servers/context
+
+---
+
+**文档维护**: 请在每次功能更新后同步本文档。
+**最后更新**: 2026-01-23

@@ -82,10 +82,7 @@ VALIDATE_SKILL_PROMPT: Final = """你是一个专业的 Agent-Skill 质量审核
 """
 
 
-def get_validate_skill_prompt(
-    skill_path: str,
-    template_type: str | None = None
-) -> str:
+def get_validate_skill_prompt(skill_path: str, template_type: str | None = None) -> str:
     """获取验证技能的 Prompt 模板.
 
     Args:
@@ -114,8 +111,7 @@ def get_validate_skill_prompt(
 """,
         }
         template_requirements = template_req_map.get(
-            template_type,
-            f"\n**{template_type} 模板**：使用标准模板要求"
+            template_type, f"\n**{template_type} 模板**：使用标准模板要求"
         )
 
     result = VALIDATE_SKILL_PROMPT.replace("{{skill_path}}", skill_path)

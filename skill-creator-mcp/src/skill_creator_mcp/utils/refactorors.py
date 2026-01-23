@@ -48,100 +48,115 @@ def generate_refactor_suggestions(
 
     # 1. 基于结构评分生成建议
     if quality.structure_score < 20:
-        suggestions.append({
-            "priority": "P0",
-            "category": "structure",
-            "issue": "项目结构不完整",
-            "suggestion": (
-                "完善项目结构，添加必需的目录和文件"
-                "（references、examples、scripts、.claude）"
-            ),
-            "impact": "high",
-            "effort": "medium",
-        })
+        suggestions.append(
+            {
+                "priority": "P0",
+                "category": "structure",
+                "issue": "项目结构不完整",
+                "suggestion": (
+                    "完善项目结构，添加必需的目录和文件（references、examples、scripts、.claude）"
+                ),
+                "impact": "high",
+                "effort": "medium",
+            }
+        )
 
     # 2. 基于文档评分生成建议
     if quality.documentation_score < 15:
-        suggestions.append({
-            "priority": "P1",
-            "category": "documentation",
-            "issue": "文档不足",
-            "suggestion": "增加文档和示例，提高代码可读性",
-            "impact": "medium",
-            "effort": "low",
-        })
+        suggestions.append(
+            {
+                "priority": "P1",
+                "category": "documentation",
+                "issue": "文档不足",
+                "suggestion": "增加文档和示例，提高代码可读性",
+                "impact": "medium",
+                "effort": "low",
+            }
+        )
 
     # 3. 基于测试评分生成建议
     if quality.test_coverage_score < 15:
-        suggestions.append({
-            "priority": "P0",
-            "category": "testing",
-            "issue": "测试覆盖率低",
-            "suggestion": "增加测试用例，提高测试覆盖率至 95% 以上",
-            "impact": "high",
-            "effort": "high",
-        })
+        suggestions.append(
+            {
+                "priority": "P0",
+                "category": "testing",
+                "issue": "测试覆盖率低",
+                "suggestion": "增加测试用例，提高测试覆盖率至 95% 以上",
+                "impact": "high",
+                "effort": "high",
+            }
+        )
 
     # 4. 基于复杂度生成建议
     if complexity.cyclomatic_complexity and complexity.cyclomatic_complexity > 10:
-        suggestions.append({
-            "priority": "P1",
-            "category": "complexity",
-            "issue": f"代码圈复杂度过高 ({complexity.cyclomatic_complexity})",
-            "suggestion": "重构简化复杂逻辑，拆分大函数，减少嵌套层级",
-            "impact": "high",
-            "effort": "medium",
-        })
+        suggestions.append(
+            {
+                "priority": "P1",
+                "category": "complexity",
+                "issue": f"代码圈复杂度过高 ({complexity.cyclomatic_complexity})",
+                "suggestion": "重构简化复杂逻辑，拆分大函数，减少嵌套层级",
+                "impact": "high",
+                "effort": "medium",
+            }
+        )
 
     # 5. 基于可维护性指数生成建议
     if complexity.maintainability_index and complexity.maintainability_index < 50:
-        suggestions.append({
-            "priority": "P1",
-            "category": "maintainability",
-            "issue": f"可维护性指数低 ({complexity.maintainability_index:.1f})",
-            "suggestion": "优化代码结构，增加注释，提高代码可读性",
-            "impact": "medium",
-            "effort": "medium",
-        })
+        suggestions.append(
+            {
+                "priority": "P1",
+                "category": "maintainability",
+                "issue": f"可维护性指数低 ({complexity.maintainability_index:.1f})",
+                "suggestion": "优化代码结构，增加注释，提高代码可读性",
+                "impact": "medium",
+                "effort": "medium",
+            }
+        )
 
     # 6. 基于文件数量生成建议
     if structure.total_files > 20:
-        suggestions.append({
-            "priority": "P2",
-            "category": "modularity",
-            "issue": f"文件数量较多 ({structure.total_files})",
-            "suggestion": "考虑模块化拆分，将相关功能组织到独立模块",
-            "impact": "low",
-            "effort": "high",
-        })
+        suggestions.append(
+            {
+                "priority": "P2",
+                "category": "modularity",
+                "issue": f"文件数量较多 ({structure.total_files})",
+                "suggestion": "考虑模块化拆分，将相关功能组织到独立模块",
+                "impact": "low",
+                "effort": "high",
+            }
+        )
 
     # 7. 基于代码行数生成建议
     if structure.total_lines > CODE_SIZE_LARGE_THRESHOLD:
-        suggestions.append({
-            "priority": "P2",
-            "category": "size",
-            "issue": f"代码行数较多 ({structure.total_lines})",
-            "suggestion": "考虑拆分模块或提取独立包",
-            "impact": "low",
-            "effort": "high",
-        })
+        suggestions.append(
+            {
+                "priority": "P2",
+                "category": "size",
+                "issue": f"代码行数较多 ({structure.total_lines})",
+                "suggestion": "考虑拆分模块或提取独立包",
+                "impact": "low",
+                "effort": "high",
+            }
+        )
 
     # 8. SKILL.md 特定建议
     skill_md = skill_dir / "SKILL.md"
     if skill_md.exists():
         content = skill_md.read_text(encoding="utf-8")
         if len(content) > 3000:
-            suggestions.append({
-                "priority": "P2",
-                "category": "token-efficiency",
-                "issue": "SKILL.md 过长",
-                "suggestion": (
-                    f"将详细内容移至 references/ 目录，"
-                    f"保持 SKILL.md 在 {SKILL_MD_RECOMMENDED_MAX_LINES} 行以内"
-                ),
-                "impact": "medium",
-                "effort": "low",
-            })
+            suggestions.append(
+                {
+                    "priority": "P2",
+                    "category": "token-efficiency",
+                    "issue": "SKILL.md 过长",
+                    "suggestion": (
+                        f"将详细内容移至 references/ 目录，"
+                        f"保持 SKILL.md 在 {SKILL_MD_RECOMMENDED_MAX_LINES} 行以内"
+                    ),
+                    "impact": "medium",
+                    "effort": "low",
+                }
+            )
 
     # 9. 检查 references 目录结构
     refs_dir = skill_dir / "references"
@@ -149,18 +164,20 @@ def generate_refactor_suggestions(
         for ref_file in refs_dir.glob("*.md"):
             content = ref_file.read_text(encoding="utf-8")
             if len(content.split("\n")) > REFERENCE_FILE_LONG_THRESHOLD:
-                suggestions.append({
-                    "priority": "P2",
-                    "category": "documentation",
-                    "issue": f"参考文档过长: {ref_file.name}",
-                    "suggestion": (
-                        f"拆分 {ref_file.name} 为多个小文件"
-                        f"（每个 {REFERENCE_FILE_MIN_LINES}-"
-                        f"{REFERENCE_FILE_MAX_LINES} 行）"
-                    ),
-                    "impact": "low",
-                    "effort": "low",
-                })
+                suggestions.append(
+                    {
+                        "priority": "P2",
+                        "category": "documentation",
+                        "issue": f"参考文档过长: {ref_file.name}",
+                        "suggestion": (
+                            f"拆分 {ref_file.name} 为多个小文件"
+                            f"（每个 {REFERENCE_FILE_MIN_LINES}-"
+                            f"{REFERENCE_FILE_MAX_LINES} 行）"
+                        ),
+                        "impact": "low",
+                        "effort": "low",
+                    }
+                )
 
     # 10. 检查是否有重复的模式或代码
     _check_duplication_patterns(skill_dir, suggestions)
@@ -208,8 +225,7 @@ def _filter_suggestions_by_focus(
         issue_lower = suggestion["issue"].lower()
         # 检查是否有匹配的关注领域
         has_match = any(
-            keyword in category_lower or keyword in issue_lower
-            for keyword in matched_categories
+            keyword in category_lower or keyword in issue_lower for keyword in matched_categories
         )
         if has_match:
             filtered.append(suggestion)
@@ -229,14 +245,16 @@ def _check_duplication_patterns(skill_dir: Path, suggestions: list[dict]) -> Non
     if refs_dir.exists():
         ref_files = list(refs_dir.glob("*.md"))
         if len(ref_files) > 5:
-            suggestions.append({
-                "priority": "P2",
-                "category": "organization",
-                "issue": f"参考文档文件过多 ({len(ref_files)})",
-                "suggestion": "考虑合并相似主题的文档，或使用子目录组织",
-                "impact": "low",
-                "effort": "low",
-            })
+            suggestions.append(
+                {
+                    "priority": "P2",
+                    "category": "organization",
+                    "issue": f"参考文档文件过多 ({len(ref_files)})",
+                    "suggestion": "考虑合并相似主题的文档，或使用子目录组织",
+                    "impact": "low",
+                    "effort": "low",
+                }
+            )
 
 
 def generate_refactor_report(
@@ -352,16 +370,13 @@ def estimate_refactor_effort(suggestions: list[dict]) -> dict[str, int]:
     effort_map = {"low": 1, "medium": 4, "high": 8}
 
     p0_effort = sum(
-        effort_map.get(s.get("effort", "medium"), 4)
-        for s in suggestions if s["priority"] == "P0"
+        effort_map.get(s.get("effort", "medium"), 4) for s in suggestions if s["priority"] == "P0"
     )
     p1_effort = sum(
-        effort_map.get(s.get("effort", "medium"), 4)
-        for s in suggestions if s["priority"] == "P1"
+        effort_map.get(s.get("effort", "medium"), 4) for s in suggestions if s["priority"] == "P1"
     )
     p2_effort = sum(
-        effort_map.get(s.get("effort", "medium"), 4)
-        for s in suggestions if s["priority"] == "P2"
+        effort_map.get(s.get("effort", "medium"), 4) for s in suggestions if s["priority"] == "P2"
     )
 
     return {

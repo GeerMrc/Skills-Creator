@@ -15,12 +15,14 @@ class TestRequirementCollectionInput:
 
     def test_valid_input(self):
         """测试有效输入."""
-        input_data = RequirementCollectionInput.model_validate({
-            "action": "start",
-            "mode": "basic",
-            "session_id": "test_session",
-            "user_input": None,
-        })
+        input_data = RequirementCollectionInput.model_validate(
+            {
+                "action": "start",
+                "mode": "basic",
+                "session_id": "test_session",
+                "user_input": None,
+            }
+        )
         assert input_data.action == "start"
         assert input_data.mode == "basic"
         assert input_data.session_id == "test_session"
@@ -28,9 +30,11 @@ class TestRequirementCollectionInput:
 
     def test_default_values(self):
         """测试默认值."""
-        input_data = RequirementCollectionInput.model_validate({
-            "action": "start",
-        })
+        input_data = RequirementCollectionInput.model_validate(
+            {
+                "action": "start",
+            }
+        )
         assert input_data.action == "start"
         assert input_data.mode == "basic"
         assert input_data.session_id is None
@@ -39,10 +43,12 @@ class TestRequirementCollectionInput:
     def test_invalid_mode(self):
         """测试无效模式."""
         with pytest.raises(Exception):
-            RequirementCollectionInput.model_validate({
-                "action": "start",
-                "mode": "invalid_mode",
-            })
+            RequirementCollectionInput.model_validate(
+                {
+                    "action": "start",
+                    "mode": "invalid_mode",
+                }
+            )
 
 
 class TestValidationRule:

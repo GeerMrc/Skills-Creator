@@ -14,7 +14,7 @@ async def test_package_skill_mcp_basic_zip(temp_dir):
     # 获取 package_skill 工具
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -23,7 +23,9 @@ async def test_package_skill_mcp_basic_zip(temp_dir):
     # 创建技能目录
     skill_dir = temp_dir / "test-package-skill"
     skill_dir.mkdir()
-    (skill_dir / "SKILL.md").write_text("---\nname: test-package-skill\ndescription: Test\nallowed-tools: Read\n---\n# Test")
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: test-package-skill\ndescription: Test\nallowed-tools: Read\n---\n# Test"
+    )
     for dir_name in ["references", "examples", "scripts", ".claude"]:
         (skill_dir / dir_name).mkdir()
 
@@ -35,7 +37,7 @@ async def test_package_skill_mcp_basic_zip(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -57,7 +59,7 @@ async def test_package_skill_mcp_with_validation(temp_dir):
     """测试通过 MCP Server 打包技能（带验证）."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -85,7 +87,7 @@ async def test_package_skill_mcp_with_validation(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（带验证）
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -104,7 +106,7 @@ async def test_package_skill_mcp_validation_fails(temp_dir):
     """测试通过 MCP Server 打包技能（验证失败）."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -123,7 +125,7 @@ async def test_package_skill_mcp_validation_fails(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（带验证，应该失败）
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -142,7 +144,7 @@ async def test_package_skill_mcp_tar_gz(temp_dir):
     """测试通过 MCP Server 打包技能为 tar.gz 格式."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -163,7 +165,7 @@ async def test_package_skill_mcp_tar_gz(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（tar.gz 格式）
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -184,7 +186,7 @@ async def test_package_skill_mcp_exclude_tests(temp_dir):
     """测试通过 MCP Server 打包技能（排除测试文件）."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -210,7 +212,7 @@ async def test_package_skill_mcp_exclude_tests(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（排除测试）
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -230,7 +232,7 @@ async def test_package_skill_mcp_nonexistent_directory(temp_dir):
     """测试通过 MCP Server 打包不存在的目录."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -244,7 +246,7 @@ async def test_package_skill_mcp_nonexistent_directory(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（目录不存在）
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(temp_dir / "nonexistent-skill"),
@@ -262,7 +264,7 @@ async def test_package_skill_mcp_invalid_format(temp_dir):
     """测试通过 MCP Server 打包技能（无效格式）."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -281,7 +283,7 @@ async def test_package_skill_mcp_invalid_format(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（无效格式）
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -299,7 +301,7 @@ async def test_package_skill_mcp_internal_error(temp_dir):
     """测试通过 MCP Server 打包技能时的内部错误."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -314,7 +316,9 @@ async def test_package_skill_mcp_internal_error(temp_dir):
 
     import skill_creator_mcp.server as server_module
 
-    with patch.object(server_module, 'package_skill_impl', side_effect=RuntimeError("Simulated error")):
+    with patch.object(
+        server_module, "package_skill_impl", side_effect=RuntimeError("Simulated error")
+    ):
         result = await package_skill_tool.fn(
             ctx,
             skill_path="/some/path",
@@ -329,7 +333,7 @@ async def test_package_skill_mcp_with_size_info(temp_dir):
     """测试通过 MCP Server 打包技能（包大小信息）."""
     package_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'package_skill':
+        if hasattr(tool, "name") and tool.name == "package_skill":
             package_skill_tool = tool
             break
 
@@ -350,7 +354,7 @@ async def test_package_skill_mcp_with_size_info(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),

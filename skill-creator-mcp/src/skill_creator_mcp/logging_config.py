@@ -20,8 +20,7 @@ SIMPLE_FORMAT = "%(levelname)s - %(message)s"
 
 # 详细日志格式（用于开发环境）
 DETAILED_FORMAT = (
-    "%(asctime)s - %(name)s - %(levelname)s - "
-    "%(filename)s:%(lineno)d - %(funcName)s - %(message)s"
+    "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s"
 )
 
 

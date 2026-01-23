@@ -1,6 +1,5 @@
 """测试 init_skill 工具."""
 
-
 import pytest
 
 from skill_creator_mcp.utils.file_ops import (

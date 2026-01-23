@@ -43,7 +43,7 @@ def validate_skill_name(name: str) -> None:
     Raises:
         ValueError: 名称不符合规范时抛出
     """
-    pattern = r'^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    pattern = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
     if not re.match(pattern, name):
         raise ValueError(
             f"技能名称 '{name}' 不符合规范。"
@@ -82,10 +82,7 @@ def validate_template_type(template: str) -> str:
     """
     valid_templates = ["minimal", "tool-based", "workflow-based", "analyzer-based"]
     if template not in valid_templates:
-        raise ValueError(
-            f"无效的模板类型: {template}。"
-            f"有效值: {', '.join(valid_templates)}"
-        )
+        raise ValueError(f"无效的模板类型: {template}。有效值: {', '.join(valid_templates)}")
     return template
 
 
@@ -151,7 +148,7 @@ def _validate_naming(skill_dir: Path) -> list[str]:
         # 提取 YAML frontmatter 中的 name 字段
         for line in content.split("\n"):
             if line.startswith("name:"):
-                yaml_name = line.split(":", 1)[1].strip().strip('"\'')
+                yaml_name = line.split(":", 1)[1].strip().strip("\"'")
                 if yaml_name != skill_name:
                     errors.append(
                         f"SKILL.md 中的 name 字段 '{yaml_name}' 与目录名 '{skill_name}' 不一致"
@@ -209,7 +206,7 @@ def _validate_skill_md(skill_dir: Path) -> tuple[list[str], list[str], str | Non
     # 提取模板类型（如果有）
     for line in frontmatter_lines:
         if line.strip().startswith("template:"):
-            template_value = line.split(":", 1)[1].strip().strip('"\'')
+            template_value = line.split(":", 1)[1].strip().strip("\"'")
             if template_value in TEMPLATE_REQUIREMENTS:
                 template_type = template_value
             break
@@ -235,7 +232,7 @@ def _validate_skill_md(skill_dir: Path) -> tuple[list[str], list[str], str | Non
         if tools_value:
             # 处理方括号格式 [Read, Write, Edit]
             tools_value = tools_value.strip("[]")
-            tools_list = [t.strip().strip(',\'"') for t in tools_value.split(",") if t.strip()]
+            tools_list = [t.strip().strip(",'\"") for t in tools_value.split(",") if t.strip()]
 
             invalid_tools = [t for t in tools_list if t and t not in VALID_TOOLS]
             if invalid_tools:

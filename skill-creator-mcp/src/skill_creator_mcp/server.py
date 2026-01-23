@@ -98,7 +98,7 @@ mcp = FastMCP(
     - format (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
     - include_tests (bool): 是否包含测试文件（默认：True）
     - validate_before_package (bool): 打包前是否验证（默认：True）
-    """
+    """,
 )
 
 
@@ -132,13 +132,15 @@ async def init_skill(
     try:
         # 使用 Pydantic model_validate 方法进行输入验证
         # 这种方法可以处理类型转换和验证，避免静态类型检查错误
-        input_data = InitSkillInput.model_validate({
-            "name": name,
-            "template": template,
-            "output_dir": output_dir,
-            "with_scripts": with_scripts,
-            "with_examples": with_examples,
-        })
+        input_data = InitSkillInput.model_validate(
+            {
+                "name": name,
+                "template": template,
+                "output_dir": output_dir,
+                "with_scripts": with_scripts,
+                "with_examples": with_examples,
+            }
+        )
 
         # 使用验证后的数据
         skill_dir = await create_directory_structure_async(
@@ -215,11 +217,13 @@ async def validate_skill(
 
     try:
         # 使用 Pydantic 验证输入参数
-        input_data = ValidateSkillInput.model_validate({
-            "skill_path": skill_path,
-            "check_structure": check_structure,
-            "check_content": check_content,
-        })
+        input_data = ValidateSkillInput.model_validate(
+            {
+                "skill_path": skill_path,
+                "check_structure": check_structure,
+                "check_content": check_content,
+            }
+        )
 
         skill_dir = Path(input_data.skill_path)
 
@@ -332,12 +336,14 @@ async def analyze_skill(
 
     try:
         # 使用 Pydantic 验证输入参数
-        input_data = AnalyzeSkillInput.model_validate({
-            "skill_path": skill_path,
-            "analyze_structure": analyze_structure,
-            "analyze_complexity": analyze_complexity,
-            "analyze_quality": analyze_quality,
-        })
+        input_data = AnalyzeSkillInput.model_validate(
+            {
+                "skill_path": skill_path,
+                "analyze_structure": analyze_structure,
+                "analyze_complexity": analyze_complexity,
+                "analyze_quality": analyze_quality,
+            }
+        )
 
         skill_dir = Path(input_data.skill_path)
 
@@ -361,6 +367,7 @@ async def analyze_skill(
             structure = await _analyze_structure(skill_dir)
         else:
             from .models.skill_config import StructureAnalysis
+
             structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
 
         # 2. 复杂度分析（异步）
@@ -368,6 +375,7 @@ async def analyze_skill(
             complexity = await _analyze_complexity(skill_dir)
         else:
             from .models.skill_config import ComplexityMetrics
+
             complexity = ComplexityMetrics(
                 cyclomatic_complexity=None,
                 maintainability_index=None,
@@ -450,13 +458,15 @@ async def refactor_skill(
 
     try:
         # 使用 Pydantic 验证输入参数
-        input_data = RefactorSkillInput.model_validate({
-            "skill_path": skill_path,
-            "focus": focus,
-            "analyze_structure": analyze_structure,
-            "analyze_complexity": analyze_complexity,
-            "analyze_quality": analyze_quality,
-        })
+        input_data = RefactorSkillInput.model_validate(
+            {
+                "skill_path": skill_path,
+                "focus": focus,
+                "analyze_structure": analyze_structure,
+                "analyze_complexity": analyze_complexity,
+                "analyze_quality": analyze_quality,
+            }
+        )
 
         skill_dir = Path(input_data.skill_path)
 
@@ -480,6 +490,7 @@ async def refactor_skill(
             structure = await _analyze_structure(skill_dir)
         else:
             from .models.skill_config import StructureAnalysis
+
             structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
 
         # 2. 复杂度分析（异步）
@@ -487,6 +498,7 @@ async def refactor_skill(
             complexity = await _analyze_complexity(skill_dir)
         else:
             from .models.skill_config import ComplexityMetrics
+
             complexity = ComplexityMetrics(
                 cyclomatic_complexity=None,
                 maintainability_index=None,
@@ -498,6 +510,7 @@ async def refactor_skill(
             quality = await _analyze_quality(skill_dir)
         else:
             from .models.skill_config import QualityScore
+
             quality = QualityScore(
                 overall_score=0.0,
                 structure_score=0.0,
@@ -583,13 +596,15 @@ async def package_skill(
     try:
         # 使用 Pydantic 验证输入参数
         # 注意：format 是 Python 保留字，在模型中映射到 format 字段
-        input_data = PackageSkillInput.model_validate({
-            "skill_path": skill_path,
-            "output_dir": output_dir,
-            "format": format,
-            "include_tests": include_tests,
-            "validate_before_package": validate_before_package,
-        })
+        input_data = PackageSkillInput.model_validate(
+            {
+                "skill_path": skill_path,
+                "output_dir": output_dir,
+                "format": format,
+                "include_tests": include_tests,
+                "validate_before_package": validate_before_package,
+            }
+        )
 
         # 调用打包函数
         result = package_skill_impl(
@@ -775,6 +790,7 @@ async def collect_requirements(
     mode: str = "basic",
     session_id: str | None = None,
     user_input: str | None = None,
+    use_elicit: bool = False,
 ) -> dict[str, Any]:
     """
     AI 驱动的需求澄清/收集工具.
@@ -787,10 +803,23 @@ async def collect_requirements(
         action: 执行动作（start=开始，next=下一步，previous=上一步，status=查询状态，complete=完成）
         mode: 收集模式（basic=基础5步，complete=完整10步，brainstorm=头脑风暴，progressive=渐进式）
         session_id: 会话ID（自动生成，用于多轮对话）
-        user_input: 用户输入（用于 next/complete 动作）
+        user_input: 用户输入（用于 next/complete 动作，use_elicit=False 时使用）
+        use_elicit: 是否使用 ctx.elicit() 自动收集输入（默认 False）。True 时会自动调用
+                   ctx.elicit() 收集所有必需的输入，无需手动调用 action="next"。
 
     Returns:
         包含收集结果的字典
+
+    Examples:
+        传统模式（两步调用）:
+            # 获取第一个问题
+            result = await collect_requirements(ctx, action="start", mode="basic")
+            # 提供答案并获取下一个问题
+            result = await collect_requirements(ctx, action="next", user_input="my-skill")
+
+        Elicit 模式（一步调用）:
+            # 自动收集所有输入
+            result = await collect_requirements(ctx, action="start", mode="basic", use_elicit=True)
     """
     from datetime import datetime
     from datetime import timezone as tz
@@ -804,20 +833,32 @@ async def collect_requirements(
 
     try:
         # 1. 验证输入参数
-        input_data = RequirementCollectionInput.model_validate({
-            "action": action,
-            "mode": mode,
-            "session_id": session_id,
-            "user_input": user_input,
-        })
+        input_data = RequirementCollectionInput.model_validate(
+            {
+                "action": action,
+                "mode": mode,
+                "session_id": session_id,
+                "user_input": user_input,
+            }
+        )
 
-        # 2. 确定步骤列表
-        all_steps = BASIC_REQUIREMENT_STEPS.copy()
-        if input_data.mode == "complete":
-            all_steps.extend(COMPLETE_REQUIREMENT_STEPS)
+        # 2. 确定收集模式和处理方式
+        is_dynamic_mode = input_data.mode in ("brainstorm", "progressive")
+
+        # 对于动态模式，total_steps 设置为较大值表示开放式收集
+        if is_dynamic_mode:
+            total_steps = 100  # 开放式收集，没有固定步骤数
+        else:
+            # basic 或 complete 模式使用预定义步骤
+            all_steps = BASIC_REQUIREMENT_STEPS.copy()
+            if input_data.mode == "complete":
+                all_steps.extend(COMPLETE_REQUIREMENT_STEPS)
+            total_steps = len(all_steps)
 
         # 3. 处理会话ID
-        current_session_id = input_data.session_id or ctx.session_id or f"req_{datetime.now(tz.utc).isoformat()}"
+        current_session_id = (
+            input_data.session_id or ctx.session_id or f"req_{datetime.now(tz.utc).isoformat()}"
+        )
 
         # 4. 获取或创建会话状态
         state_data = await ctx.get_state(f"requirement_{current_session_id}")
@@ -830,10 +871,21 @@ async def collect_requirements(
                 started_at=datetime.now(tz.utc).isoformat(),
                 completed=False,
                 mode=input_data.mode,
-                total_steps=len(all_steps),
+                total_steps=total_steps,
             )
 
-        # 5. 处理不同的 action
+        # 5. Elicit 模式：自动收集所有输入
+        if use_elicit and input_data.action == "start":
+            return await _collect_with_elicit(
+                ctx=ctx,
+                session_state=session_state,
+                current_session_id=current_session_id,
+                is_dynamic_mode=is_dynamic_mode,
+                all_steps=all_steps if not is_dynamic_mode else None,
+                input_data=input_data,
+            )
+
+        # 6. 处理不同的 action
         if input_data.action == "status":
             return {
                 "success": True,
@@ -846,6 +898,7 @@ async def collect_requirements(
                 "answers": session_state.answers,
                 "completed": session_state.completed,
                 "message": "会话状态查询成功",
+                "is_dynamic_mode": is_dynamic_mode,
             }
 
         elif input_data.action == "previous":
@@ -854,6 +907,31 @@ async def collect_requirements(
                 session_state.current_step_index -= 1
                 await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
 
+                # 对于动态模式，需要从会话历史恢复上一个问题
+                if is_dynamic_mode:
+                    # 简化处理：返回状态但不返回具体问题
+                    # （历史问题保存在 _conversation_history 中，但 previous 操作不需要显示）
+                    return {
+                        "success": True,
+                        "session_id": current_session_id,
+                        "action": input_data.action,
+                        "mode": session_state.mode,
+                        "step_index": session_state.current_step_index,
+                        "total_steps": session_state.total_steps,
+                        "progress": (session_state.current_step_index / session_state.total_steps)
+                        * 100,
+                        "answers": {
+                            k: v
+                            for k, v in session_state.answers.items()
+                            if k != "_conversation_history"
+                        },
+                        "message": f"返回到第 {session_state.current_step_index + 1} 步（动态模式请继续提供新输入）",
+                        "is_dynamic_mode": True,
+                        "completed": False,
+                    }
+
+            # basic/complete 模式的原有逻辑（只有非动态模式才会执行到这里）
+            if not is_dynamic_mode:
                 current_step_data = all_steps[session_state.current_step_index]
                 validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
                 step = RequirementStep(
@@ -871,7 +949,8 @@ async def collect_requirements(
                     "current_step": step.model_dump(),
                     "step_index": session_state.current_step_index,
                     "total_steps": session_state.total_steps,
-                    "progress": (session_state.current_step_index / session_state.total_steps) * 100,
+                    "progress": (session_state.current_step_index / session_state.total_steps)
+                    * 100,
                     "answers": session_state.answers,
                     "message": f"返回到步骤: {step.title}",
                     "completed": False,
@@ -893,71 +972,69 @@ async def collect_requirements(
                 started_at=datetime.now(tz.utc).isoformat(),
                 completed=False,
                 mode=input_data.mode,
-                total_steps=len(all_steps),
+                total_steps=total_steps,
             )
             await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
 
-        # 6. 获取当前步骤
-        if session_state.current_step_index >= len(all_steps):
-            # 所有步骤已完成
-            session_state.completed = True
-            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+        # 6. 获取当前步骤或生成动态问题
+        if is_dynamic_mode:
+            # 动态模式：使用 LLM 生成问题
+            if input_data.mode == "brainstorm":
+                # 获取对话历史
+                history_raw: Any = session_state.answers.get("_conversation_history", [])
+                brainstorm_history: list[dict[str, str]] = (
+                    list(history_raw) if isinstance(history_raw, list) else []
+                )
+                question_result = await _generate_brainstorm_question(
+                    ctx, session_state.answers, brainstorm_history
+                )
 
-            return {
-                "success": True,
-                "session_id": current_session_id,
-                "action": input_data.action,
-                "mode": session_state.mode,
-                "step_index": session_state.current_step_index,
-                "total_steps": session_state.total_steps,
-                "progress": 100.0,
-                "answers": session_state.answers,
-                "completed": True,
-                "message": "所有步骤已完成！可以使用 'complete' action 获取最终结果。",
-            }
-
-        current_step_data = all_steps[session_state.current_step_index]
-        validation_data2: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
-        current_step = RequirementStep(
-            key=str(current_step_data["key"]),
-            title=str(current_step_data["title"]),
-            prompt=str(current_step_data["prompt"]),
-            validation=ValidationRule(**validation_data2),
-        )
-
-        # 7. 处理用户输入（next/complete action）
-        if input_data.action in ("next", "complete") and input_data.user_input:
-            # 验证用户输入
-            validation_result = _validate_requirement_answer(
-                input_data.user_input,
-                current_step.validation,
-            )
-
-            if not validation_result["valid"]:
                 return {
-                    "success": False,
+                    "success": True,
                     "session_id": current_session_id,
                     "action": input_data.action,
-                    "error": validation_result["error"],
-                    "message": f"输入验证失败: {validation_result['error']}",
+                    "mode": session_state.mode,
+                    "step_index": session_state.current_step_index,
+                    "total_steps": session_state.total_steps,
+                    "progress": min(session_state.current_step_index * 5, 95),  # 动态模式的进度估算
+                    "answers": {
+                        k: v
+                        for k, v in session_state.answers.items()
+                        if k != "_conversation_history"
+                    },
+                    "question": question_result.get("question", ""),
+                    "is_dynamic_mode": True,
+                    "is_llm_generated": question_result.get("is_dynamic", False),
+                    "completed": False,
+                    "message": f"Brainstorm 模式 - 问题 {session_state.current_step_index + 1}",
                 }
 
-            # 保存答案
-            session_state.answers[current_step.key] = input_data.user_input
+            elif input_data.mode == "progressive":
+                question_result = await _generate_progressive_question(ctx, session_state.answers)
 
-            # 移动到下一步
-            if input_data.action == "next":
-                session_state.current_step_index += 1
+                return {
+                    "success": True,
+                    "session_id": current_session_id,
+                    "action": input_data.action,
+                    "mode": session_state.mode,
+                    "step_index": session_state.current_step_index,
+                    "total_steps": session_state.total_steps,
+                    "progress": min(session_state.current_step_index * 5, 95),
+                    "answers": session_state.answers,
+                    "question": question_result.get("next_question", ""),
+                    "question_key": question_result.get("question_key", ""),
+                    "is_dynamic_mode": True,
+                    "is_llm_generated": question_result.get("is_dynamic", False),
+                    "completed": False,
+                    "message": f"Progressive 模式 - 问题 {session_state.current_step_index + 1}",
+                }
 
-            # 检查是否完成
-            if input_data.action == "complete" or session_state.current_step_index >= len(all_steps):
+        # 7. basic/complete 模式：获取预定义步骤（只在非动态模式执行）
+        if not is_dynamic_mode:
+            if session_state.current_step_index >= len(all_steps):
+                # 所有步骤已完成
                 session_state.completed = True
-
-            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
-
-            # 如果完成，使用 LLM 生成总结
-            if session_state.completed:
-                completeness_check = await _check_requirement_completeness(ctx, session_state.answers)
+                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
 
                 return {
                     "success": True,
@@ -969,28 +1046,161 @@ async def collect_requirements(
                     "progress": 100.0,
                     "answers": session_state.answers,
                     "completed": True,
-                    "is_complete": completeness_check["is_complete"],
-                    "missing_info": completeness_check["missing_info"],
-                    "suggestions": completeness_check["suggestions"],
-                    "message": "需求收集完成！",
+                    "message": "所有步骤已完成！可以使用 'complete' action 获取最终结果。",
                 }
 
-        # 8. 返回当前步骤信息
-        progress = (session_state.current_step_index / session_state.total_steps) * 100
+            current_step_data = all_steps[session_state.current_step_index]
+            validation_data2: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
+            current_step = RequirementStep(
+                key=str(current_step_data["key"]),
+                title=str(current_step_data["title"]),
+                prompt=str(current_step_data["prompt"]),
+                validation=ValidationRule(**validation_data2),
+            )
 
-        return {
-            "success": True,
-            "session_id": current_session_id,
-            "action": input_data.action,
-            "mode": session_state.mode,
-            "current_step": current_step.model_dump(),
-            "step_index": session_state.current_step_index,
-            "total_steps": session_state.total_steps,
-            "progress": progress,
-            "answers": session_state.answers,
-            "completed": session_state.completed,
-            "message": f"步骤 {session_state.current_step_index + 1}/{session_state.total_steps}: {current_step.title}",
-        }
+        # 8. 处理用户输入（next/complete action）
+        if input_data.action in ("next", "complete") and input_data.user_input:
+            if is_dynamic_mode:
+                # 动态模式：直接保存答案并继续
+                # 保存用户输入
+                answer_key = f"answer_{session_state.current_step_index}"
+                session_state.answers[answer_key] = input_data.user_input
+
+                # 更新对话历史（用于 brainstorm 模式）
+                if input_data.mode == "brainstorm":
+                    history_raw = session_state.answers.get("_conversation_history", [])
+                    updated_history: list[dict[str, str]] = (
+                        list(history_raw) if isinstance(history_raw, list) else []
+                    )
+                    updated_history.append({"role": "user", "content": input_data.user_input})
+                    session_state.answers["_conversation_history"] = updated_history  # type: ignore[assignment]
+
+                # 移动到下一步
+                if input_data.action == "next":
+                    session_state.current_step_index += 1
+
+                # 检查是否完成
+                if input_data.action == "complete":
+                    session_state.completed = True
+
+                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+                # 如果完成，返回结果
+                if session_state.completed:
+                    return {
+                        "success": True,
+                        "session_id": current_session_id,
+                        "action": input_data.action,
+                        "mode": session_state.mode,
+                        "step_index": session_state.current_step_index,
+                        "total_steps": session_state.total_steps,
+                        "progress": 100.0,
+                        "answers": {
+                            k: v
+                            for k, v in session_state.answers.items()
+                            if k != "_conversation_history"
+                        },
+                        "completed": True,
+                        "message": f"{input_data.mode.upper()} 模式需求收集完成！",
+                        "is_dynamic_mode": True,
+                    }
+                else:
+                    # 返回成功，等待用户继续
+                    return {
+                        "success": True,
+                        "session_id": current_session_id,
+                        "action": input_data.action,
+                        "mode": session_state.mode,
+                        "step_index": session_state.current_step_index,
+                        "total_steps": session_state.total_steps,
+                        "progress": min(session_state.current_step_index * 5, 95),
+                        "answers": {
+                            k: v
+                            for k, v in session_state.answers.items()
+                            if k != "_conversation_history"
+                        },
+                        "message": "答案已保存，请继续使用 'next' action",
+                        "is_dynamic_mode": True,
+                    }
+            else:
+                # basic/complete 模式的原有验证逻辑
+                validation_result = _validate_requirement_answer(
+                    input_data.user_input,
+                    current_step.validation,
+                )
+
+                if not validation_result["valid"]:
+                    return {
+                        "success": False,
+                        "session_id": current_session_id,
+                        "action": input_data.action,
+                        "error": validation_result["error"],
+                        "message": f"输入验证失败: {validation_result['error']}",
+                    }
+
+                # 保存答案
+                session_state.answers[current_step.key] = input_data.user_input
+
+                # 移动到下一步
+                if input_data.action == "next":
+                    session_state.current_step_index += 1
+
+                # 检查是否完成
+                if input_data.action == "complete" or session_state.current_step_index >= len(
+                    all_steps
+                ):
+                    session_state.completed = True
+
+                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+                # 如果完成，使用 LLM 生成总结
+                if session_state.completed:
+                    completeness_check = await _check_requirement_completeness(
+                        ctx, session_state.answers
+                    )
+
+                    return {
+                        "success": True,
+                        "session_id": current_session_id,
+                        "action": input_data.action,
+                        "mode": session_state.mode,
+                        "step_index": session_state.current_step_index,
+                        "total_steps": session_state.total_steps,
+                        "progress": 100.0,
+                        "answers": session_state.answers,
+                        "completed": True,
+                        "is_complete": completeness_check["is_complete"],
+                        "missing_info": completeness_check["missing_info"],
+                        "suggestions": completeness_check["suggestions"],
+                        "message": "需求收集完成！",
+                    }
+
+        # 9. 返回当前步骤信息（basic/complete 模式）
+        # 对于动态模式，如果执行到这里，说明需要返回默认响应
+        if is_dynamic_mode:
+            return {
+                "success": False,
+                "error": "动态模式需要使用 'start' 或 'next' action",
+                "message": "请使用 'start' 开始新会话，或使用 'next' 继续收集",
+                "session_id": current_session_id,
+            }
+
+        if not is_dynamic_mode:
+            progress = (session_state.current_step_index / session_state.total_steps) * 100
+
+            return {
+                "success": True,
+                "session_id": current_session_id,
+                "action": input_data.action,
+                "mode": session_state.mode,
+                "current_step": current_step.model_dump(),
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": progress,
+                "answers": session_state.answers,
+                "completed": session_state.completed,
+                "message": f"步骤 {session_state.current_step_index + 1}/{session_state.total_steps}: {current_step.title}",
+            }
 
     except Exception as e:
         return {
@@ -998,6 +1208,243 @@ async def collect_requirements(
             "error": f"需求收集出错: {e}",
             "error_type": "internal_error",
             "message": f"内部错误: {e}",
+        }
+
+
+async def _collect_with_elicit(
+    ctx: Context,
+    session_state: Any,
+    current_session_id: str,
+    is_dynamic_mode: bool,
+    all_steps: list[dict[str, Any]] | None,
+    input_data: Any,
+    max_retries: int = 3,
+) -> dict[str, Any]:
+    """使用 ctx.elicit() 自动收集所有用户输入.
+
+    这是一个内部辅助函数，实现了完整的 elicit 循环逻辑：
+    1. 生成或获取下一个问题
+    2. 调用 ctx.elicit() 获取用户输入
+    3. 验证输入
+    4. 保存答案并继续，或重新请求输入（验证失败时）
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态对象
+        current_session_id: 会话ID
+        is_dynamic_mode: 是否为动态模式（brainstorm/progressive）
+        all_steps: 预定义步骤列表（仅 basic/complete 模式）
+        input_data: 输入数据对象
+        max_retries: 验证失败时的最大重试次数
+
+    Returns:
+        包含收集结果的字典
+    """
+    from .models.skill_config import RequirementStep, ValidationRule
+
+    try:
+        # 重置会话状态（如果是重新开始）
+        if session_state.current_step_index == 0 and not session_state.answers:
+            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+        # 主收集循环
+        while not session_state.completed:
+            # 1. 获取当前问题
+            if is_dynamic_mode:
+                # 动态模式：使用 LLM 生成问题
+                if input_data.mode == "brainstorm":
+                    history_raw = session_state.answers.get("_conversation_history", [])
+                    history: list[dict[str, str]] = (
+                        list(history_raw) if isinstance(history_raw, list) else []
+                    )  # type: ignore
+                    question_result = await _generate_brainstorm_question(
+                        ctx, session_state.answers, history
+                    )
+                    question_text = question_result.get("question", "")
+                    prompt_text = question_text
+                    validation = None  # 动态模式不使用固定验证规则
+                    answer_key = f"answer_{session_state.current_step_index}"
+                    step_title = f"Brainstorm 问题 {session_state.current_step_index + 1}"
+
+                elif input_data.mode == "progressive":
+                    question_result = await _generate_progressive_question(
+                        ctx, session_state.answers
+                    )
+                    question_text = question_result.get("next_question", "")
+                    prompt_text = question_text
+                    validation = None
+                    answer_key = question_result.get(
+                        "question_key", f"answer_{session_state.current_step_index}"
+                    )
+                    step_title = f"Progressive 问题 {session_state.current_step_index + 1}"
+
+                else:
+                    return {
+                        "success": False,
+                        "error": f"未知的动态模式: {input_data.mode}",
+                    }
+
+            else:
+                # 静态模式：使用预定义步骤
+                if all_steps is None or session_state.current_step_index >= len(all_steps):
+                    # 所有步骤已完成
+                    session_state.completed = True
+                    await ctx.set_state(
+                        f"requirement_{current_session_id}", session_state.model_dump()
+                    )  # type: ignore[func-returns-value]
+                    break
+
+                current_step_data = all_steps[session_state.current_step_index]
+                validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
+                step = RequirementStep(
+                    key=str(current_step_data["key"]),
+                    title=str(current_step_data["title"]),
+                    prompt=str(current_step_data["prompt"]),
+                    validation=ValidationRule(**validation_data),
+                )
+
+                prompt_text = step.prompt
+                validation = step.validation
+                answer_key = step.key
+                step_title = step.title
+
+            # 2. 调用 elicit 获取用户输入（带验证重试）
+            user_answer = None
+            retry_count = 0
+            validation_error = None
+
+            while retry_count <= max_retries:
+                # 构建提示文本
+                if validation_error and not is_dynamic_mode:
+                    elicit_prompt = (
+                        f"{prompt_text}\n\n⚠️ 输入验证失败: {validation_error}\n请重新输入："
+                    )
+                else:
+                    elicit_prompt = f"{step_title}\n\n{prompt_text}"
+
+                # 调用 elicit
+                try:
+                    result = await ctx.elicit(elicit_prompt)  # type: ignore[call-arg]
+
+                    # 检查用户是否接受了输入请求
+                    # FastMCP 返回 AcceptedElicitation | DeclinedElicitation | CancelledElicitation
+                    if hasattr(result, "accepted") and not result.accepted:  # type: ignore[union-attr]
+                        # 用户取消输入
+                        await ctx.set_state(
+                            f"requirement_{current_session_id}", session_state.model_dump()
+                        )  # type: ignore[func-returns-value]
+                        return {
+                            "success": False,
+                            "action": "cancelled",
+                            "message": "用户取消了输入",
+                            "session_id": current_session_id,
+                            "step_index": session_state.current_step_index,
+                            "answers": {
+                                k: v
+                                for k, v in session_state.answers.items()
+                                if k != "_conversation_history"
+                            },
+                            "progress": (
+                                session_state.current_step_index / session_state.total_steps
+                            )
+                            * 100,
+                        }
+
+                    # 获取用户输入
+                    user_answer = (
+                        str(getattr(result, "data", "")) if hasattr(result, "data") else ""
+                    )
+
+                except Exception as e:
+                    # elicit 调用失败，返回错误
+                    await ctx.set_state(
+                        f"requirement_{current_session_id}", session_state.model_dump()
+                    )  # type: ignore[func-returns-value]
+                    return {
+                        "success": False,
+                        "error": f"elicit 调用失败: {e}",
+                        "session_id": current_session_id,
+                        "message": f"获取用户输入时出错: {e}",
+                    }
+
+                # 3. 验证输入（仅非动态模式）
+                if not is_dynamic_mode and validation:
+                    validation_result = _validate_requirement_answer(user_answer, validation)
+                    if not validation_result["valid"]:
+                        validation_error = validation_result["error"]
+                        retry_count += 1
+                        continue
+
+                # 验证通过或动态模式，退出重试循环
+                break
+
+            # 检查是否超过最大重试次数
+            if retry_count > max_retries:
+                return {
+                    "success": False,
+                    "error": "验证失败次数过多",
+                    "message": f"输入验证失败超过 {max_retries} 次，请稍后重试",
+                    "session_id": current_session_id,
+                }
+
+            # 4. 保存答案
+            session_state.answers[answer_key] = user_answer  # type: ignore[index]
+
+            # 更新对话历史（用于 brainstorm 模式）
+            if is_dynamic_mode and input_data.mode == "brainstorm":
+                history_raw = session_state.answers.get("_conversation_history", [])
+                conversation_history: list[dict[str, str]] = (
+                    list(history_raw) if isinstance(history_raw, list) else []
+                )  # type: ignore
+                conversation_history.append({"role": "user", "content": str(user_answer)})
+                session_state.answers["_conversation_history"] = conversation_history  # type: ignore[assignment]
+
+            # 5. 移动到下一步
+            session_state.current_step_index += 1
+
+            # 6. 保存会话状态
+            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+
+            # 7. 检查是否完成
+            if is_dynamic_mode:
+                # 动态模式：检查是否达到足够的轮次（这里使用简单计数，实际可以更智能）
+                if session_state.current_step_index >= 5:  # 默认收集 5 轮
+                    session_state.completed = True
+            else:
+                # 静态模式：检查是否完成所有步骤
+                if session_state.current_step_index >= len(all_steps):  # type: ignore[arg-type]
+                    session_state.completed = True
+
+        # 8. 返回完成结果
+        progress = (
+            100.0
+            if session_state.completed
+            else (session_state.current_step_index / session_state.total_steps) * 100
+        )
+
+        return {
+            "success": True,
+            "session_id": current_session_id,
+            "action": "complete",
+            "mode": session_state.mode,
+            "step_index": session_state.current_step_index,
+            "total_steps": session_state.total_steps,
+            "progress": progress,
+            "answers": {
+                k: v for k, v in session_state.answers.items() if k != "_conversation_history"
+            },
+            "completed": session_state.completed,
+            "message": "需求收集完成（使用 elicit 模式）",
+            "is_dynamic_mode": is_dynamic_mode,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"elicit 模式收集出错: {e}",
+            "error_type": "elicit_error",
+            "message": f"内部错误: {e}",
+            "session_id": current_session_id,
         }
 
 
@@ -1019,11 +1466,17 @@ def _validate_requirement_answer(
     # 提取验证字段
     field = validation.get("field") if isinstance(validation, dict) else validation.field
     required = validation.get("required") if isinstance(validation, dict) else validation.required
-    min_length = validation.get("min_length") if isinstance(validation, dict) else validation.min_length
-    max_length = validation.get("max_length") if isinstance(validation, dict) else validation.max_length
+    min_length = (
+        validation.get("min_length") if isinstance(validation, dict) else validation.min_length
+    )
+    max_length = (
+        validation.get("max_length") if isinstance(validation, dict) else validation.max_length
+    )
     options = validation.get("options") if isinstance(validation, dict) else validation.options
     pattern = validation.get("pattern") if isinstance(validation, dict) else validation.pattern
-    help_text = validation.get("help_text") if isinstance(validation, dict) else validation.help_text
+    help_text = (
+        validation.get("help_text") if isinstance(validation, dict) else validation.help_text
+    )
 
     # 检查必填
     if required and not answer.strip():
@@ -1140,6 +1593,384 @@ async def _check_requirement_completeness(
             "is_complete": len(missing) == 0,
             "missing_info": missing,
             "suggestions": ["请补充缺失的关键信息"] if missing else [],
+        }
+
+
+async def _generate_brainstorm_question(
+    ctx: Context,
+    answers: dict[str, str],
+    conversation_history: list[dict[str, str]] | None = None,
+) -> dict[str, Any]:
+    """使用 LLM 为 brainstorm 模式动态生成探索性问题.
+
+    Args:
+        ctx: MCP 上下文
+        answers: 已收集的答案
+        conversation_history: 对话历史记录
+
+    Returns:
+        包含生成问题的字典
+    """
+    try:
+        # 构建上下文
+        context_parts = []
+        if answers:
+            context_parts.append("已收集的信息:")
+            for key, value in answers.items():
+                context_parts.append(f"- {key}: {value}")
+
+        if conversation_history:
+            context_parts.append("\n之前的对话:")
+            for msg in conversation_history[-4:]:  # 只保留最近4条
+                context_parts.append(f"{msg.get('role', '')}: {msg.get('content', '')}")
+
+        context = "\n".join(context_parts) if context_parts else "这是对话的开始。"
+
+        # 生成探索性问题
+        prompt = f"""你是一个技能创建顾问，正在帮助用户通过头脑风暴方式探索技能需求。
+
+{context}
+
+请生成一个开放性的探索性问题，帮助用户深入思考他们的技能需求。问题应该：
+1. 基于已收集的信息进行深入
+2. 探索用户可能未曾考虑的角度
+3. 鼓励创造性思考
+4. 避免重复已问过的内容
+
+请只返回问题文本，不要其他内容。"""
+
+        result = await ctx.sample(
+            messages=prompt,
+            system_prompt="You are a creative skill development consultant specializing in brainstorming and exploration.",
+            temperature=0.8,  # 更高的温度以产生更多样化的问题
+        )
+
+        question = result.text.strip() if result.text else "请描述您希望这个技能实现什么独特价值？"
+
+        return {
+            "success": True,
+            "question": question,
+            "is_dynamic": True,
+            "source": "llm_generated",
+        }
+
+    except Exception as e:
+        # 降级到预定义问题
+        fallback_questions = [
+            "这个技能的核心价值主张是什么？",
+            "它与现有解决方案有什么不同？",
+            "用户最痛的场景是什么？",
+            "您希望用户使用后有什么感受？",
+        ]
+
+        # 基于已收集答案数量选择问题
+        index = min(len(answers), len(fallback_questions) - 1)
+
+        return {
+            "success": True,
+            "question": fallback_questions[index],
+            "is_dynamic": False,
+            "source": "fallback",
+            "error": str(e),
+        }
+
+
+async def _generate_progressive_question(
+    ctx: Context,
+    answers: dict[str, str],
+) -> dict[str, Any]:
+    """使用 LLM 为 progressive 模式生成针对性的下一个问题.
+
+    Args:
+        ctx: MCP 上下文
+        answers: 已收集的答案
+
+    Returns:
+        包含生成问题的字典和问题类型
+    """
+    try:
+        # 分析已收集的答案，确定下一个最相关的问题
+        context = json.dumps(answers, indent=2, ensure_ascii=False)
+
+        prompt = f"""分析以下已收集的技能需求信息，确定下一个应该询问的最相关问题。
+
+已收集的信息：
+{context}
+
+可选问题类型（按优先级排序）：
+1. 如果缺少 skill_name，询问技能名称
+2. 如果缺少 skill_function，询问主要功能
+3. 如果缺少 use_cases，询问使用场景
+4. 如果缺少 template_type，询问模板类型
+5. 如果基本信息齐全，询问更深入的问题（target_users, tech_stack 等）
+
+请返回 JSON 格式：
+{{
+    "next_question": "具体的问题文本",
+    "question_key": "问题标识（如 skill_name, skill_function 等）",
+    "reasoning": "选择这个问题的原因"
+}}"""
+
+        result = await ctx.sample(
+            messages=prompt,
+            system_prompt="You are a skill requirements analyst. Determine the most relevant next question based on collected information.",
+            temperature=0.3,
+        )
+
+        # 尝试解析 JSON
+        import re
+
+        json_match = re.search(r"\{.*\}", result.text or "", re.DOTALL)
+        if json_match:
+            try:
+                parsed = json.loads(json_match.group())
+                return {
+                    "success": True,
+                    "next_question": parsed.get("next_question", "请提供更多关于技能功能的细节？"),
+                    "question_key": parsed.get("question_key", "follow_up"),
+                    "reasoning": parsed.get("reasoning", ""),
+                    "is_dynamic": True,
+                }
+            except json.JSONDecodeError:
+                pass
+
+        # 降级：根据答案数量选择基础问题
+        basic_questions = [
+            ("skill_name", "请提供技能名称（小写字母、数字、连字符）"),
+            ("skill_function", "请描述这个技能的主要功能"),
+            ("use_cases", "请描述这个技能的使用场景"),
+            (
+                "template_type",
+                "选择技能模板类型：minimal、tool-based、workflow-based、analyzer-based",
+            ),
+        ]
+
+        index = min(len(answers), len(basic_questions) - 1)
+        key, question = basic_questions[index]
+
+        return {
+            "success": True,
+            "next_question": question,
+            "question_key": key,
+            "is_dynamic": False,
+            "source": "fallback",
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "next_question": "请提供更多关于技能的信息？",
+        }
+
+
+# ============================================================================
+# Phase 0: 技术验证工具
+# 这些工具用于验证 FastMCP Context API 的可用性
+# ============================================================================
+
+
+@mcp.tool()
+async def test_llm_sampling(ctx: Context, prompt: str) -> dict[str, Any]:
+    """测试 LLM Sampling 能力.
+
+    验证 MCP Server 可以通过 ctx.sample() 调用客户端 LLM。
+
+    Args:
+        ctx: MCP 上下文
+        prompt: 要发送给 LLM 的提示文本
+
+    Returns:
+        包含测试结果的字典，包括 LLM 响应文本和历史记录
+    """
+    try:
+        result = await ctx.sample(
+            messages=prompt,
+            system_prompt="You are a helpful assistant for skill creation.",
+            temperature=0.7,
+        )
+
+        return {
+            "success": True,
+            "test": "test_llm_sampling",
+            "has_response": result.text is not None,
+            "response_text": result.text or "",
+            "has_history": result.history is not None,
+            "history_length": len(result.history) if result.history else 0,
+            "message": "LLM Sampling 能力验证通过",
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "test": "test_llm_sampling",
+            "error": str(e),
+            "message": f"LLM Sampling 验证失败: {e}",
+        }
+
+
+@mcp.tool()
+async def test_user_elicitation(
+    ctx: Context, prompt: str = "请提供技能名称（小写字母、数字、连字符）"
+) -> dict[str, Any]:
+    """测试用户征询 (User Elicitation) 能力.
+
+    验证可以通过 ctx.elicit() 请求用户输入结构化数据。
+
+    Args:
+        ctx: MCP 上下文
+        prompt: 向用户显示的提示文本
+
+    Returns:
+        包含测试结果的字典
+    """
+    try:
+        result = await ctx.elicit(prompt)  # type: ignore[call-arg]
+
+        # FastMCP 返回 AcceptedElicitation | DeclinedElicitation | CancelledElicitation
+        if hasattr(result, "accepted") and result.accepted:  # type: ignore[union-attr]
+            return {
+                "success": True,
+                "test": "test_user_elicitation",
+                "action": "accept",
+                "user_input": str(getattr(result, "data", "")) if hasattr(result, "data") else "",
+                "message": "User Elicitation 能力验证通过 - 用户接受了输入请求",
+            }
+        else:
+            return {
+                "success": True,
+                "test": "test_user_elicitation",
+                "action": "cancel",
+                "message": "User Elicitation 能力验证通过 - 用户取消了输入请求",
+            }
+    except Exception as e:
+        return {
+            "success": False,
+            "test": "test_user_elicitation",
+            "error": str(e),
+            "message": f"User Elicitation 验证失败: {e}",
+        }
+
+
+@mcp.tool()
+async def test_conversation_loop(ctx: Context, user_input: str) -> dict[str, Any]:
+    """测试对话循环和状态管理能力.
+
+    验证可以在对话循环中使用 session state 保存历史，
+    并且 LLM 可以利用对话历史生成更连贯的响应。
+
+    Args:
+        ctx: MCP 上下文
+        user_input: 用户输入的文本
+
+    Returns:
+        包含测试结果的字典，包括 LLM 响应和会话状态
+    """
+    try:
+        # 获取历史对话
+        history_data = await ctx.get_state("test_conversation_history")
+        history = list(history_data) if history_data else []
+
+        # 添加用户输入
+        history.append({"role": "user", "content": user_input})
+
+        # 调用 LLM 生成响应
+        result = await ctx.sample(
+            messages=history,
+            system_prompt="You are a skill creation consultant. Help users clarify their requirements.",
+        )
+
+        # 添加 AI 响应
+        if result.text:
+            history.append({"role": "assistant", "content": result.text})
+
+        # 保存历史
+        await ctx.set_state("test_conversation_history", history)  # type: ignore[func-returns-value]
+
+        return {
+            "success": True,
+            "test": "test_conversation_loop",
+            "has_llm_response": result.text is not None,
+            "llm_response": result.text or "",
+            "conversation_length": len(history),
+            "history_saved": True,
+            "message": "对话循环和状态管理验证通过",
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "test": "test_conversation_loop",
+            "error": str(e),
+            "message": f"对话循环验证失败: {e}",
+        }
+
+
+@mcp.tool()
+async def test_requirement_completeness(ctx: Context, requirement: str) -> dict[str, Any]:
+    """测试需求完整性判断能力.
+
+    验证 LLM 能够判断需求是否完整，并识别缺失的关键信息。
+
+    Args:
+        ctx: MCP 上下文
+        requirement: 技能创建需求描述
+
+    Returns:
+        包含测试结果的字典，包括完整性分析和缺失信息列表
+    """
+    try:
+        prompt = f"""分析以下技能创建需求，判断是否包含所有必要信息：
+
+{requirement}
+
+必要信息包括：
+1. skill_name - 技能名称
+2. skill_function - 主要功能
+3. use_cases - 使用场景
+4. template_type - 模板类型
+
+请返回 JSON 格式，包含：
+- is_complete: bool（是否完整）
+- missing_info: list[str]（缺失的信息列表）
+- suggestions: list[str]（补充建议列表）
+"""
+
+        result = await ctx.sample(
+            messages=prompt,
+            system_prompt="You are a skill creation consultant. Analyze requirements for completeness.",
+            temperature=0.3,
+        )
+
+        # 尝试解析 LLM 返回的 JSON
+        import re
+
+        json_match = re.search(r"\{.*\}", result.text or "", re.DOTALL)
+        if json_match:
+            try:
+                analysis = json.loads(json_match.group())
+                return {
+                    "success": True,
+                    "test": "test_requirement_completeness",
+                    "llm_analysis": analysis,
+                    "has_missing_info": "missing_info" in analysis,
+                    "message": "需求完整性判断验证通过",
+                }
+            except json.JSONDecodeError:
+                pass
+
+        # 如果无法解析 JSON，返回原始响应
+        return {
+            "success": True,
+            "test": "test_requirement_completeness",
+            "llm_response": result.text or "",
+            "json_parse_failed": True,
+            "message": "需求完整性判断验证通过（但 JSON 解析失败）",
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "test": "test_requirement_completeness",
+            "error": str(e),
+            "message": f"需求完整性判断验证失败: {e}",
         }
 
 

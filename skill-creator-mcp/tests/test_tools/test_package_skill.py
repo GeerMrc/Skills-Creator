@@ -489,7 +489,7 @@ def test_package_skill_exception_handling(temp_dir: Path):
     # Mock _create_zip_package 抛出异常
     with patch(
         "skill_creator_mcp.utils.packagers._create_zip_package",
-        side_effect=RuntimeError("Simulated packaging error")
+        side_effect=RuntimeError("Simulated packaging error"),
     ):
         result = package_skill(
             skill_path=str(skill_dir),

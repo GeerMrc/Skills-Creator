@@ -110,10 +110,7 @@ REFACTOR_SKILL_PROMPT: Final = """你是一个专业的 Agent-Skill 重构专家
 """
 
 
-def get_refactor_skill_prompt(
-    skill_path: str,
-    focus_areas: list[str] | None = None
-) -> str:
+def get_refactor_skill_prompt(skill_path: str, focus_areas: list[str] | None = None) -> str:
     """获取重构技能的 Prompt 模板.
 
     Args:

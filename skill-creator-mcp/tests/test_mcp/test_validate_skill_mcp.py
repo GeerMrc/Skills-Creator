@@ -13,7 +13,7 @@ async def test_validate_skill_mcp_valid_skill(temp_dir):
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -38,7 +38,7 @@ allowed-tools: Read, Write, Edit
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(validate_skill_tool, 'fn'):
+    if hasattr(validate_skill_tool, "fn"):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -61,7 +61,7 @@ async def test_validate_skill_mcp_directory_not_exists():
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -72,7 +72,7 @@ async def test_validate_skill_mcp_directory_not_exists():
     ctx.log = MagicMock()
 
     # 调用工具（目录不存在）
-    if hasattr(validate_skill_tool, 'fn'):
+    if hasattr(validate_skill_tool, "fn"):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path="/non-existent-skill",
@@ -89,7 +89,7 @@ async def test_validate_skill_mcp_path_not_directory(temp_dir):
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -104,7 +104,7 @@ async def test_validate_skill_mcp_path_not_directory(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（路径不是目录）
-    if hasattr(validate_skill_tool, 'fn'):
+    if hasattr(validate_skill_tool, "fn"):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path=str(file_path),
@@ -121,7 +121,7 @@ async def test_validate_skill_mcp_check_structure_false(temp_dir):
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -130,14 +130,16 @@ async def test_validate_skill_mcp_check_structure_false(temp_dir):
     # 创建有效的技能目录
     skill_dir = temp_dir / "test-incomplete"
     skill_dir.mkdir()
-    (skill_dir / "SKILL.md").write_text("---\nname: test-incomplete\ndescription: Test\nallowed-tools: Read\n---")
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: test-incomplete\ndescription: Test\nallowed-tools: Read\n---"
+    )
 
     # 创建模拟的 MCP Context
     ctx = MagicMock()
     ctx.log = MagicMock()
 
     # 调用工具（不检查结构）
-    if hasattr(validate_skill_tool, 'fn'):
+    if hasattr(validate_skill_tool, "fn"):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -160,7 +162,7 @@ async def test_validate_skill_mcp_check_content_false(temp_dir):
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -178,7 +180,7 @@ async def test_validate_skill_mcp_check_content_false(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（不检查内容）
-    if hasattr(validate_skill_tool, 'fn'):
+    if hasattr(validate_skill_tool, "fn"):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -198,7 +200,7 @@ async def test_validate_skill_mcp_with_template_type(temp_dir):
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -228,7 +230,7 @@ allowed-tools: Read, Write, Edit
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(validate_skill_tool, 'fn'):
+    if hasattr(validate_skill_tool, "fn"):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -246,7 +248,7 @@ async def test_validate_skill_mcp_missing_template_files(temp_dir):
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -272,7 +274,7 @@ allowed-tools: Read, Write
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(validate_skill_tool, 'fn'):
+    if hasattr(validate_skill_tool, "fn"):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -293,7 +295,7 @@ async def test_validate_skill_mcp_internal_error(temp_dir):
     # 获取 validate_skill 工具
     validate_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'validate_skill':
+        if hasattr(tool, "name") and tool.name == "validate_skill":
             validate_skill_tool = tool
             break
 
@@ -304,7 +306,7 @@ async def test_validate_skill_mcp_internal_error(temp_dir):
     ctx.log = MagicMock()
 
     # 模拟 Path 构造函数抛出异常
-    with patch('skill_creator_mcp.server.Path', side_effect=RuntimeError("Simulated error")):
+    with patch("skill_creator_mcp.server.Path", side_effect=RuntimeError("Simulated error")):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path="/some/path",

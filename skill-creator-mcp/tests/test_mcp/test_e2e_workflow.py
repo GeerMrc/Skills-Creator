@@ -22,14 +22,14 @@ async def test_e2e_complete_workflow(temp_dir):
     package_skill_tool = None
 
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name'):
-            if tool.name == 'init_skill':
+        if hasattr(tool, "name"):
+            if tool.name == "init_skill":
                 init_skill_tool = tool
-            elif tool.name == 'analyze_skill':
+            elif tool.name == "analyze_skill":
                 analyze_skill_tool = tool
-            elif tool.name == 'refactor_skill':
+            elif tool.name == "refactor_skill":
                 refactor_skill_tool = tool
-            elif tool.name == 'package_skill':
+            elif tool.name == "package_skill":
                 package_skill_tool = tool
 
     assert init_skill_tool is not None, "init_skill tool not found"
@@ -46,7 +46,7 @@ async def test_e2e_complete_workflow(temp_dir):
     output_dir.mkdir()
 
     # 步骤 1: 创建技能
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         init_result = await init_skill_tool.fn(
             ctx,
             name=skill_name,
@@ -58,7 +58,7 @@ async def test_e2e_complete_workflow(temp_dir):
         assert (skill_dir / "SKILL.md").exists()
 
     # 步骤 2: 分析技能
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         analyze_result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -72,7 +72,7 @@ async def test_e2e_complete_workflow(temp_dir):
         assert analyze_result["quality"]["overall_score"] >= 0
 
     # 步骤 3: 重构技能（分析建议）
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         refactor_result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -86,7 +86,7 @@ async def test_e2e_complete_workflow(temp_dir):
         assert refactor_result["skill_name"] == skill_name
 
     # 步骤 4: 打包技能
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         package_result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -108,12 +108,12 @@ async def test_e2e_workflow_with_validation(temp_dir):
     package_skill_tool = None
 
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name'):
-            if tool.name == 'init_skill':
+        if hasattr(tool, "name"):
+            if tool.name == "init_skill":
                 init_skill_tool = tool
-            elif tool.name == 'analyze_skill':
+            elif tool.name == "analyze_skill":
                 analyze_skill_tool = tool
-            elif tool.name == 'package_skill':
+            elif tool.name == "package_skill":
                 package_skill_tool = tool
 
     ctx = MagicMock()
@@ -125,7 +125,7 @@ async def test_e2e_workflow_with_validation(temp_dir):
     output_dir.mkdir()
 
     # 创建完整模板的技能
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         init_result = await init_skill_tool.fn(
             ctx,
             name=skill_name,
@@ -135,7 +135,7 @@ async def test_e2e_workflow_with_validation(temp_dir):
         assert init_result["success"] is True
 
     # 分析验证
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         analyze_result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -143,7 +143,7 @@ async def test_e2e_workflow_with_validation(temp_dir):
         assert analyze_result["success"] is True
 
     # 打包时验证
-    if hasattr(package_skill_tool, 'fn'):
+    if hasattr(package_skill_tool, "fn"):
         package_result = await package_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -162,10 +162,10 @@ async def test_e2e_error_recovery(temp_dir):
     analyze_skill_tool = None
 
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name'):
-            if tool.name == 'init_skill':
+        if hasattr(tool, "name"):
+            if tool.name == "init_skill":
                 init_skill_tool = tool
-            elif tool.name == 'analyze_skill':
+            elif tool.name == "analyze_skill":
                 analyze_skill_tool = tool
 
     ctx = MagicMock()
@@ -176,7 +176,7 @@ async def test_e2e_error_recovery(temp_dir):
     output_dir.mkdir()
 
     # 尝试分析不存在的技能
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         analyze_result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -185,7 +185,7 @@ async def test_e2e_error_recovery(temp_dir):
         assert "error" in analyze_result
 
     # 创建技能
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         init_result = await init_skill_tool.fn(
             ctx,
             name="test-error-skill",
@@ -195,7 +195,7 @@ async def test_e2e_error_recovery(temp_dir):
         assert init_result["success"] is True
 
     # 现在分析应该成功
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         analyze_result = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -211,12 +211,12 @@ async def test_e2e_iterative_refinement(temp_dir):
     analyze_skill_tool = None
 
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name'):
-            if tool.name == 'init_skill':
+        if hasattr(tool, "name"):
+            if tool.name == "init_skill":
                 init_skill_tool = tool
-            elif tool.name == 'refactor_skill':
+            elif tool.name == "refactor_skill":
                 refactor_skill_tool = tool
-            elif tool.name == 'analyze_skill':
+            elif tool.name == "analyze_skill":
                 analyze_skill_tool = tool
 
     ctx = MagicMock()
@@ -226,7 +226,7 @@ async def test_e2e_iterative_refinement(temp_dir):
     skill_dir = temp_dir / skill_name
 
     # 创建基础技能
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         init_result = await init_skill_tool.fn(
             ctx,
             name=skill_name,
@@ -236,7 +236,7 @@ async def test_e2e_iterative_refinement(temp_dir):
         assert init_result["success"] is True
 
     # 第一次分析
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         first_analysis = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -245,7 +245,7 @@ async def test_e2e_iterative_refinement(temp_dir):
         _first_score = first_analysis["quality"]["overall_score"]
 
     # 获取重构建议
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         refactor_result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -257,7 +257,7 @@ async def test_e2e_iterative_refinement(temp_dir):
         # 在真实场景中，这里会应用建议的修改
 
     # 第二次分析（验证改进）
-    if hasattr(analyze_skill_tool, 'fn'):
+    if hasattr(analyze_skill_tool, "fn"):
         second_analysis = await analyze_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -276,10 +276,10 @@ async def test_e2e_multiple_skills(temp_dir):
     analyze_skill_tool = None
 
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name'):
-            if tool.name == 'init_skill':
+        if hasattr(tool, "name"):
+            if tool.name == "init_skill":
                 init_skill_tool = tool
-            elif tool.name == 'analyze_skill':
+            elif tool.name == "analyze_skill":
                 analyze_skill_tool = tool
 
     ctx = MagicMock()
@@ -290,7 +290,7 @@ async def test_e2e_multiple_skills(temp_dir):
     skill_dirs = []
 
     for name in skill_names:
-        if hasattr(init_skill_tool, 'fn'):
+        if hasattr(init_skill_tool, "fn"):
             result = await init_skill_tool.fn(
                 ctx,
                 name=name,
@@ -303,7 +303,7 @@ async def test_e2e_multiple_skills(temp_dir):
     # 分析所有技能
     analysis_results = []
     for skill_path in skill_dirs:
-        if hasattr(analyze_skill_tool, 'fn'):
+        if hasattr(analyze_skill_tool, "fn"):
             result = await analyze_skill_tool.fn(
                 ctx,
                 skill_path=skill_path,
@@ -325,10 +325,10 @@ async def test_e2e_package_formats(temp_dir):
     package_skill_tool = None
 
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name'):
-            if tool.name == 'init_skill':
+        if hasattr(tool, "name"):
+            if tool.name == "init_skill":
                 init_skill_tool = tool
-            elif tool.name == 'package_skill':
+            elif tool.name == "package_skill":
                 package_skill_tool = tool
 
     ctx = MagicMock()
@@ -340,7 +340,7 @@ async def test_e2e_package_formats(temp_dir):
     output_dir.mkdir()
 
     # 创建技能
-    if hasattr(init_skill_tool, 'fn'):
+    if hasattr(init_skill_tool, "fn"):
         init_result = await init_skill_tool.fn(
             ctx,
             name=skill_name,
@@ -354,7 +354,7 @@ async def test_e2e_package_formats(temp_dir):
     package_paths = []
 
     for fmt in formats:
-        if hasattr(package_skill_tool, 'fn'):
+        if hasattr(package_skill_tool, "fn"):
             result = await package_skill_tool.fn(
                 ctx,
                 skill_path=str(skill_dir),

@@ -76,6 +76,40 @@ AI 引导的创意发散，探索技能可能性：
 - 允许跳过非关键步骤
 - 后续可补充细节
 
+### Elicit 模式 (use_elicit=True)
+
+一键自动收集，AI 自动调用 `ctx.elicit()` 逐个收集输入：
+
+- **自动化**：无需手动调用 action="next"
+- **验证重试**：输入无效时自动重新请求
+- **状态保存**：每步后自动保存会话状态
+- **取消友好**：用户可随时取消，已收集信息不会丢失
+
+**使用方式**：
+
+```json
+{
+  "action": "start",
+  "mode": "basic",
+  "use_elicit": true
+}
+```
+
+**与传统模式的区别**：
+
+| 特性 | 传统模式 | Elicit 模式 |
+|------|----------|------------|
+| 调用次数 | 多次（每步一次） | 一次（自动收集所有） |
+| 用户交互 | 手动调用 next | AI 自动调用 elicit |
+| 状态管理 | 手动管理 | 自动保存每步 |
+| 适用场景 | 需要中断/恢复的场景 | 快速完成需求收集 |
+
+**注意事项**：
+- elicit 模式会在后台调用 `ctx.elicit()` 自动收集所有必需的输入
+- 用户取消输入时会返回 cancelled 状态
+- 验证失败时（如格式错误）会自动重新请求，最多重试 3 次
+- 动态模式（brainstorm/progressive）默认收集 5 轮对话
+
 ## 工具参数
 
 ### collect_requirements
@@ -98,7 +132,8 @@ async def collect_requirements(
 | `action` | string | "start" | 执行动作：start/next/previous/status/complete |
 | `mode` | string | "basic" | 收集模式：basic/complete/brainstorm/progressive |
 | `session_id` | string | auto | 会话 ID（自动生成） |
-| `user_input` | string | None | 用户输入（用于 next/complete 动作） |
+| `user_input` | string | None | 用户输入（用于 next/complete 动作，elicit=False 时使用） |
+| `use_elicit` | boolean | False | 是否使用 ctx.elicit() 自动收集输入（v0.3.0+） |
 
 **返回值**：
 

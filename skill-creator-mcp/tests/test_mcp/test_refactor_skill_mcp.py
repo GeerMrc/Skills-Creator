@@ -13,7 +13,7 @@ async def test_refactor_skill_mcp_basic(temp_dir):
     # 获取 refactor_skill 工具
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -42,7 +42,7 @@ This is a test skill.
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -67,7 +67,7 @@ async def test_refactor_skill_mcp_with_focus(temp_dir):
     """测试通过 MCP Server 重构技能（关注领域过滤）."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -84,7 +84,7 @@ async def test_refactor_skill_mcp_with_focus(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（关注文档）
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -105,7 +105,7 @@ async def test_refactor_skill_mcp_no_analysis(temp_dir):
     """测试通过 MCP Server 重构技能（关闭所有分析）."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -121,7 +121,7 @@ async def test_refactor_skill_mcp_no_analysis(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（所有分析都关闭）
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -144,7 +144,7 @@ async def test_refactor_skill_mcp_directory_not_exists(temp_dir):
     """测试通过 MCP Server 重构不存在的目录."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -155,7 +155,7 @@ async def test_refactor_skill_mcp_directory_not_exists(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（目录不存在）
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(temp_dir / "non-existent-skill"),
@@ -170,7 +170,7 @@ async def test_refactor_skill_mcp_path_not_directory(temp_dir):
     """测试通过 MCP Server 重构非目录路径."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -185,7 +185,7 @@ async def test_refactor_skill_mcp_path_not_directory(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具（路径不是目录）
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(file_path),
@@ -200,7 +200,7 @@ async def test_refactor_skill_mcp_internal_error(temp_dir):
     """测试通过 MCP Server 重构技能时的内部错误."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -213,7 +213,7 @@ async def test_refactor_skill_mcp_internal_error(temp_dir):
     # 模拟 Path 构造函数抛出异常
     from unittest.mock import patch
 
-    with patch('skill_creator_mcp.server.Path', side_effect=RuntimeError("Simulated error")):
+    with patch("skill_creator_mcp.server.Path", side_effect=RuntimeError("Simulated error")):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path="/some/path",
@@ -228,7 +228,7 @@ async def test_refactor_skill_mcp_with_complex_skill(temp_dir):
     """测试通过 MCP Server 重构复杂技能."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -253,7 +253,7 @@ async def test_refactor_skill_mcp_with_complex_skill(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -264,7 +264,9 @@ async def test_refactor_skill_mcp_with_complex_skill(temp_dir):
         assert len(result["suggestions"]) > 0
 
         # 检查有 token 效率建议（因为 SKILL.md 过长）
-        token_suggestions = [s for s in result["suggestions"] if s["category"] == "token-efficiency"]
+        token_suggestions = [
+            s for s in result["suggestions"] if s["category"] == "token-efficiency"
+        ]
         assert len(token_suggestions) > 0
 
         # 检查有模块化建议（因为文件过多）
@@ -277,7 +279,7 @@ async def test_refactor_skill_mcp_generates_report(temp_dir):
     """测试通过 MCP Server 重构技能生成完整报告."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -293,7 +295,7 @@ async def test_refactor_skill_mcp_generates_report(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
@@ -313,7 +315,7 @@ async def test_refactor_skill_mcp_effort_estimate(temp_dir):
     """测试通过 MCP Server 重构技能时的工作量估算."""
     refactor_skill_tool = None
     for tool in mcp._tool_manager._tools.values():
-        if hasattr(tool, 'name') and tool.name == 'refactor_skill':
+        if hasattr(tool, "name") and tool.name == "refactor_skill":
             refactor_skill_tool = tool
             break
 
@@ -332,7 +334,7 @@ async def test_refactor_skill_mcp_effort_estimate(temp_dir):
     ctx.log = MagicMock()
 
     # 调用工具
-    if hasattr(refactor_skill_tool, 'fn'):
+    if hasattr(refactor_skill_tool, "fn"):
         result = await refactor_skill_tool.fn(
             ctx,
             skill_path=str(skill_dir),
