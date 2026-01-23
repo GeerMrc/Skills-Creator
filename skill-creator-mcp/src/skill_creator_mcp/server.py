@@ -876,6 +876,27 @@ async def collect_requirements(
 
         # 5. Elicit 模式：自动收集所有输入
         if use_elicit and input_data.action == "start":
+            # 首先检测客户端是否支持 elicitation
+            from .utils.capability_detection import check_elicitation_capability
+            capability = await check_elicitation_capability(ctx)
+            if not capability.get("supported"):
+                return {
+                    "success": False,
+                    "error": "elicit_mode_not_supported",
+                    "message": "当前 MCP 客户端不支持交互式输入模式 (use_elicit=True)。",
+                    "fallback_mode": "traditional",
+                    "traditional_usage": {
+                        "step_1": "调用 collect_requirements(action='start', mode='basic')",
+                        "step_2": "使用返回的 session_id 调用 collect_requirements(action='next', session_id='...', user_input='...')",
+                        "step_3": "重复步骤 2 直到所有问题完成",
+                        "example": {
+                            "start": "collect_requirements(action='start', mode='basic')",
+                            "next": "collect_requirements(action='next', session_id='req_xxx', user_input='my-skill')",
+                        }
+                    },
+                    "capability_error": capability.get("error"),
+                    "details": capability.get("details"),
+                }
             return await _collect_with_elicit(
                 ctx=ctx,
                 session_state=session_state,
@@ -1768,6 +1789,20 @@ async def _generate_progressive_question(
 # Phase 0: 技术验证工具
 # 这些工具用于验证 FastMCP Context API 的可用性
 # ============================================================================
+
+
+@mcp.tool()
+async def check_client_capabilities(ctx: Context) -> dict[str, Any]:
+    """检测 MCP 客户端的能力支持情况.
+
+    检测客户端是否支持高级 MCP 功能，如 sampling 和 elicitation。
+
+    Returns:
+        包含客户端能力检测结果的字典
+    """
+    from .utils.capability_detection import get_client_capabilities
+
+    return await get_client_capabilities(ctx)
 
 
 @mcp.tool()
