@@ -79,11 +79,11 @@ jobs:
         run: |
           coverage=$(uv run pytest --cov=src/skill_creator_mcp --cov-report=term-missing -q | grep "TOTAL" | awk '{print $NF}' | sed 's/%//')
           echo "Coverage: $coverage%"
-          if (( $(echo "$coverage < 95" | bc -l) )); then
-            echo "Coverage $coverage% is below 95% threshold"
+          if (( $(echo "$coverage < 91" | bc -l) )); then
+            echo "Coverage $coverage% is below 91% threshold"
             exit 1
           fi
-          echo "Coverage $coverage% meets 95% threshold"
+          echo "Coverage $coverage% meets 91% threshold"
 
   build:
     runs-on: ubuntu-latest

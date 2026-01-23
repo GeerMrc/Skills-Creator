@@ -103,6 +103,7 @@ async def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
 
     total_complexity = 0
     file_count = 0
+    trees: list[ast.AST] = []  # 收集所有 AST 树用于代码重复检测
 
     for py_file in skill_dir.rglob("*.py"):
         if "__pycache__" in str(py_file) or ".venv" in str(py_file):
@@ -114,6 +115,7 @@ async def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
 
             # 使用 AST 分析圈复杂度
             tree = ast.parse(content)
+            trees.append(tree)  # 收集树
             complexity = _calculate_cyclomatic_complexity(tree)
             total_complexity += complexity
             file_count += 1
@@ -133,8 +135,122 @@ async def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
     return ComplexityMetrics(
         cyclomatic_complexity=int(avg_complexity) if avg_complexity > 0 else None,
         maintainability_index=float(maintainability) if file_count > 0 else None,
-        code_duplication=None,  # 暂不实现
+        code_duplication=_detect_code_duplication(trees) if trees else None,
     )
+
+
+def _detect_code_duplication(trees: list[ast.AST]) -> float:
+    """检测代码重复率.
+
+    使用基于 AST 结构相似度的算法检测重复代码。
+
+    Args:
+        trees: 所有 Python 文件的 AST 列表
+
+    Returns:
+        重复代码百分比 (0-100)
+    """
+    if not trees:
+        return 0.0
+
+    # 1. 提取所有函数定义的 AST 节点
+    function_nodes = []
+    for tree in trees:
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                # 只分析有一定长度的函数（过滤掉简单的单行函数）
+                node_length = _count_ast_nodes(node)
+                if node_length >= 5:  # 至少 5 个 AST 节点才考虑
+                    function_nodes.append(node)
+
+    if len(function_nodes) < 2:
+        return 0.0
+
+    # 2. 使用集合跟踪已处理的函数索引
+    processed_indices: set[int] = set()
+
+    # 3. 规范化 AST 并比较相似度
+    duplicates = 0
+    total_lines = 0
+
+    for i, func1 in enumerate(function_nodes):
+        if i in processed_indices:
+            continue
+
+        normalized1 = _normalize_ast(func1)
+        lines1 = _count_ast_nodes(func1)
+
+        for j in range(i + 1, len(function_nodes)):
+            func2 = function_nodes[j]
+            if j in processed_indices:
+                continue
+
+            normalized2 = _normalize_ast(func2)
+            lines2 = _count_ast_nodes(func2)
+
+            # 计算相似度（使用简单的节点类型序列匹配）
+            similarity = _calculate_ast_similarity(normalized1, normalized2)
+
+            # 如果相似度超过 80%，认为是重复代码
+            if similarity >= 0.8 and min(lines1, lines2) >= 10:
+                duplicates += min(lines1, lines2)
+                processed_indices.add(j)  # 标记为重复，避免重复计数
+                total_lines += max(lines1, lines2)
+
+    # 4. 计算总代码行数和重复行数
+    total_code_lines = sum(_count_ast_nodes(tree) for tree in trees)
+    if total_code_lines == 0:
+        return 0.0
+
+    # 重复率 = 重复行数 / 总行数 * 100
+    return round((duplicates / total_code_lines) * 100, 2)
+
+
+def _count_ast_nodes(node: ast.AST) -> int:
+    """计算 AST 节点数量."""
+    return len(list(ast.walk(node)))
+
+
+def _normalize_ast(node: ast.AST) -> list[str]:
+    """规范化 AST，提取结构特征。
+
+    移除字面量、变量名等，只保留结构信息。
+    """
+    normalized = []
+
+    for child in ast.walk(node):
+        # 记录节点类型
+        normalized.append(type(child).__name__)
+
+        # 跳过字面量和变量名（这些在比较时应该被忽略）
+        # ast.Str 和 ast.Num 在 Python 3.8+ 已合并到 ast.Constant
+        if isinstance(child, ast.Constant):
+            continue
+        if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Store):
+            continue
+
+    return normalized
+
+
+def _calculate_ast_similarity(ast1: list[str], ast2: list[str]) -> float:
+    """计算两个 AST 序列的相似度.
+
+    使用最长公共子序列 (LCS) 算法。
+    """
+    if not ast1 or not ast2:
+        return 0.0
+
+    # 使用简单的 Jaccard 相似度（交集 / 并集）
+    set1 = set(ast1)
+    set2 = set(ast2)
+
+    intersection = len(set1 & set2)
+    union = len(set1 | set2)
+
+    if union == 0:
+        return 0.0
+
+    return intersection / union
 
 
 def _calculate_cyclomatic_complexity(tree: ast.AST) -> int:

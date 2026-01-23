@@ -96,35 +96,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 - ✅ 进度跟踪（可视化完成百分比）
 - ✅ **智能回退机制**（客户端限制时自动降级）
 
-### 回退机制说明
-
-**当前客户端限制**：
-
-由于当前 Claude Code 客户端不支持 FastMCP 3.0+ 的高级 API，以下功能受限：
-
-- ❌ **LLM Sampling**（`ctx.sample()`）：无法动态生成个性化问题
-- ❌ **User Elicitation**（`ctx.elicit()`）：无法交互式收集用户输入
-
-**自动回退策略**：
-
-| 功能 | 理想模式 | 回退模式 | 状态 |
-|------|----------|----------|------|
-| 动态问题生成 | LLM 根据上下文生成 | 预定义问题列表 | ✅ 已启用 |
-| 交互式输入收集 | 一键完成所有输入 | 逐步问答模式 | ✅ 已启用 |
-| 需求完整性分析 | LLM 智能判断 | 固定规则检查 | ✅ 已启用 |
-
-**用户实际体验**：
-
-1. **基础模式/完整模式**：使用预定义的 5/10 步结构化问卷
-2. **头脑风暴模式**：使用 4 个探索性问题轮换提问
-3. **渐进式模式**：根据答案数量选择相应的基础问题
-4. **会话恢复**：通过 `action="status"` 查询状态后继续
-
-**不影响核心功能**：
-- ✅ 所有关键信息仍然收集
-- ✅ 输入验证正常工作
-- ✅ 会话状态持久化
-- ✅ 与 `init_skill` 集成完整
+> 💡 **回退机制**：由于客户端限制，高级功能会自动降级为预定义模式。详见 [回退机制说明](references/fallback-mechanism.md)。
 
 ## MCP 工具集成
 
@@ -158,6 +130,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 详细文档
 
+- **[回退机制说明](references/fallback-mechanism.md)** - 客户端限制与自动降级策略
 - **[需求澄清指南](references/requirement-collection.md)** - AI 对话式需求收集流程详解
 - **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
 - **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
@@ -167,33 +140,6 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 架构说明
 
-Skill-Creator 采用混合架构，结合 MCP Server 和 Agent-Skill 的优势：
+Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（6 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Claude Code / Desktop                    │
-│                                                              │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │          Agent-Skill (skill-creator)                   │ │
-│  │  - 编排工作流程                                        │ │
-│  │  - 渐进式披露知识                                      │ │
-│  │  - 最佳实践指导                                        │ │
-│  └────────────────────┬───────────────────────────────────┘ │
-│                         │ 调用                                │
-│  ┌────────────────────▼───────────────────────────────────┐ │
-│  │         MCP Server (skill-creator-mcp)                 │ │
-│  │  - 6 Tools: 原子操作 (collect/init/validate/analyze/refactor/package) │ │
-│  │  - 4 Resources: 只读数据 (模板/规范/最佳实践)          │ │
-│  │  - 3 Prompts: 可重用模板 (create/validate/refactor)    │ │
-│  └─────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**职责边界**:
-- **MCP Server**: 执行原子操作、文件 I/O、数据验证、Session State 管理
-- **Agent-Skill**: 工作流编排、知识传递、最佳实践指导
-
-**详细文档**:
-- **[混合架构 ADR](../docs/adr/001-hybrid-architecture.md)** - 架构决策记录
-- **[协同示例](examples/mcp-skill-collaboration.md)** - 协同工作流示例
-- **[需求收集示例](examples/requirement-collection-basic.md)** - 需求澄清使用示例
+详见：[混合架构 ADR](../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md) | [需求收集示例](examples/requirement-collection-basic.md)

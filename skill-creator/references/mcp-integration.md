@@ -276,6 +276,7 @@ cached_practices = best_practices.contents[0].text
 ## 相关文档
 
 - **[MCP 使用示例](../examples/mcp-usage-examples.md)** - 完整代码示例
-- **[最佳实践](best-practices.md)** - 开发规范
+- **[最佳实践 - 核心](best-practices-core.md)** - 开发规范
+- **[最佳实践 - 高级](best-practices-advanced.md)** - Token 优化和高级技巧
 - **[验证规范](validation.md)** - 验证规则
 - **[验证实施指南](validation-guide.md)** - 等级划分和 CI/CD 集成

@@ -5,6 +5,9 @@
 - 用户取消处理
 - 验证失败重试
 - 会话状态正确保存
+
+注意：previous 和 status action 在主函数 collect_requirements 中处理，
+不通过 _collect_with_elicit，因此相关测试在 test_fallback_scenarios.py 中。
 """
 
 from unittest.mock import AsyncMock, MagicMock, Mock
@@ -276,19 +279,220 @@ async def test_collect_with_elicit_state_persistence():
 
 
 # ============================================================================
+# 动态模式 Elicit 测试 (Brainstorm/Progressive)
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_collect_with_elicit_brainstorm_mode():
+    """测试 brainstorm 模式的 elicit 集成."""
+    from datetime import datetime
+    from datetime import timezone as tz
+
+    mock_ctx = MagicMock()
+    mock_ctx.set_state = AsyncMock()
+    state_snapshots = []
+
+    async def mock_set_state(key, value):
+        state_snapshots.append(value)
+
+    mock_ctx.set_state = mock_set_state
+
+    # 模拟 elicit 返回用户输入
+    elicit_responses = [
+        "pdf-processing",
+        "extract text and images from PDF files",
+        "document automation workflow",
+        "tool-based",
+        "support OCR and batch processing",
+    ]
+    response_index = [0]
+
+    async def mock_elicit(prompt, **kwargs):
+        mock_result = Mock()
+        mock_result.accepted = True
+        if response_index[0] < len(elicit_responses):
+            mock_result.data = elicit_responses[response_index[0]]
+            response_index[0] += 1
+        else:
+            mock_result.data = "additional info"
+        return mock_result
+
+    mock_ctx.elicit = mock_elicit
+
+    session_state = SessionState(
+        current_step_index=0,
+        answers={},
+        started_at=datetime.now(tz.utc).isoformat(),
+        completed=False,
+        mode="brainstorm",
+        total_steps=10,
+    )
+
+    input_data = RequirementCollectionInput.model_validate(
+        {
+            "action": "start",
+            "mode": "brainstorm",
+            "session_id": "test-session",
+        }
+    )
+
+    result = await _collect_with_elicit(
+        ctx=mock_ctx,
+        session_state=session_state,
+        current_session_id="test-session",
+        is_dynamic_mode=True,
+        all_steps=None,
+        input_data=input_data,
+    )
+
+    # 验证返回结果
+    assert result["success"] is True
+    assert "answers" in result
+    # brainstorm 模式会收集多轮答案
+    assert len(result["answers"]) > 0
+
+
+@pytest.mark.asyncio
+async def test_collect_with_elicit_progressive_mode():
+    """测试 progressive 模式的 elicit 集成."""
+    from datetime import datetime
+    from datetime import timezone as tz
+
+    mock_ctx = MagicMock()
+    mock_ctx.set_state = AsyncMock()
+
+    # 模拟 elicit 返回用户输入
+    elicit_responses = ["test-skill", "A test skill function", "For testing"]
+    response_index = [0]
+
+    async def mock_elicit(prompt, **kwargs):
+        mock_result = Mock()
+        mock_result.accepted = True
+        if response_index[0] < len(elicit_responses):
+            mock_result.data = elicit_responses[response_index[0]]
+            response_index[0] += 1
+        else:
+            mock_result.data = "more info"
+        return mock_result
+
+    mock_ctx.elicit = mock_elicit
+
+    session_state = SessionState(
+        current_step_index=0,
+        answers={},
+        started_at=datetime.now(tz.utc).isoformat(),
+        completed=False,
+        mode="progressive",
+        total_steps=10,
+    )
+
+    input_data = RequirementCollectionInput.model_validate(
+        {
+            "action": "start",
+            "mode": "progressive",
+            "session_id": "test-session",
+        }
+    )
+
+    result = await _collect_with_elicit(
+        ctx=mock_ctx,
+        session_state=session_state,
+        current_session_id="test-session",
+        is_dynamic_mode=True,
+        all_steps=None,
+        input_data=input_data,
+    )
+
+    # 验证返回结果
+    assert "answers" in result
+    # progressive 模式会收集多轮答案
+    assert len(result["answers"]) > 0
+
+
+@pytest.mark.asyncio
+async def test_collect_with_elicit_brainstorm_conversation_history():
+    """测试 brainstorm 模式的对话历史更新."""
+    from datetime import datetime
+    from datetime import timezone as tz
+
+    mock_ctx = MagicMock()
+    state_snapshots = []
+
+    async def mock_set_state(key, value):
+        state_snapshots.append(value)
+
+    mock_ctx.set_state = mock_set_state
+
+    # 模拟 elicit 返回用户输入
+    call_count = [0]
+
+    async def mock_elicit(prompt, **kwargs):
+        mock_result = Mock()
+        mock_result.accepted = True
+        call_count[0] += 1
+        mock_result.data = f"User input {call_count[0]}"
+        return mock_result
+
+    mock_ctx.elicit = mock_elicit
+
+    session_state = SessionState(
+        current_step_index=0,
+        answers={},
+        started_at=datetime.now(tz.utc).isoformat(),
+        completed=False,
+        mode="brainstorm",
+        total_steps=10,
+    )
+
+    input_data = RequirementCollectionInput.model_validate(
+        {
+            "action": "start",
+            "mode": "brainstorm",
+            "session_id": "test-session",
+        }
+    )
+
+    # 运行几轮
+    await _collect_with_elicit(
+        ctx=mock_ctx,
+        session_state=session_state,
+        current_session_id="test-session",
+        is_dynamic_mode=True,
+        all_steps=None,
+        input_data=input_data,
+    )
+
+    # 验证对话历史被保存
+    assert len(state_snapshots) > 0
+    # 检查最后一次状态快照包含对话历史
+    last_snapshot = state_snapshots[-1]
+    # 对话历史应该被保存在 answers 中
+    assert "_conversation_history" in last_snapshot.get("answers", {})
+
+
+# ============================================================================
 # 总结
 # ============================================================================
 
 """
 Elicit 模式测试总结：
 
+基础功能：
 1. ✅ 用户取消处理
 2. ✅ 验证失败重试
 3. ✅ 超过最大重试次数
 4. ✅ elicit 调用失败处理
 5. ✅ 会话状态持久化
 
+动态模式 (新增):
+6. ✅ brainstorm 模式 elicit 集成
+7. ✅ progressive 模式 elicit 集成
+8. ✅ brainstorm 对话历史更新
+
 注意：这些测试验证了 elicit 模式的核心逻辑。
 要在实际 Claude Code 环境中测试完整的 elicit 功能，
 需要启动 MCP Server 并通过 MCP 协议调用工具。
+
+previous 和 status action 的测试在 test_fallback_scenarios.py 中。
 """

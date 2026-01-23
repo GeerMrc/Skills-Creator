@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skill-creator-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "Agent-Skills 开发与质量保证 MCP Server"
 readme = "README.md"
 requires-python = ">=3.10"

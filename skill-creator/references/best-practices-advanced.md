@@ -36,7 +36,8 @@
 SKILL.md (100行)
 ├── references/
 │   ├── mcp-integration.md (200行)  # 需要时加载
-│   ├── best-practices.md (250行)   # 需要时加载
+│   ├── best-practices-core.md (206行)   # 核心原则
+│   ├── best-practices-advanced.md (232行)  # 高级技巧
 │   └── validation.md (220行)       # 需要时加载
 ```
 

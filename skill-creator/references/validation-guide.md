@@ -328,5 +328,5 @@ def get_grade(score: float) -> str:
 ## 相关资源
 
 - **[验证规范](validation.md)** - 核心验证规则和检查清单
-- **[最佳实践](best-practices.md)** - 渐进式披露架构和设计原则
+- **[最佳实践 - 核心](best-practices-core.md)** - 渐进式披露架构和设计原则
 - **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用和资源访问

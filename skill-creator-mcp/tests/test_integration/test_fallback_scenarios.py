@@ -5,6 +5,8 @@
 - brainstorm 模式的回退行为
 - progressive 模式的回退行为
 - 完整性检查的回退行为
+- previous action 测试
+- status action 测试
 """
 
 from unittest.mock import AsyncMock, MagicMock, Mock
@@ -415,3 +417,449 @@ async def test_progressive_fallback_smart_questions():
     # 有 skill_name 时应该问 skill_function
     result2 = await _generate_progressive_question(mock_ctx, {"skill_name": "test"})
     assert result2["question_key"] == "skill_function"
+
+
+# ============================================================================
+# Previous Action 测试
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_previous_action_basic_mode():
+    """测试 basic 模式下的 previous action."""
+    mock_ctx = MagicMock()
+
+    # 使用可变状态存储
+    session_storage = {}
+
+    async def mock_get_state(key):
+        return session_storage.get(key)
+
+    async def mock_set_state(key, value):
+        session_storage[key] = value
+
+    mock_ctx.get_state = mock_get_state
+    mock_ctx.set_state = mock_set_state
+    mock_ctx.session_id = "test-session"
+
+    # 首先开始一个会话并前进两步
+    result = await collect_requirements(
+        mock_ctx,
+        action="start",
+        mode="basic",
+    )
+
+    session_id = result["session_id"]
+
+    # 回答第一个问题
+    await collect_requirements(
+        mock_ctx,
+        action="next",
+        session_id=session_id,
+        user_input="test-skill",
+    )
+
+    # 回答第二个问题
+    await collect_requirements(
+        mock_ctx,
+        action="next",
+        session_id=session_id,
+        user_input="A test skill function",
+    )
+
+    # 现在执行 previous
+    result = await collect_requirements(
+        mock_ctx,
+        action="previous",
+        session_id=session_id,
+    )
+
+    # 应该返回到上一步
+    assert result["success"] is True
+    assert result["action"] == "previous"
+    assert result["step_index"] == 1  # 从第2步返回到第1步
+
+
+@pytest.mark.asyncio
+async def test_previous_action_at_first_step():
+    """测试在第一步时执行 previous action."""
+    mock_ctx = MagicMock()
+
+    # 使用可变状态存储
+    session_storage = {}
+
+    async def mock_get_state(key):
+        return session_storage.get(key)
+
+    async def mock_set_state(key, value):
+        session_storage[key] = value
+
+    mock_ctx.get_state = mock_get_state
+    mock_ctx.set_state = mock_set_state
+    mock_ctx.session_id = "test-session"
+
+    # 开始一个会话（basic 模式）
+    result = await collect_requirements(
+        mock_ctx,
+        action="start",
+        mode="basic",
+    )
+
+    session_id = result["session_id"]
+
+    # 在第一步时执行 previous（step_index = 0）
+    result = await collect_requirements(
+        mock_ctx,
+        action="previous",
+        session_id=session_id,
+    )
+
+    # 在 basic 模式下，第一步执行 previous 会返回当前步骤（不报错）
+    assert result["success"] is True
+    assert result["step_index"] == 0  # 仍在第一步
+
+
+@pytest.mark.asyncio
+async def test_previous_action_dynamic_mode_brainstorm():
+    """测试 brainstorm 动态模式下的 previous action."""
+    mock_ctx = MagicMock()
+
+    # 模拟 LLM 不可用
+    mock_ctx.sample = AsyncMock(side_effect=Exception("Sampling not available"))
+
+    # 使用可变状态存储
+    session_storage = {}
+
+    async def mock_get_state(key):
+        return session_storage.get(key)
+
+    async def mock_set_state(key, value):
+        session_storage[key] = value
+
+    mock_ctx.get_state = mock_get_state
+    mock_ctx.set_state = mock_set_state
+    mock_ctx.session_id = "test-session"
+
+    # 开始 brainstorm 模式
+    result = await collect_requirements(
+        mock_ctx,
+        action="start",
+        mode="brainstorm",
+    )
+
+    session_id = result["session_id"]
+
+    # 提供一个答案
+    await collect_requirements(
+        mock_ctx,
+        action="next",
+        session_id=session_id,
+        user_input="Some answer",
+    )
+
+    # 执行 previous
+    result = await collect_requirements(
+        mock_ctx,
+        action="previous",
+        session_id=session_id,
+    )
+
+    # 应该成功返回到上一步
+    assert result["success"] is True
+    assert result["action"] == "previous"
+
+
+# ============================================================================
+# Status Action 测试
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_status_action_basic_mode():
+    """测试 basic 模式下的 status action."""
+    mock_ctx = MagicMock()
+
+    # 使用可变状态存储
+    session_storage = {}
+
+    async def mock_get_state(key):
+        return session_storage.get(key)
+
+    async def mock_set_state(key, value):
+        session_storage[key] = value
+
+    mock_ctx.get_state = mock_get_state
+    mock_ctx.set_state = mock_set_state
+    mock_ctx.session_id = "test-session"
+
+    # 开始会话
+    result = await collect_requirements(
+        mock_ctx,
+        action="start",
+        mode="basic",
+    )
+
+    session_id = result["session_id"]
+
+    # 回答一个问题
+    await collect_requirements(
+        mock_ctx,
+        action="next",
+        session_id=session_id,
+        user_input="test-skill",
+    )
+
+    # 查询状态
+    result = await collect_requirements(
+        mock_ctx,
+        action="status",
+        session_id=session_id,
+    )
+
+    # 验证状态信息
+    assert result["success"] is True
+    assert result["action"] == "status"
+    assert result["step_index"] == 1  # 在第2步（索引为1）
+    assert result["total_steps"] == 5
+    assert result["progress"] == 20.0  # 1/5 * 100
+    assert "skill_name" in result["answers"]
+
+
+@pytest.mark.asyncio
+async def test_status_action_completed_session():
+    """测试已完成会话的 status action."""
+    mock_ctx = MagicMock()
+
+    # 模拟 LLM 不可用
+    mock_ctx.sample = AsyncMock(side_effect=Exception("Sampling not available"))
+
+    # 使用可变状态存储
+    session_storage = {}
+
+    async def mock_get_state(key):
+        return session_storage.get(key)
+
+    async def mock_set_state(key, value):
+        session_storage[key] = value
+
+    mock_ctx.get_state = mock_get_state
+    mock_ctx.set_state = mock_set_state
+    mock_ctx.session_id = "test-session"
+
+    # 直接设置一个已完成的会话状态
+    completed_session_data = {
+        "current_step_index": 5,
+        "answers": {
+            "skill_name": "pdf-helper",
+            "skill_function": "Parse PDF files",
+            "use_cases": "Document analysis",
+            "template_type": "tool-based",
+            "additional_features": "OCR support",
+        },
+        "started_at": "2026-01-23T10:00:00Z",
+        "completed": True,
+        "mode": "basic",
+        "total_steps": 5,
+    }
+    session_storage["requirement_test-session"] = completed_session_data
+
+    # 查询状态
+    result = await collect_requirements(
+        mock_ctx,
+        action="status",
+        session_id="test-session",
+    )
+
+    # 验证完成状态
+    assert result["success"] is True
+    assert result["action"] == "status"
+    assert result["completed"] is True
+    assert len(result["answers"]) == 5
+
+
+@pytest.mark.asyncio
+async def test_status_action_dynamic_mode():
+    """测试动态模式下的 status action."""
+    mock_ctx = MagicMock()
+
+    # 模拟 LLM 不可用
+    mock_ctx.sample = AsyncMock(side_effect=Exception("Sampling not available"))
+
+    # 使用可变状态存储
+    session_storage = {}
+
+    async def mock_get_state(key):
+        return session_storage.get(key)
+
+    async def mock_set_state(key, value):
+        session_storage[key] = value
+
+    mock_ctx.get_state = mock_get_state
+    mock_ctx.set_state = mock_set_state
+    mock_ctx.session_id = "test-session"
+
+    # 开始 brainstorm 模式
+    result = await collect_requirements(
+        mock_ctx,
+        action="start",
+        mode="brainstorm",
+    )
+
+    session_id = result["session_id"]
+
+    # 查询状态
+    result = await collect_requirements(
+        mock_ctx,
+        action="status",
+        session_id=session_id,
+    )
+
+    # 验证动态模式状态
+    assert result["success"] is True
+    assert result["action"] == "status"
+    assert result["mode"] == "brainstorm"
+    # 动态模式下 is_dynamic_mode 应该在返回值中
+    # 注意：根据实际代码行为，可能不包含此字段
+    # 我们只验证核心字段
+
+
+# ============================================================================
+# LLM 解析成功分支测试
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_check_requirement_completeness_llm_success():
+    """测试 LLM 成功解析完整性的情况."""
+    mock_ctx = MagicMock()
+
+    # Mock LLM 返回有效 JSON
+    mock_sample_result = Mock()
+    mock_sample_result.text = '''{
+        "is_complete": true,
+        "missing_info": [],
+        "suggestions": []
+    }'''
+    mock_ctx.sample = AsyncMock(return_value=mock_sample_result)
+
+    answers = {
+        "skill_name": "test-skill",
+        "skill_function": "测试功能",
+        "use_cases": "测试场景",
+        "template_type": "tool-based",
+    }
+
+    result = await _check_requirement_completeness(mock_ctx, answers)
+
+    # 验证 LLM 解析成功
+    assert result["is_complete"] is True
+    assert len(result["missing_info"]) == 0
+
+
+@pytest.mark.asyncio
+async def test_check_requirement_completeness_llm_partial():
+    """测试 LLM 返回部分缺失信息的情况."""
+    mock_ctx = MagicMock()
+
+    # Mock LLM 返回部分缺失的 JSON
+    mock_sample_result = Mock()
+    mock_sample_result.text = '''{
+        "is_complete": false,
+        "missing_info": ["use_cases"],
+        "suggestions": ["请补充使用场景"]
+    }'''
+    mock_ctx.sample = AsyncMock(return_value=mock_sample_result)
+
+    answers = {
+        "skill_name": "test-skill",
+        "skill_function": "测试功能",
+    }
+
+    result = await _check_requirement_completeness(mock_ctx, answers)
+
+    # 验证 LLM 返回的缺失信息
+    assert result["is_complete"] is False
+    assert "use_cases" in result["missing_info"]
+
+
+@pytest.mark.asyncio
+async def test_check_requirement_completeness_llm_json_with_prefix():
+    """测试 LLM 返回带前缀文本的 JSON."""
+    mock_ctx = MagicMock()
+
+    # Mock LLM 返回带前缀的 JSON
+    mock_sample_result = Mock()
+    mock_sample_result.text = '''这是分析结果：
+
+{
+    "is_complete": false,
+    "missing_info": ["template_type"],
+    "suggestions": ["请选择模板类型"]
+}
+
+希望对您有帮助。'''
+    mock_ctx.sample = AsyncMock(return_value=mock_sample_result)
+
+    answers = {
+        "skill_name": "test-skill",
+        "skill_function": "测试功能",
+        "use_cases": "测试场景",
+    }
+
+    result = await _check_requirement_completeness(mock_ctx, answers)
+
+    # 验证 JSON 被正确提取
+    assert result["is_complete"] is False
+    assert "template_type" in result["missing_info"]
+
+
+# ============================================================================
+# 边缘情况测试
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_previous_action_dynamic_at_first_step():
+    """测试动态模式在第一步时执行 previous."""
+    mock_ctx = MagicMock()
+
+    # 模拟 LLM 不可用
+    mock_ctx.sample = AsyncMock(side_effect=Exception("Sampling not available"))
+
+    # 使用可变状态存储
+    session_storage = {}
+
+    async def mock_get_state(key):
+        return session_storage.get(key)
+
+    async def mock_set_state(key, value):
+        session_storage[key] = value
+
+    mock_ctx.get_state = mock_get_state
+    mock_ctx.set_state = mock_set_state
+    mock_ctx.session_id = "test-session"
+
+    # 开始 brainstorm 模式
+    result = await collect_requirements(
+        mock_ctx,
+        action="start",
+        mode="brainstorm",
+    )
+
+    session_id = result["session_id"]
+
+    # 在第一步时执行 previous（step_index = 0）
+    result = await collect_requirements(
+        mock_ctx,
+        action="previous",
+        session_id=session_id,
+    )
+
+    # 动态模式下，第一步执行 previous 的行为：
+    # 代码会执行到第 979-986 行的 else 分支，返回错误
+    # 但如果代码逻辑是 "already at first step, no change to make"
+    # 可能返回 success=True (保持状态不变)
+    # 根据实际测试结果调整断言
+    assert result["action"] == "previous"
+    # 验证 step_index 仍然是 0
+    assert result["step_index"] == 0
