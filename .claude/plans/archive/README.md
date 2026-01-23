@@ -1,16 +1,20 @@
 # 计划文档归档索引
 
-> **最后更新**: 2026-01-22
-> **归档文件数**: 10个
+> **最后更新**: 2026-01-23
+> **归档文件数**: 16个
 
 ---
 
 ## 最新归档
 
-| 文件名 | 原文件名 | 归档原因 | 归档日期 |
-|--------|----------|----------|----------|
-| `audit-project-2026-01-21.md` | indexed-spinning-donut.md | 已过期（被2026-01-22版本替代） | 2026-01-22 |
-| `docs-create-claude-md-plan.md` | lively-crafting-bear.md | 已完成（CLAUDE.md已创建） | 2026-01-22 |
+| 文件名 | 归档原因 | 归档日期 |
+|--------|----------|----------|
+| `audit-project-comprehensive.md` | 项目审核审计完成，报告已生成 | 2026-01-23 |
+| `COMPREHENSIVE_AUDIT_REPORT_2026-01-22.md` | 综合审核报告已归档 | 2026-01-23 |
+| `cross-validation-checklist.md` | 交叉验证检查清单已完成 | 2026-01-23 |
+| `main-skill-creator-dev.md` | 主开发计划已完成 | 2026-01-23 |
+| `main-skill-creator-dev-simple.md` | 简化版开发计划已完成 | 2026-01-23 |
+| `release-preparation-plan.md` | 发布准备计划已完成 | 2026-01-23 |
 
 ---
 
@@ -24,13 +28,16 @@
 
 ### 审计报告 (Audit Reports)
 
-| 文件名 | 原文件名 | 内容 | 状态 | 归档日期 |
-|--------|----------|------|------|----------|
-| `audit-agent-skill-architecture-2026-01-21.md` | joyful-twirling-lerdorf-agent-a194c32.md | Agent-Skill深度架构审计报告 | 已完成 | 2026-01-22 |
-| `audit-mcp-server-architecture-2026-01-21.md` | joyful-twirling-lerdorf-agent-a6951fc.md | MCP Server深度架构审计报告 | 已完成 | 2026-01-22 |
-| `audit-plan-comprehensive-2026-01-21.md` | joyful-twirling-lerdorf.md | 项目完整架构审计计划（主计划） | 已完成 | 2026-01-22 |
-| `audit-plan-consistency-2026-01-21.md` | joyful-twirling-lerdorf-agent-a3f3070.md | 开发计划一致性深度审计报告 | 已完成 | 2026-01-22 |
-| `audit-project-full-2026-01-21.md` | reactive-nibbling-island.md | 项目全面审核报告 | 已完成 | 2026-01-22 |
+| 文件名 | 内容 | 状态 | 归档日期 |
+|--------|------|------|----------|
+| `audit-agent-skill-architecture-2026-01-21.md` | Agent-Skill深度架构审计报告 | 已完成 | 2026-01-22 |
+| `audit-mcp-server-architecture-2026-01-21.md` | MCP Server深度架构审计报告 | 已完成 | 2026-01-22 |
+| `audit-plan-comprehensive-2026-01-21.md` | 项目完整架构审计计划（主计划） | 已完成 | 2026-01-22 |
+| `audit-plan-consistency-2026-01-21.md` | 开发计划一致性深度审计报告 | 已完成 | 2026-01-22 |
+| `audit-project-full-2026-01-21.md` | 项目全面审核报告 | 已完成 | 2026-01-22 |
+| `audit-project-comprehensive.md` | 项目审核审计计划 | 已完成 | 2026-01-23 |
+| `COMPREHENSIVE_AUDIT_REPORT_2026-01-22.md` | 综合审核报告 | 已完成 | 2026-01-23 |
+| `cross-validation-checklist.md` | 交叉验证检查清单 | 已完成 | 2026-01-23 |
 
 ### 功能计划 (Feature Plans)
 
@@ -46,9 +53,22 @@
 
 ### 质量改进计划 (Quality Improvement Plans)
 
-| 文件名 | 原文件名 | 内容 | 状态 | 归档日期 |
-|--------|----------|------|------|----------|
-| `quality-improvement-plan-2026-01-21.md` | dynamic-wandering-sky.md | 质量提升与下一阶段推进计划 | 已完成 | 2026-01-22 |
+| 文件名 | 内容 | 状态 | 归档日期 |
+|--------|------|------|----------|
+| `quality-improvement-plan-2026-01-21.md` | 质量提升与下一阶段推进计划 | 已完成 | 2026-01-22 |
+
+### 主开发计划 (Main Development Plans)
+
+| 文件名 | 内容 | 状态 | 归档日期 |
+|--------|------|------|----------|
+| `main-skill-creator-dev.md` | Skills-Creator 主开发计划 | 已完成 | 2026-01-23 |
+| `main-skill-creator-dev-simple.md` | Skills-Creator 简化版开发计划 | 已完成 | 2026-01-23 |
+
+### 发布准备计划 (Release Preparation Plans)
+
+| 文件名 | 内容 | 状态 | 归档日期 |
+|--------|------|------|----------|
+| `release-preparation-plan.md` | 发布准备计划 | 已完成 | 2026-01-23 |
 
 ---
 
@@ -83,9 +103,5 @@
 
 | 文件名 | 状态 |
 |--------|------|
-| `main-skill-creator-dev.md` | 活跃（主开发计划） |
-| `audit-project-comprehensive.md` | 活跃（当前审计计划） |
-| `audit-project-2026-01-21.md` | 已过期 |
-| `docs-create-claude-md-plan.md` | 已完成 |
-| `release-preparation-plan.md` | 活跃 |
-| `main-skill-creator-dev-simple.md` | 活跃（简化版） |
+| `next-steps-v0.3.0.md` | 活跃（v0.3.0 开发计划） |
+| `atomic-wandering-sifakis.md` | 活跃（功能分支计划） |

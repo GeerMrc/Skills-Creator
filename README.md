@@ -126,7 +126,7 @@ Skills-Creator/
 │   │   ├── resources/          # 3个资源
 │   │   ├── prompts/            # 3个提示模板
 │   │   └── utils/              # 工具函数
-│   ├── tests/                  # 测试套件 (98% 覆盖率)
+│   ├── tests/                  # 测试套件 (99% 覆盖率, 307个测试)
 │   └── pyproject.toml          # 项目配置
 ├── docs/                       # 项目文档
 │   └── adr/
@@ -157,7 +157,8 @@ Skills-Creator/
 | 文档 | 说明 |
 |------|------|
 | [MCP 集成指南](skill-creator/references/mcp-integration.md) | MCP 工具和资源使用 |
-| [最佳实践](skill-creator/references/best-practices.md) | 渐进式披露和描述规范 |
+| [最佳实践 - 核心](skill-creator/references/best-practices-core.md) | 基础架构和规范 |
+| [最佳实践 - 高级](skill-creator/references/best-practices-advanced.md) | 高级技巧和优化 |
 | [验证规范](skill-creator/references/validation.md) | 命名、结构、内容验证规则 |
 | [验证指南](skill-creator/references/validation-guide.md) | 详细验证指南 |
 
@@ -216,7 +217,7 @@ uv run python -m skill_creator_mcp.http
 
 | 指标 | 当前值 | 目标值 |
 |------|--------|--------|
-| 测试覆盖率 | 98% | ≥95% |
+| 测试覆盖率 | 99% (307个测试) | ≥95% |
 | 代码规范 | ✅ 通过 | 0错误 |
 | 类型检查 | ✅ 通过 | 0错误 |
 | 安全检查 | ✅ 通过 | 0高危 |

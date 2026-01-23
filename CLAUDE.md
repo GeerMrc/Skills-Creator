@@ -296,13 +296,18 @@ uv run bandit -r src/  # 0 高危问题
 ```
 main (生产分支)
   │
+develop (开发分支)
+  │
   └─ feature/* (功能分支)
       ├─ feature/init-skill-tool     [当前分支]
       ├─ feature/your-feature-name
       └── ...
 ```
 
-**说明**: 项目当前使用简化的分支结构，直接从 main 创建功能分支。
+**说明**: 项目使用 Git Flow 风格的分支结构：
+- `main`: 生产分支，仅包含稳定版本
+- `develop`: 开发分支，集成所有功能开发
+- `feature/*`: 功能分支，从 `develop` 创建，完成后合并回 `develop`
 
 ### 3.2 分支命名规范
 
@@ -324,9 +329,9 @@ main (生产分支)
 
 **创建功能分支**:
 ```bash
-# 1. 确保在最新 main 分支
-git checkout main
-git pull origin main
+# 1. 确保在最新 develop 分支
+git checkout develop
+git pull origin develop
 
 # 2. 创建新分支
 git checkout -b feature/your-feature-name
@@ -340,10 +345,16 @@ git push -u origin feature/your-feature-name
 
 **分支合并流程**:
 1. 开发完成后推送到远程
-2. 创建 Pull Request 到 main
+2. 创建 Pull Request 到 `develop`
 3. Code Review 通过后合并
 4. 使用 **Squash and Merge** 保持提交历史整洁
 5. 合并后删除功能分支
+
+**发布到 main**:
+1. 从 `develop` 创建 `release/vX.Y.Z` 分支
+2. 进行发布前测试和修复
+3. 合并 `release` 分支到 `main` 和 `develop`
+4. 在 `main` 上打 tag
 
 **禁止操作**:
 - ❌ 直接在 main 分支提交代码
@@ -1031,7 +1042,8 @@ planning → in_progress → completed → archived
 | 文档 | 路径 | 说明 |
 |------|------|------|
 | MCP 集成指南 | `skill-creator/references/mcp-integration.md` | MCP 工具使用和资源访问 |
-| 最佳实践 | `skill-creator/references/best-practices.md` | 渐进式披露和描述规范 |
+| 最佳实践 - 核心 | `skill-creator/references/best-practices-core.md` | 基础架构和规范 |
+| 最佳实践 - 高级 | `skill-creator/references/best-practices-advanced.md` | 高级技巧和优化 |
 | 验证规范 | `skill-creator/references/validation.md` | 命名、结构、内容验证规则 |
 
 ### 9.3 计划文档

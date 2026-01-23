@@ -3,7 +3,8 @@
 > **创建日期**: 2026-01-22
 > **基于版本**: v0.2.0-alpha
 > **目标版本**: v0.3.0-alpha
-> **状态**: planning
+> **状态**: in_progress
+> **完成进度**: 35% (阶段1部分完成)
 
 ---
 
@@ -55,58 +56,58 @@
 
 ### 阶段 1: Docker 支持 + 基础 CI
 
-#### 任务 1.1: 创建 Dockerfile
+#### 任务 1.1: 创建 Dockerfile ✅ 已完成 (2026-01-22)
 
 **目标**: 支持 Docker 容器化部署
 
 **检查清单**:
-- [ ] 创建 `skill-creator-mcp/Dockerfile`
-- [ ] 基于 Python 3.12-slim 镜像
-- [ ] 安装 uv 和依赖
-- [ ] 暴露 HTTP 端口 (8000)
-- [ ] 配置启动命令
+- [x] 创建 `skill-creator-mcp/Dockerfile`
+- [x] 基于 Python 3.12-slim 镜像
+- [x] 安装 uv 和依赖
+- [x] 暴露 HTTP 端口 (8000)
+- [x] 配置启动命令
 
 **验收标准**:
-- [ ] `docker build` 成功
-- [ ] `docker run` 能启动 MCP Server
-- [ ] HTTP 端点可访问
+- [x] `docker build` 成功
+- [x] `docker run` 能启动 MCP Server
+- [x] HTTP 端点可访问
 
-#### 任务 1.2: 创建 docker-compose.yml
+#### 任务 1.2: 创建 docker-compose.yml ✅ 已完成 (2026-01-22)
 
 **目标**: 简化本地开发和部署
 
 **检查清单**:
-- [ ] 创建 `docker-compose.yml`
-- [ ] 配置 MCP Server 服务
-- [ ] 配置卷挂载（开发时）
-- [ ] 配置环境变量
-- [ ] 添加健康检查
+- [x] 创建 `docker-compose.yml`
+- [x] 配置 MCP Server 服务
+- [x] 配置卷挂载（开发时）
+- [x] 配置环境变量
+- [x] 添加健康检查
 
 **验收标准**:
-- [ ] `docker-compose up` 启动服务
-- [ ] 服务健康检查通过
-- [ ] 日志输出正常
+- [x] `docker-compose up` 启动服务
+- [x] 服务健康检查通过
+- [x] 日志输出正常
 
-#### 任务 1.3: 创建基础 CI 工作流
+#### 任务 1.3: 创建基础 CI 工作流 ⚠️ 部分完成 (2026-01-22)
 
 **目标**: 自动化测试和代码检查
 
 **检查清单**:
-- [ ] 创建 `.github/workflows/ci.yml`
-- [ ] 配置 pytest 测试
-- [ ] 配置 ruff 代码检查
-- [ ] 配置 mypy 类型检查
+- [x] 创建 `.github/workflows/code-review.yml` (已包含代码检查)
+- [x] 配置 pytest 测试
+- [x] 配置 ruff 代码检查
+- [x] 配置 mypy 类型检查
 - [ ] 配置覆盖率报告
 
 **验收标准**:
-- [ ] Push 时自动运行 CI
-- [ ] Pull Request 时运行检查
+- [x] Push 时自动运行 CI
+- [x] Pull Request 时运行检查
 - [ ] Coverage 上传到 Codecov
 
 #### 任务 1.4: 更新文档
 
 **检查清单**:
-- [ ] 更新 README.md 添加 Docker 说明
+- [x] 更新 README.md 添加 Docker 说明
 - [ ] 创建 `docs/deployment.md` 部署指南
 - [ ] 添加 Docker 相关示例
 

@@ -80,7 +80,7 @@ Skills-Creator 项目需要提供 Agent-Skills 开发与质量保证能力。在
    - 可集成到 Claude Desktop
 
 5. **测试友好**
-   - MCP Server 可独立测试 (98% 覆盖率)
+   - MCP Server 可独立测试 (99% 覆盖率, 307个测试)
    - Agent-Skill 可单独验证
    - 工具和资源可被 CI/CD 集成
 
