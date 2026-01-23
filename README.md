@@ -2,7 +2,7 @@
 
 > **版本**: v0.2.0-alpha
 > **项目类型**: MCP Server + Agent-Skill 混合架构
-> **测试覆盖率**: 92% (401 tests)
+> **测试覆盖率**: 94% (414 tests)
 
 > **📢 目录结构变更通知 (v0.2.0)**: Agent-Skill 相关代码已统一到 `skill-creator/` 目录。如果您直接引用 `SKILL.md`、`examples/` 或 `references/`，请参阅 [迁移指南](MIGRATION.md) 更新您的路径配置。
 
@@ -126,7 +126,7 @@ Skills-Creator/
 │   │   ├── resources/          # 3个资源
 │   │   ├── prompts/            # 3个提示模板
 │   │   └── utils/              # 工具函数
-│   ├── tests/                  # 测试套件 (92% 覆盖率, 401个测试)
+│   ├── tests/                  # 测试套件 (94% 覆盖率, 414个测试)
 │   └── pyproject.toml          # 项目配置
 ├── docs/                       # 项目文档
 │   └── adr/
@@ -217,7 +217,7 @@ uv run python -m skill_creator_mcp.http
 
 | 指标 | 当前值 | 目标值 |
 |------|--------|--------|
-| 测试覆盖率 | 92% (401个测试) | ≥95% |
+| 测试覆盖率 | 94% (414个测试) | ≥95% |
 | 代码规范 | ✅ 通过 | 0错误 |
 | 类型检查 | ✅ 通过 | 0错误 |
 | 安全检查 | ✅ 通过 | 0高危 |
