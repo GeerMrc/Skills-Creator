@@ -130,6 +130,13 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 详细文档
 
+### 文档索引
+
+- **[引用文档索引](references/README.md)** - 所有引用文档的分类导航
+- **[示例文档索引](examples/README.md)** - 所有使用示例的分类导航
+
+### 核心文档
+
 - **[回退机制说明](references/fallback-mechanism.md)** - 客户端限制与自动降级策略
 - **[需求澄清指南](references/requirement-collection.md)** - AI 对话式需求收集流程详解
 - **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
