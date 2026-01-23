@@ -31,6 +31,12 @@
 | **[API 使用示例](requirement-collection-api-examples.md)** | 实际使用场景 | ~150 |
 | **[回退机制](fallback-mechanism.md)** | 客户端兼容性说明 | ~50 |
 
+### 故障排除
+
+| 文档 | 说明 | 行数 |
+|------|------|------|
+| **[故障排除指南](troubleshooting.md)** | 常见问题和解决方案 | ~250 |
+
 ### 创意发散
 
 | 文档 | 说明 | 行数 |
@@ -52,6 +58,7 @@
 | API 参数和返回值 | [API 核心参考](requirement-collection-api-core.md) |
 | 实际使用示例 | [API 使用示例](requirement-collection-api-examples.md) |
 | 高级优化技巧 | [最佳实践 - 高级](best-practices-advanced.md) |
+| 排除连接错误 | [故障排除指南](troubleshooting.md) |
 | 创意发散方法 | [头脑风暴技巧](brainstorming-techniques.md) |
 
 ---
