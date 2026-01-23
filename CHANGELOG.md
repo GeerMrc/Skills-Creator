@@ -111,6 +111,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `examples/requirement-collection-basic.md` - 使用示例（200+ 行）
 
 - **SKILL.md Updates**: 添加需求澄清流程
+
+### Fixed
+- **Fallback mechanism**: 统一 Progressive 和 Brainstorm 模式的异常返回格式
+  - 异常时统一返回 `success: True` 和 `source: "fallback"`
+  - 保留 `error` 字段用于调试
+  - 确保所有回退路径返回一致的响应结构
+
+### Testing
+- **capability_detection.py**: 新增 18 个单元测试
+  - 覆盖率从 0% 提升到 100%
+  - 测试 sampling/elicitation 能力检测的各种场景
+  - 验证正确计算 summary 和 fallback_required 标志
+- **fallback_scenarios**: 新增 14 个集成测试
+  - 测试真实异常场景下的回退行为
+  - 验证 collect_requirements 在高级 API 不可用时的正常工作
+  - 覆盖端到端回退流程（basic/complete/brainstorm/progressive 模式）
+- **测试覆盖**: 总体从 85% 提升到 92% (+7%)
+- **测试数量**: 从 369 个增加到 401 个 (+32 个)
   - 新增核心能力：需求澄清
   - 新增触发词：需求澄清
   - 新增快速开始：需求澄清示例

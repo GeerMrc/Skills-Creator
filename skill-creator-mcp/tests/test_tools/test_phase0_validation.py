@@ -182,7 +182,7 @@ async def test_generate_progressive_question_empty_answers():
 
 @pytest.mark.asyncio
 async def test_generate_progressive_question_fallback():
-    """测试 LLM 调用失败时的降级处理."""
+    """测试 LLM 调用失败时的降级处理（统一格式）."""
     mock_ctx = MagicMock()
     mock_ctx.sample = AsyncMock(side_effect=Exception("LLM error"))
 
@@ -191,11 +191,14 @@ async def test_generate_progressive_question_fallback():
         answers={"skill_name": "test"},
     )
 
-    # 注意：progressive 模式在异常时返回 success: False
-    # 这与 brainstorm 模式不同（brainstorm 返回降级问题）
-    assert result["success"] is False
-    assert "error" in result
-    assert "next_question" in result  # 仍然提供默认问题
+    # 异常时现在返回 success:True（与 brainstorm 保持一致）
+    assert result["success"] is True
+    assert "error" in result  # 保留错误信息供调试
+    assert "next_question" in result  # 提供回退问题
+    assert result["is_dynamic"] is False
+    assert result["source"] == "fallback"
+    # 有 skill_name 时应该返回下一个问题
+    assert result["question_key"] == "skill_function" or result["question_key"] == "use_cases"
 
 
 # ============================================================================

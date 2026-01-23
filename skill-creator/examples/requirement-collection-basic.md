@@ -421,7 +421,225 @@ session_id = result["session_id"]
 }
 ```
 
+## 回退机制说明
+
+### 当前客户端限制
+
+由于当前 Claude Code 客户端不支持 FastMCP 3.0+ 的高级 API，以下功能受限：
+
+- **LLM Sampling** (`ctx.sample()`): 无法动态生成个性化问题
+- **User Elicitation** (`ctx.elicit()`): 无法交互式收集用户输入
+
+### 自动回退策略
+
+系统实现了智能回退机制，确保核心功能在客户端限制时仍能正常工作：
+
+| 功能 | 理想模式 | 回退模式 | 状态 |
+|------|----------|----------|------|
+| 动态问题生成 | LLM 根据上下文生成 | 预定义问题列表 | ✅ 已启用 |
+| 交互式输入收集 | 一键完成所有输入 | 逐步问答模式 | ✅ 已启用 |
+| 需求完整性分析 | LLM 智能判断 | 固定规则检查 | ✅ 已启用 |
+
+### Brainstorm 模式回退
+
+#### 理想模式（LLM 支持）
+
+```json
+{
+  "action": "start",
+  "mode": "brainstorm"
+}
+```
+
+**响应**（有 LLM 支持）：
+```json
+{
+  "success": true,
+  "question": "您希望这个技能解决用户什么样的核心痛点？",
+  "is_dynamic": true,
+  "source": "llm_generated"
+}
+```
+
+#### 回退模式（无 LLM）
+
+**响应**（无 LLM 支持）：
+```json
+{
+  "success": true,
+  "question": "请描述您希望这个技能实现的核心价值",
+  "is_dynamic": false,
+  "source": "fallback"
+}
+```
+
+**回退问题轮换**：
+- 问题 1: 请描述您希望这个技能实现的核心价值
+- 问题 2: 这个技能的主要使用场景是什么？
+- 问题 3: 您希望这个技能解决什么具体问题？
+- 问题 4: 技能的成功交付需要哪些关键功能？
+
+### Progressive 模式回退
+
+#### 理想模式（LLM 支持）
+
+```json
+{
+  "action": "start",
+  "mode": "progressive"
+}
+```
+
+**响应**（有 LLM 支持）：
+```json
+{
+  "success": true,
+  "next_question": "这个技能需要集成哪些 API？",
+  "question_key": "api_targets",
+  "reasoning": "需要了解集成目标",
+  "is_dynamic": true,
+  "source": "llm_generated"
+}
+```
+
+#### 回退模式（无 LLM）
+
+**响应**（无 LLM 支持）：
+```json
+{
+  "success": true,
+  "next_question": "请提供技能名称（小写字母、数字、连字符）",
+  "question_key": "skill_name",
+  "is_dynamic": false,
+  "source": "fallback"
+}
+```
+
+**智能问题选择**：
+- 无答案时：询问技能名称
+- 有技能名称：询问主要功能
+- 有功能描述：询问使用场景
+- 有场景描述：询问模板类型
+
+### 完整性检查回退
+
+#### 理想模式（LLM 智能判断）
+
+```json
+{
+  "is_complete": false,
+  "missing_info": [
+    "未说明是否需要处理大型 PDF 文件",
+    "未明确是否需要并发处理能力"
+  ],
+  "suggestions": [
+    "建议添加性能要求说明",
+    "考虑添加内存限制说明"
+  ],
+  "source": "llm_analysis"
+}
+```
+
+#### 回退模式（固定规则检查）
+
+```json
+{
+  "is_complete": false,
+  "missing_info": [
+    "use_cases",
+    "template_type"
+  ],
+  "suggestions": [
+    "请提供技能的使用场景",
+    "请选择合适的模板类型"
+  ],
+  "source": "rule_based"
+}
+```
+
+**固定规则**：
+- 必须包含：`skill_name`, `skill_function`, `use_cases`, `template_type`
+- 可选包含：`additional_features`, `target_users`, `tech_stack`, `external_dependencies`, `test_requirements`, `documentation_level`
+
+### 用户实际体验
+
+#### 基础模式体验（不受影响）
+
+```
+用户: "开始收集需求"
+助手: [返回第一个问题] "请提供技能名称"
+用户: "pdf-helper"
+助手: [返回第二个问题] "请描述主要功能"
+用户: "解析 PDF 文件"
+助手: [返回第三个问题] "请描述使用场景"
+...
+```
+
+#### 头脑风暴模式体验（回退模式）
+
+```
+用户: "开始头脑风暴模式"
+助手: "请描述您希望这个技能实现的核心价值"  # 预定义问题
+用户: "帮助用户快速提取 PDF 中的表格数据"
+助手: "这个技能的主要使用场景是什么？"      # 下一预定义问题
+用户: "财务报表分析"
+助手: "您希望这个技能解决什么具体问题？"    # 下一预定义问题
+...
+```
+
+#### 渐进式模式体验（回退模式）
+
+```
+用户: "开始渐进式模式"
+助手: "请提供技能名称"                     # 基础问题
+用户: "table-extractor"
+助手: "请描述这个技能的主要功能"           # 智能选择下一个问题
+用户: "从 PDF 提取表格"
+助手: "请描述这个技能的使用场景"           # 智能选择下一个问题
+...
+```
+
+### 核心功能保障
+
+即使在回退模式下，以下功能仍完全可用：
+
+- ✅ 所有关键信息收集（名称、功能、场景、模板）
+- ✅ 输入验证（格式、长度、选项）
+- ✅ 会话状态持久化
+- ✅ 进度跟踪（0-100%）
+- ✅ 中断恢复机制
+- ✅ 答案修改功能（previous）
+- ✅ 与 `init_skill` 工具集成
+
+### 故障排除
+
+#### 如何检测是否在回退模式？
+
+检查响应中的 `source` 字段：
+
+```json
+{
+  "source": "fallback"  // 回退模式
+  // 或
+  "source": "llm_generated"  // 理想模式
+}
+```
+
+#### 回退模式下功能受限吗？
+
+核心功能不受限制，仅高级功能受限：
+- ❌ 动态个性化问题（使用预定义问题轮换）
+- ❌ 上下文感知问题生成（使用固定问题列表）
+- ❌ LLM 智能完整性分析（使用固定规则检查）
+
+#### 如何启用完整功能？
+
+需要等待客户端支持 FastMCP 3.0+ 的以下 API：
+- `ctx.sample()` - LLM 调用
+- `ctx.elicit()` - 用户交互
+
 ## 相关文档
 
 - **[需求澄清指南](../references/requirement-collection.md)** - 详细文档
 - **[MCP 集成指南](../references/mcp-integration.md)** - MCP 工具配置
+- **[SKILL.md 回退机制说明](../SKILL.md)** - 完整回退机制说明

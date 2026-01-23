@@ -18,7 +18,6 @@ from skill_creator_mcp.server import (
     collect_requirements,
 )
 
-
 # ============================================================================
 # collect_requirements 回退场景测试
 # ============================================================================
@@ -209,7 +208,6 @@ async def test_e2e_fallback_workflow_complete():
 
     # 开始 complete 模式
     result = await collect_requirements(mock_ctx, action="start", mode="complete")
-    session_id = result["session_id"]
 
     # 验证有 10 个步骤
     assert result["total_steps"] == 10
@@ -312,7 +310,7 @@ async def test_generate_brainstorm_question_fallback():
 
 @pytest.mark.asyncio
 async def test_generate_progressive_question_fallback():
-    """测试 progressive 问题生成的回退行为（异常情况）."""
+    """测试 progressive 问题生成的回退行为（异常情况，统一格式）."""
     mock_ctx = MagicMock()
 
     # Mock LLM 不可用
@@ -323,11 +321,13 @@ async def test_generate_progressive_question_fallback():
         answers={},
     )
 
-    # 异常时返回 success: False
-    assert result["success"] is False
-    assert "error" in result
+    # 异常时现在返回 success:True（与 brainstorm 保持一致）
+    assert result["success"] is True
+    assert "error" in result  # 保留错误信息供调试
     assert "next_question" in result
-    # 仍然提供默认问题
+    assert result["is_dynamic"] is False
+    assert result["source"] == "fallback"
+    assert "question_key" in result
 
 
 # ============================================================================

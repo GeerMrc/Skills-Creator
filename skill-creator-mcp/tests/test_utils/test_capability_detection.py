@@ -16,7 +16,6 @@ from skill_creator_mcp.utils.capability_detection import (
     get_client_capabilities,
 )
 
-
 # ============================================================================
 # check_sampling_capability 测试
 # ============================================================================

@@ -1778,10 +1778,29 @@ async def _generate_progressive_question(
         }
 
     except Exception as e:
+        # 统一返回格式：即使异常也返回 success:True 和 fallback 问题
+        # 这样与 brainstorm 模式行为一致
+        basic_questions = [
+            ("skill_name", "请提供技能名称（小写字母、数字、连字符）"),
+            ("skill_function", "请描述这个技能的主要功能"),
+            ("use_cases", "请描述这个技能的使用场景"),
+            (
+                "template_type",
+                "选择技能模板类型：minimal、tool-based、workflow-based、analyzer-based",
+            ),
+        ]
+
+        # 根据已收集答案数量选择问题
+        index = min(len(answers), len(basic_questions) - 1)
+        key, question = basic_questions[index]
+
         return {
-            "success": False,
-            "error": str(e),
-            "next_question": "请提供更多关于技能的信息？",
+            "success": True,  # 与 brainstorm 保持一致
+            "next_question": question,
+            "question_key": key,
+            "is_dynamic": False,
+            "source": "fallback",
+            "error": str(e),  # 保留原始错误信息供调试
         }
 
 
