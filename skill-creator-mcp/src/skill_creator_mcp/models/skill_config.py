@@ -63,6 +63,43 @@ class InitSkillInput(BaseModel):
         return v
 
 
+class InitResult(BaseModel):
+    """初始化技能结果模型."""
+
+    success: bool = Field(
+        ...,
+        description="操作是否成功",
+    )
+    skill_path: str = Field(
+        ...,
+        description="技能目录路径",
+    )
+    skill_name: str = Field(
+        ...,
+        description="技能名称",
+    )
+    template: SkillTemplateType = Field(
+        ...,
+        description="使用的模板类型",
+    )
+    message: str = Field(
+        ...,
+        description="操作消息",
+    )
+    next_steps: list[str] = Field(
+        default_factory=list,
+        description="后续步骤",
+    )
+    error: str | None = Field(
+        default=None,
+        description="错误信息",
+    )
+    error_type: str | None = Field(
+        default=None,
+        description="错误类型",
+    )
+
+
 class SkillConfig(BaseModel):
     """技能配置模型."""
 

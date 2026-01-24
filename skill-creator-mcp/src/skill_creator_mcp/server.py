@@ -125,9 +125,9 @@ async def init_skill(
         with_examples: 是否包含使用示例
 
     Returns:
-        包含创建结果的字典
+        包含创建结果的字典（Pydantic 模型的 JSON 序列化）
     """
-    from .models.skill_config import InitSkillInput
+    from .models.skill_config import InitResult, InitSkillInput
 
     try:
         # 使用 Pydantic model_validate 方法进行输入验证
@@ -168,30 +168,46 @@ async def init_skill(
         if input_data.with_examples:
             await _create_example_examples(skill_dir, input_data.name)
 
-        return {
-            "success": True,
-            "skill_path": str(skill_dir),
-            "skill_name": input_data.name,
-            "template": input_data.template,
-            "message": f"技能 '{input_data.name}' 已创建在：{skill_dir}",
-            "next_steps": [
+        result = InitResult(
+            success=True,
+            skill_path=str(skill_dir),
+            skill_name=input_data.name,
+            template=input_data.template,
+            message=f"技能 '{input_data.name}' 已创建在：{skill_dir}",
+            next_steps=[
                 f"1. 编辑 {skill_dir / 'SKILL.md'} 完善技能描述",
                 f"2. 运行验证：python scripts/validate.py {skill_dir}",
             ],
-        }
+        )
+        return {"success": True, **result.model_dump()}
 
     except ValueError as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "error_type": "validation_error",
-        }
+        # 错误情况下使用默认模板 "minimal"
+        result = InitResult(
+            success=False,
+            skill_path="",
+            skill_name=name if name else "",
+            template="minimal",
+            message=f"验证失败: {e}",
+            next_steps=[],
+            error=str(e),
+            error_type="validation_error",
+        )
+        return {"success": False, **result.model_dump()}
+
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "error_type": "internal_error",
-        }
+        # 错误情况下使用默认模板 "minimal"
+        result = InitResult(
+            success=False,
+            skill_path="",
+            skill_name=name if name else "",
+            template="minimal",
+            message=f"内部错误: {e}",
+            next_steps=[],
+            error=str(e),
+            error_type="internal_error",
+        )
+        return {"success": False, **result.model_dump()}
 
 
 @mcp.tool()
@@ -809,60 +825,20 @@ async def collect_requirements(
             # 自动收集所有输入
             result = await collect_requirements(ctx, action="start", mode="basic", use_elicit=True)
     """
-    from datetime import datetime
-    from datetime import timezone as tz
-
-    from .models.skill_config import (
-        RequirementCollectionInput,
-        RequirementStep,
-        SessionState,
-        ValidationRule,
-    )
-
     try:
-        # 1. 验证输入参数
-        input_data = RequirementCollectionInput.model_validate(
-            {
-                "action": action,
-                "mode": mode,
-                "session_id": session_id,
-                "user_input": user_input,
-            }
-        )
+        # 1. 验证输入参数并初始化会话状态
+        (
+            input_data,
+            is_dynamic_mode,
+            total_steps,
+            current_session_id,
+            session_state,
+        ) = await _validate_and_init_requirement_session(ctx, action, mode, session_id, user_input)
 
-        # 2. 确定收集模式和处理方式
-        is_dynamic_mode = input_data.mode in ("brainstorm", "progressive")
+        # 获取当前模式的步骤（静态模式）
+        all_steps = _get_requirement_mode_steps(input_data.mode) if not is_dynamic_mode else None
 
-        # 对于动态模式，total_steps 设置为较大值表示开放式收集
-        if is_dynamic_mode:
-            total_steps = 100  # 开放式收集，没有固定步骤数
-        else:
-            # basic 或 complete 模式使用预定义步骤
-            all_steps = BASIC_REQUIREMENT_STEPS.copy()
-            if input_data.mode == "complete":
-                all_steps.extend(COMPLETE_REQUIREMENT_STEPS)
-            total_steps = len(all_steps)
-
-        # 3. 处理会话ID
-        current_session_id = (
-            input_data.session_id or ctx.session_id or f"req_{datetime.now(tz.utc).isoformat()}"
-        )
-
-        # 4. 获取或创建会话状态
-        state_data = await ctx.get_state(f"requirement_{current_session_id}")
-        if state_data:
-            session_state = SessionState.model_validate(state_data)
-        else:
-            session_state = SessionState(
-                current_step_index=0,
-                answers={},
-                started_at=datetime.now(tz.utc).isoformat(),
-                completed=False,
-                mode=input_data.mode,
-                total_steps=total_steps,
-            )
-
-        # 5. Elicit 模式：自动收集所有输入
+        # 2. Elicit 模式：自动收集所有输入
         if use_elicit and input_data.action == "start":
             # 首先检测客户端是否支持 elicitation
             from .utils.capability_detection import check_elicitation_capability
@@ -890,306 +866,79 @@ async def collect_requirements(
                 session_state=session_state,
                 current_session_id=current_session_id,
                 is_dynamic_mode=is_dynamic_mode,
-                all_steps=all_steps if not is_dynamic_mode else None,
+                all_steps=all_steps,
                 input_data=input_data,
             )
 
-        # 6. 处理不同的 action
+        # 3. 处理不同的 action
         if input_data.action == "status":
-            return {
-                "success": True,
-                "session_id": current_session_id,
-                "action": input_data.action,
-                "mode": session_state.mode,
-                "step_index": session_state.current_step_index,
-                "total_steps": session_state.total_steps,
-                "progress": (session_state.current_step_index / session_state.total_steps) * 100,
-                "answers": session_state.answers,
-                "completed": session_state.completed,
-                "message": "会话状态查询成功",
-                "is_dynamic_mode": is_dynamic_mode,
-            }
+            return _handle_requirement_status_action(
+                session_state, current_session_id, is_dynamic_mode
+            )
 
         elif input_data.action == "previous":
-            # 上一步
-            if session_state.current_step_index > 0:
-                session_state.current_step_index -= 1
-                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
-
-                # 对于动态模式，需要从会话历史恢复上一个问题
-                if is_dynamic_mode:
-                    # 简化处理：返回状态但不返回具体问题
-                    # （历史问题保存在 _conversation_history 中，但 previous 操作不需要显示）
-                    return {
-                        "success": True,
-                        "session_id": current_session_id,
-                        "action": input_data.action,
-                        "mode": session_state.mode,
-                        "step_index": session_state.current_step_index,
-                        "total_steps": session_state.total_steps,
-                        "progress": (session_state.current_step_index / session_state.total_steps)
-                        * 100,
-                        "answers": session_state.answers,
-                        "conversation_history": session_state.conversation_history,
-                        "message": f"返回到第 {session_state.current_step_index + 1} 步（动态模式请继续提供新输入）",
-                        "is_dynamic_mode": True,
-                        "completed": False,
-                    }
-
-            # basic/complete 模式的原有逻辑（只有非动态模式才会执行到这里）
-            if not is_dynamic_mode:
-                current_step_data = all_steps[session_state.current_step_index]
-                validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
-                step = RequirementStep(
-                    key=str(current_step_data["key"]),
-                    title=str(current_step_data["title"]),
-                    prompt=str(current_step_data["prompt"]),
-                    validation=ValidationRule(**validation_data),
-                )
-
-                return {
-                    "success": True,
-                    "session_id": current_session_id,
-                    "action": input_data.action,
-                    "mode": session_state.mode,
-                    "current_step": step.model_dump(),
-                    "step_index": session_state.current_step_index,
-                    "total_steps": session_state.total_steps,
-                    "progress": (session_state.current_step_index / session_state.total_steps)
-                    * 100,
-                    "answers": session_state.answers,
-                    "message": f"返回到步骤: {step.title}",
-                    "completed": False,
-                }
-            else:
-                return {
-                    "success": False,
-                    "session_id": current_session_id,
-                    "action": input_data.action,
-                    "error": "已经是第一步了",
-                    "message": "无法返回上一步",
-                }
+            return await _handle_requirement_previous_action(
+                ctx, session_state, current_session_id, is_dynamic_mode, all_steps
+            )
 
         elif input_data.action == "start":
             # 开始新会话或重置
-            session_state = SessionState(
-                current_step_index=0,
-                answers={},
-                started_at=datetime.now(tz.utc).isoformat(),
-                completed=False,
-                mode=input_data.mode,
-                total_steps=total_steps,
-            )
-            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
-
-        # 6. 获取当前步骤或生成动态问题
-        if is_dynamic_mode:
-            # 动态模式：使用 LLM 生成问题
-            if input_data.mode == "brainstorm":
-                # 获取对话历史
-                brainstorm_history: list[dict[str, str]] = session_state.conversation_history
-                question_result = await _generate_brainstorm_question(
-                    ctx, session_state.answers, brainstorm_history
-                )
-
-                return {
-                    "success": True,
-                    "session_id": current_session_id,
-                    "action": input_data.action,
-                    "mode": session_state.mode,
-                    "step_index": session_state.current_step_index,
-                    "total_steps": session_state.total_steps,
-                    "progress": min(session_state.current_step_index * 5, 95),  # 动态模式的进度估算
-                    "answers": session_state.answers,
-                    "conversation_history": session_state.conversation_history,
-                    "question": question_result.get("question", ""),
-                    "is_dynamic_mode": True,
-                    "is_llm_generated": question_result.get("is_dynamic", False),
-                    "completed": False,
-                    "message": f"Brainstorm 模式 - 问题 {session_state.current_step_index + 1}",
-                }
-
-            elif input_data.mode == "progressive":
-                question_result = await _generate_progressive_question(ctx, session_state.answers)
-
-                return {
-                    "success": True,
-                    "session_id": current_session_id,
-                    "action": input_data.action,
-                    "mode": session_state.mode,
-                    "step_index": session_state.current_step_index,
-                    "total_steps": session_state.total_steps,
-                    "progress": min(session_state.current_step_index * 5, 95),
-                    "answers": session_state.answers,
-                    "question": question_result.get("next_question", ""),
-                    "question_key": question_result.get("question_key", ""),
-                    "is_dynamic_mode": True,
-                    "is_llm_generated": question_result.get("is_dynamic", False),
-                    "completed": False,
-                    "message": f"Progressive 模式 - 问题 {session_state.current_step_index + 1}",
-                }
-
-        # 7. basic/complete 模式：获取预定义步骤（只在非动态模式执行）
-        if not is_dynamic_mode:
-            if session_state.current_step_index >= len(all_steps):
-                # 所有步骤已完成
-                session_state.completed = True
-                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
-
-                return {
-                    "success": True,
-                    "session_id": current_session_id,
-                    "action": input_data.action,
-                    "mode": session_state.mode,
-                    "step_index": session_state.current_step_index,
-                    "total_steps": session_state.total_steps,
-                    "progress": 100.0,
-                    "answers": session_state.answers,
-                    "completed": True,
-                    "message": "所有步骤已完成！可以使用 'complete' action 获取最终结果。",
-                }
-
-            current_step_data = all_steps[session_state.current_step_index]
-            validation_data2: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
-            current_step = RequirementStep(
-                key=str(current_step_data["key"]),
-                title=str(current_step_data["title"]),
-                prompt=str(current_step_data["prompt"]),
-                validation=ValidationRule(**validation_data2),
+            await _handle_requirement_start_action(
+                ctx, session_state, current_session_id, total_steps, input_data.mode
             )
 
-        # 8. 处理用户输入（next/complete action）
+        # 4. 处理用户输入（next/complete action）
         if input_data.action in ("next", "complete") and input_data.user_input:
-            if is_dynamic_mode:
-                # 动态模式：直接保存答案并继续
-                # 保存用户输入
-                answer_key = f"answer_{session_state.current_step_index}"
-                session_state.answers[answer_key] = input_data.user_input
-
-                # 更新对话历史（用于 brainstorm 模式）
-                if input_data.mode == "brainstorm":
-                    session_state.conversation_history.append({"role": "user", "content": input_data.user_input})
-
-                # 移动到下一步
-                if input_data.action == "next":
-                    session_state.current_step_index += 1
-
-                # 检查是否完成
-                if input_data.action == "complete":
-                    session_state.completed = True
-
-                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
-
-                # 如果完成，返回结果
-                if session_state.completed:
-                    return {
-                        "success": True,
-                        "session_id": current_session_id,
-                        "action": input_data.action,
-                        "mode": session_state.mode,
-                        "step_index": session_state.current_step_index,
-                        "total_steps": session_state.total_steps,
-                        "progress": 100.0,
-                        "answers": session_state.answers,
-                        "conversation_history": session_state.conversation_history,
-                        "completed": True,
-                        "message": f"{input_data.mode.upper()} 模式需求收集完成！",
-                        "is_dynamic_mode": True,
-                    }
-                else:
-                    # 返回成功，等待用户继续
-                    return {
-                        "success": True,
-                        "session_id": current_session_id,
-                        "action": input_data.action,
-                        "mode": session_state.mode,
-                        "step_index": session_state.current_step_index,
-                        "total_steps": session_state.total_steps,
-                        "progress": min(session_state.current_step_index * 5, 95),
-                        "answers": session_state.answers,
-                        "conversation_history": session_state.conversation_history,
-                        "message": "答案已保存，请继续使用 'next' action",
-                        "is_dynamic_mode": True,
-                    }
-            else:
-                # basic/complete 模式的原有验证逻辑
-                validation_result = _validate_requirement_answer(
-                    input_data.user_input,
-                    current_step.validation,
-                )
-
-                if not validation_result["valid"]:
-                    return {
-                        "success": False,
-                        "session_id": current_session_id,
-                        "action": input_data.action,
-                        "error": validation_result["error"],
-                        "message": f"输入验证失败: {validation_result['error']}",
-                    }
-
-                # 保存答案
-                session_state.answers[current_step.key] = input_data.user_input
-
-                # 移动到下一步
-                if input_data.action == "next":
-                    session_state.current_step_index += 1
-
-                # 检查是否完成
-                if input_data.action == "complete" or session_state.current_step_index >= len(
-                    all_steps
-                ):
-                    session_state.completed = True
-
-                await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
-
-                # 如果完成，使用 LLM 生成总结
-                if session_state.completed:
-                    completeness_check = await _check_requirement_completeness(
-                        ctx, session_state.answers
+            # 获取当前步骤（仅静态模式需要）
+            current_step = None
+            if not is_dynamic_mode and all_steps:
+                from .models.skill_config import RequirementStep, ValidationRule
+                if session_state.current_step_index < len(all_steps):
+                    step_data = all_steps[session_state.current_step_index]
+                    validation_data: dict[str, Any] = dict(step_data["validation"])  # type: ignore[arg-type]
+                    current_step = RequirementStep(
+                        key=str(step_data["key"]),
+                        title=str(step_data["title"]),
+                        prompt=str(step_data["prompt"]),
+                        validation=ValidationRule(**validation_data),
                     )
 
-                    return {
-                        "success": True,
-                        "session_id": current_session_id,
-                        "action": input_data.action,
-                        "mode": session_state.mode,
-                        "step_index": session_state.current_step_index,
-                        "total_steps": session_state.total_steps,
-                        "progress": 100.0,
-                        "answers": session_state.answers,
-                        "completed": True,
-                        "is_complete": completeness_check["is_complete"],
-                        "missing_info": completeness_check["missing_info"],
-                        "suggestions": completeness_check["suggestions"],
-                        "message": "需求收集完成！",
-                    }
+            result = await _process_requirement_user_answer(
+                ctx=ctx,
+                session_state=session_state,
+                current_session_id=current_session_id,
+                action=input_data.action,
+                user_input=input_data.user_input,
+                is_dynamic_mode=is_dynamic_mode,
+                mode=input_data.mode,
+                all_steps=all_steps,
+                current_step=current_step.model_dump() if current_step else None,
+            )
 
-        # 9. 返回当前步骤信息（basic/complete 模式）
-        # 对于动态模式，如果执行到这里，说明需要返回默认响应
-        if is_dynamic_mode:
-            return {
-                "success": False,
-                "error": "动态模式需要使用 'start' 或 'next' action",
-                "message": "请使用 'start' 开始新会话，或使用 'next' 继续收集",
-                "session_id": current_session_id,
-            }
+            # 如果处理完成或验证失败，直接返回
+            if result.get("completed") or not result.get("success"):
+                return result
 
-        if not is_dynamic_mode:
-            progress = (session_state.current_step_index / session_state.total_steps) * 100
+            # 如果只是处理了用户输入（非完成），继续获取下一个问题
+            if result.get("processed"):
+                # 继续获取下一个问题
+                pass
 
-            return {
-                "success": True,
-                "session_id": current_session_id,
-                "action": input_data.action,
-                "mode": session_state.mode,
-                "current_step": current_step.model_dump(),
-                "step_index": session_state.current_step_index,
-                "total_steps": session_state.total_steps,
-                "progress": progress,
-                "answers": session_state.answers,
-                "completed": session_state.completed,
-                "message": f"步骤 {session_state.current_step_index + 1}/{session_state.total_steps}: {current_step.title}",
-            }
+        # 5. 获取并返回下一个问题
+        question_result = await _get_requirement_next_question(
+            ctx=ctx,
+            session_state=session_state,
+            is_dynamic_mode=is_dynamic_mode,
+            mode=input_data.mode,
+            all_steps=all_steps,
+        )
+
+        # 添加会话信息到问题结果
+        question_result["session_id"] = current_session_id
+        question_result["action"] = input_data.action
+        question_result["mode"] = session_state.mode
+
+        return question_result
 
     except Exception as e:
         return {
@@ -1422,6 +1171,514 @@ async def _collect_with_elicit(
             "error_type": "elicit_error",
             "message": f"内部错误: {e}",
             "session_id": current_session_id,
+        }
+
+
+# ==================== 需求收集辅助函数 ====================
+
+
+async def _validate_and_init_requirement_session(
+    ctx: Context,
+    action: str,
+    mode: str,
+    session_id: str | None,
+    user_input: str | None,
+) -> tuple[Any, bool, int, str, Any]:
+    """验证输入参数并初始化/获取会话状态.
+
+    Args:
+        ctx: MCP 上下文
+        action: 执行动作
+        mode: 收集模式
+        session_id: 会话ID
+        user_input: 用户输入
+
+    Returns:
+        (input_data, is_dynamic_mode, total_steps, current_session_id, session_state)
+    """
+    from datetime import datetime
+    from datetime import timezone as tz
+    from .models.skill_config import (
+        RequirementCollectionInput,
+        SessionState,
+    )
+
+    # 1. 验证输入参数
+    input_data = RequirementCollectionInput.model_validate(
+        {
+            "action": action,
+            "mode": mode,
+            "session_id": session_id,
+            "user_input": user_input,
+        }
+    )
+
+    # 2. 确定收集模式
+    is_dynamic_mode = input_data.mode in ("brainstorm", "progressive")
+
+    # 3. 计算总步骤数
+    if is_dynamic_mode:
+        total_steps = 100  # 开放式收集，没有固定步骤数
+    else:
+        all_steps = BASIC_REQUIREMENT_STEPS.copy()
+        if input_data.mode == "complete":
+            all_steps.extend(COMPLETE_REQUIREMENT_STEPS)
+        total_steps = len(all_steps)
+
+    # 4. 处理会话ID
+    current_session_id = (
+        input_data.session_id or ctx.session_id or f"req_{datetime.now(tz.utc).isoformat()}"
+    )
+
+    # 5. 获取或创建会话状态
+    state_data = await ctx.get_state(f"requirement_{current_session_id}")
+    if state_data:
+        session_state = SessionState.model_validate(state_data)
+    else:
+        session_state = SessionState(
+            current_step_index=0,
+            answers={},
+            started_at=datetime.now(tz.utc).isoformat(),
+            completed=False,
+            mode=input_data.mode,
+            total_steps=total_steps,
+        )
+
+    return input_data, is_dynamic_mode, total_steps, current_session_id, session_state
+
+
+def _get_requirement_mode_steps(mode: str) -> list[dict[str, Any]]:
+    """获取指定模式的步骤列表.
+
+    Args:
+        mode: 收集模式 (basic/complete/brainstorm/progressive)
+
+    Returns:
+        步骤列表（动态模式返回空列表）
+    """
+    if mode in ("brainstorm", "progressive"):
+        return []
+
+    all_steps = BASIC_REQUIREMENT_STEPS.copy()
+    if mode == "complete":
+        all_steps.extend(COMPLETE_REQUIREMENT_STEPS)
+    return all_steps
+
+
+def _handle_requirement_status_action(
+    session_state: Any,
+    current_session_id: str,
+    is_dynamic_mode: bool,
+) -> dict[str, Any]:
+    """处理 status 操作.
+
+    Args:
+        session_state: 会话状态
+        current_session_id: 会话ID
+        is_dynamic_mode: 是否为动态模式
+
+    Returns:
+        状态查询结果
+    """
+    return {
+        "success": True,
+        "session_id": current_session_id,
+        "action": "status",
+        "mode": session_state.mode,
+        "step_index": session_state.current_step_index,
+        "total_steps": session_state.total_steps,
+        "progress": (session_state.current_step_index / session_state.total_steps) * 100,
+        "answers": session_state.answers,
+        "completed": session_state.completed,
+        "message": "会话状态查询成功",
+        "is_dynamic_mode": is_dynamic_mode,
+    }
+
+
+async def _handle_requirement_previous_action(
+    ctx: Context,
+    session_state: Any,
+    current_session_id: str,
+    is_dynamic_mode: bool,
+    all_steps: list[dict[str, Any]] | None,
+) -> dict[str, Any]:
+    """处理 previous 操作.
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态
+        current_session_id: 会话ID
+        is_dynamic_mode: 是否为动态模式
+        all_steps: 预定义步骤列表
+
+    Returns:
+        上一步操作结果
+    """
+    from .models.skill_config import RequirementStep, ValidationRule
+
+    # 上一步
+    if session_state.current_step_index > 0:
+        session_state.current_step_index -= 1
+        await ctx.set_state(
+            f"requirement_{current_session_id}", session_state.model_dump()
+        )  # type: ignore[func-returns-value]
+
+        # 对于动态模式，返回状态但不返回具体问题
+        if is_dynamic_mode:
+            return {
+                "success": True,
+                "session_id": current_session_id,
+                "action": "previous",
+                "mode": session_state.mode,
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": (session_state.current_step_index / session_state.total_steps)
+                * 100,
+                "answers": session_state.answers,
+                "conversation_history": session_state.conversation_history,
+                "message": f"返回到第 {session_state.current_step_index + 1} 步（动态模式请继续提供新输入）",
+                "is_dynamic_mode": True,
+                "completed": False,
+            }
+
+    # basic/complete 模式的原有逻辑
+    if not is_dynamic_mode and all_steps:
+        current_step_data = all_steps[session_state.current_step_index]
+        validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
+        step = RequirementStep(
+            key=str(current_step_data["key"]),
+            title=str(current_step_data["title"]),
+            prompt=str(current_step_data["prompt"]),
+            validation=ValidationRule(**validation_data),
+        )
+
+        return {
+            "success": True,
+            "session_id": current_session_id,
+            "action": "previous",
+            "mode": session_state.mode,
+            "current_step": step.model_dump(),
+            "step_index": session_state.current_step_index,
+            "total_steps": session_state.total_steps,
+            "progress": (session_state.current_step_index / session_state.total_steps)
+            * 100,
+            "answers": session_state.answers,
+            "message": f"返回到步骤: {step.title}",
+            "completed": False,
+        }
+    else:
+        return {
+            "success": False,
+            "session_id": current_session_id,
+            "action": "previous",
+            "error": "已经是第一步了" if session_state.current_step_index == 0 else "动态模式不支持返回上一步",
+            "message": "无法返回上一步",
+        }
+
+
+async def _handle_requirement_start_action(
+    ctx: Context,
+    session_state: Any,
+    current_session_id: str,
+    total_steps: int,
+    mode: str,
+) -> None:
+    """处理 start 操作 - 重置会话状态.
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态
+        current_session_id: 会话ID
+        total_steps: 总步骤数
+        mode: 收集模式
+    """
+    from datetime import datetime
+    from datetime import timezone as tz
+    from .models.skill_config import SessionState
+
+    # 重置会话状态
+    new_state = SessionState(
+        current_step_index=0,
+        answers={},
+        started_at=datetime.now(tz.utc).isoformat(),
+        completed=False,
+        mode=mode,  # type: ignore[assignment]
+        total_steps=total_steps,
+    )
+    # 更新传入的 session_state 对象（就地修改）
+    session_state.current_step_index = new_state.current_step_index
+    session_state.answers = new_state.answers
+    session_state.started_at = new_state.started_at
+    session_state.completed = new_state.completed
+    session_state.mode = new_state.mode
+    session_state.total_steps = new_state.total_steps
+
+    await ctx.set_state(
+        f"requirement_{current_session_id}", session_state.model_dump()
+    )  # type: ignore[func-returns-value]
+
+
+async def _get_requirement_next_question(
+    ctx: Context,
+    session_state: Any,
+    is_dynamic_mode: bool,
+    mode: str,
+    all_steps: list[dict[str, Any]] | None,
+) -> dict[str, Any]:
+    """获取下一个问题（动态模式或静态模式）.
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态
+        is_dynamic_mode: 是否为动态模式
+        mode: 收集模式
+        all_steps: 预定义步骤列表
+
+    Returns:
+        包含问题的响应字典
+    """
+    from .models.skill_config import RequirementStep, ValidationRule
+
+    # 动态模式：使用 LLM 生成问题
+    if is_dynamic_mode:
+        if mode == "brainstorm":
+            brainstorm_history: list[dict[str, str]] = session_state.conversation_history
+            question_result = await _generate_brainstorm_question(
+                ctx, session_state.answers, brainstorm_history
+            )
+
+            return {
+                "success": True,
+                "question": question_result.get("question", ""),
+                "is_dynamic_mode": True,
+                "is_llm_generated": question_result.get("is_dynamic", False),
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": min(session_state.current_step_index * 5, 95),
+                "answers": session_state.answers,
+                "conversation_history": session_state.conversation_history,
+                "completed": False,
+                "message": f"Brainstorm 模式 - 问题 {session_state.current_step_index + 1}",
+            }
+
+        elif mode == "progressive":
+            question_result = await _generate_progressive_question(ctx, session_state.answers)
+
+            return {
+                "success": True,
+                "question": question_result.get("next_question", ""),
+                "question_key": question_result.get("question_key", ""),
+                "is_dynamic_mode": True,
+                "is_llm_generated": question_result.get("is_dynamic", False),
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": min(session_state.current_step_index * 5, 95),
+                "answers": session_state.answers,
+                "completed": False,
+                "message": f"Progressive 模式 - 问题 {session_state.current_step_index + 1}",
+            }
+
+    # 静态模式：获取预定义步骤
+    if not is_dynamic_mode and all_steps:
+        if session_state.current_step_index >= len(all_steps):
+            # 所有步骤已完成
+            session_state.completed = True
+            return {
+                "success": True,
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": 100.0,
+                "answers": session_state.answers,
+                "completed": True,
+                "message": "所有步骤已完成！可以使用 'complete' action 获取最终结果。",
+                "current_step": None,
+            }
+
+        current_step_data = all_steps[session_state.current_step_index]
+        validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
+        current_step = RequirementStep(
+            key=str(current_step_data["key"]),
+            title=str(current_step_data["title"]),
+            prompt=str(current_step_data["prompt"]),
+            validation=ValidationRule(**validation_data),
+        )
+
+        return {
+            "success": True,
+            "current_step": current_step.model_dump(),
+            "step_index": session_state.current_step_index,
+            "total_steps": session_state.total_steps,
+            "progress": (session_state.current_step_index / session_state.total_steps) * 100,
+            "answers": session_state.answers,
+            "completed": session_state.completed,
+            "is_dynamic_mode": False,
+        }
+
+    # 默认返回
+    return {
+        "success": False,
+        "error": "无法获取下一个问题",
+        "message": "请使用 'start' 开始新会话，或使用 'next' 继续收集",
+    }
+
+
+async def _process_requirement_user_answer(
+    ctx: Context,
+    session_state: Any,
+    current_session_id: str,
+    action: str,
+    user_input: str,
+    is_dynamic_mode: bool,
+    mode: str,
+    all_steps: list[dict[str, Any]] | None,
+    current_step: Any,
+) -> dict[str, Any]:
+    """处理用户输入（next/complete action）.
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态
+        current_session_id: 会话ID
+        action: 操作类型
+        user_input: 用户输入
+        is_dynamic_mode: 是否为动态模式
+        mode: 收集模式
+        all_steps: 预定义步骤列表
+        current_step: 当前步骤对象（仅静态模式）
+
+    Returns:
+        处理结果字典
+    """
+    from .models.skill_config import RequirementStep, ValidationRule
+
+    if is_dynamic_mode:
+        # 动态模式：直接保存答案并继续
+        answer_key = f"answer_{session_state.current_step_index}"
+        session_state.answers[answer_key] = user_input
+
+        # 更新对话历史（用于 brainstorm 模式）
+        if mode == "brainstorm":
+            session_state.conversation_history.append({"role": "user", "content": user_input})
+
+        # 移动到下一步
+        if action == "next":
+            session_state.current_step_index += 1
+
+        # 检查是否完成
+        if action == "complete":
+            session_state.completed = True
+
+        await ctx.set_state(
+            f"requirement_{current_session_id}", session_state.model_dump()
+        )  # type: ignore[func-returns-value]
+
+        # 如果完成，返回结果
+        if session_state.completed:
+            return {
+                "success": True,
+                "session_id": current_session_id,
+                "action": action,
+                "mode": mode,
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": 100.0,
+                "answers": session_state.answers,
+                "conversation_history": session_state.conversation_history,
+                "completed": True,
+                "message": f"{mode.upper()} 模式需求收集完成！",
+                "is_dynamic_mode": True,
+            }
+        else:
+            # 返回成功，等待用户继续
+            return {
+                "success": True,
+                "session_id": current_session_id,
+                "action": action,
+                "mode": mode,
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": min(session_state.current_step_index * 5, 95),
+                "answers": session_state.answers,
+                "conversation_history": session_state.conversation_history,
+                "message": "答案已保存，请继续使用 'next' action",
+                "is_dynamic_mode": True,
+            }
+    else:
+        # basic/complete 模式的验证逻辑
+        if current_step is None:
+            return {
+                "success": False,
+                "error": "没有当前步骤",
+                "message": "请先使用 'start' 开始会话",
+            }
+
+        # 重建 RequirementStep 对象以获取验证规则
+        step_data = current_step
+        validation_data: dict[str, Any] = dict(step_data["validation"])  # type: ignore[arg-type]
+        step_obj = RequirementStep(
+            key=str(step_data["key"]),
+            title=str(step_data["title"]),
+            prompt=str(step_data["prompt"]),
+            validation=ValidationRule(**validation_data),
+        )
+
+        validation_result = _validate_requirement_answer(
+            user_input,
+            step_obj.validation,
+        )
+
+        if not validation_result["valid"]:
+            return {
+                "success": False,
+                "session_id": current_session_id,
+                "action": action,
+                "error": validation_result["error"],
+                "message": f"输入验证失败: {validation_result['error']}",
+            }
+
+        # 保存答案
+        session_state.answers[step_obj.key] = user_input
+
+        # 移动到下一步
+        if action == "next":
+            session_state.current_step_index += 1
+
+        # 检查是否完成
+        if action == "complete" or (all_steps and session_state.current_step_index >= len(all_steps)):
+            session_state.completed = True
+
+        await ctx.set_state(
+            f"requirement_{current_session_id}", session_state.model_dump()
+        )  # type: ignore[func-returns-value]
+
+        # 如果完成，使用 LLM 生成总结
+        if session_state.completed:
+            completeness_check = await _check_requirement_completeness(
+                ctx, session_state.answers
+            )
+
+            return {
+                "success": True,
+                "session_id": current_session_id,
+                "action": action,
+                "mode": mode,
+                "step_index": session_state.current_step_index,
+                "total_steps": session_state.total_steps,
+                "progress": 100.0,
+                "answers": session_state.answers,
+                "completed": True,
+                "is_complete": completeness_check["is_complete"],
+                "missing_info": completeness_check["missing_info"],
+                "suggestions": completeness_check["suggestions"],
+                "message": "需求收集完成！",
+            }
+
+        # 未完成，返回空结果表示继续
+        return {
+            "success": True,
+            "session_id": current_session_id,
+            "action": action,
+            "processed": True,
         }
 
 
