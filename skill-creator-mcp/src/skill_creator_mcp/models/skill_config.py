@@ -495,6 +495,10 @@ class SessionState(BaseModel):
         default_factory=dict,
         description="已收集的答案",
     )
+    conversation_history: list[dict[str, str]] = Field(
+        default_factory=list,
+        description="对话历史（用于 brainstorm/progressive 模式）",
+    )
     started_at: str | None = Field(
         default=None,
         description="会话开始时间（ISO 8601）",

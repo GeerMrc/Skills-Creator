@@ -467,8 +467,9 @@ async def test_collect_with_elicit_brainstorm_conversation_history():
     assert len(state_snapshots) > 0
     # 检查最后一次状态快照包含对话历史
     last_snapshot = state_snapshots[-1]
-    # 对话历史应该被保存在 answers 中
-    assert "_conversation_history" in last_snapshot.get("answers", {})
+    # 对话历史应该被保存在独立的 conversation_history 字段中
+    assert "conversation_history" in last_snapshot
+    assert len(last_snapshot["conversation_history"]) >= 5  # 至少有5轮对话
 
 
 # ============================================================================

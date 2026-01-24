@@ -941,11 +941,8 @@ async def collect_requirements(
                         "total_steps": session_state.total_steps,
                         "progress": (session_state.current_step_index / session_state.total_steps)
                         * 100,
-                        "answers": {
-                            k: v
-                            for k, v in session_state.answers.items()
-                            if k != "_conversation_history"
-                        },
+                        "answers": session_state.answers,
+                        "conversation_history": session_state.conversation_history,
                         "message": f"返回到第 {session_state.current_step_index + 1} 步（动态模式请继续提供新输入）",
                         "is_dynamic_mode": True,
                         "completed": False,
@@ -1002,10 +999,7 @@ async def collect_requirements(
             # 动态模式：使用 LLM 生成问题
             if input_data.mode == "brainstorm":
                 # 获取对话历史
-                history_raw: Any = session_state.answers.get("_conversation_history", [])
-                brainstorm_history: list[dict[str, str]] = (
-                    list(history_raw) if isinstance(history_raw, list) else []
-                )
+                brainstorm_history: list[dict[str, str]] = session_state.conversation_history
                 question_result = await _generate_brainstorm_question(
                     ctx, session_state.answers, brainstorm_history
                 )
@@ -1018,11 +1012,8 @@ async def collect_requirements(
                     "step_index": session_state.current_step_index,
                     "total_steps": session_state.total_steps,
                     "progress": min(session_state.current_step_index * 5, 95),  # 动态模式的进度估算
-                    "answers": {
-                        k: v
-                        for k, v in session_state.answers.items()
-                        if k != "_conversation_history"
-                    },
+                    "answers": session_state.answers,
+                    "conversation_history": session_state.conversation_history,
                     "question": question_result.get("question", ""),
                     "is_dynamic_mode": True,
                     "is_llm_generated": question_result.get("is_dynamic", False),
@@ -1089,12 +1080,7 @@ async def collect_requirements(
 
                 # 更新对话历史（用于 brainstorm 模式）
                 if input_data.mode == "brainstorm":
-                    history_raw = session_state.answers.get("_conversation_history", [])
-                    updated_history: list[dict[str, str]] = (
-                        list(history_raw) if isinstance(history_raw, list) else []
-                    )
-                    updated_history.append({"role": "user", "content": input_data.user_input})
-                    session_state.answers["_conversation_history"] = updated_history  # type: ignore[assignment]
+                    session_state.conversation_history.append({"role": "user", "content": input_data.user_input})
 
                 # 移动到下一步
                 if input_data.action == "next":
@@ -1116,11 +1102,8 @@ async def collect_requirements(
                         "step_index": session_state.current_step_index,
                         "total_steps": session_state.total_steps,
                         "progress": 100.0,
-                        "answers": {
-                            k: v
-                            for k, v in session_state.answers.items()
-                            if k != "_conversation_history"
-                        },
+                        "answers": session_state.answers,
+                        "conversation_history": session_state.conversation_history,
                         "completed": True,
                         "message": f"{input_data.mode.upper()} 模式需求收集完成！",
                         "is_dynamic_mode": True,
@@ -1135,11 +1118,8 @@ async def collect_requirements(
                         "step_index": session_state.current_step_index,
                         "total_steps": session_state.total_steps,
                         "progress": min(session_state.current_step_index * 5, 95),
-                        "answers": {
-                            k: v
-                            for k, v in session_state.answers.items()
-                            if k != "_conversation_history"
-                        },
+                        "answers": session_state.answers,
+                        "conversation_history": session_state.conversation_history,
                         "message": "答案已保存，请继续使用 'next' action",
                         "is_dynamic_mode": True,
                     }
@@ -1274,10 +1254,7 @@ async def _collect_with_elicit(
             if is_dynamic_mode:
                 # 动态模式：使用 LLM 生成问题
                 if input_data.mode == "brainstorm":
-                    history_raw = session_state.answers.get("_conversation_history", [])
-                    history: list[dict[str, str]] = (
-                        list(history_raw) if isinstance(history_raw, list) else []
-                    )  # type: ignore
+                    history: list[dict[str, str]] = session_state.conversation_history
                     question_result = await _generate_brainstorm_question(
                         ctx, session_state.answers, history
                     )
@@ -1360,11 +1337,8 @@ async def _collect_with_elicit(
                             "message": "用户取消了输入",
                             "session_id": current_session_id,
                             "step_index": session_state.current_step_index,
-                            "answers": {
-                                k: v
-                                for k, v in session_state.answers.items()
-                                if k != "_conversation_history"
-                            },
+                            "answers": session_state.answers,
+                            "conversation_history": session_state.conversation_history,
                             "progress": (
                                 session_state.current_step_index / session_state.total_steps
                             )
@@ -1413,12 +1387,7 @@ async def _collect_with_elicit(
 
             # 更新对话历史（用于 brainstorm 模式）
             if is_dynamic_mode and input_data.mode == "brainstorm":
-                history_raw = session_state.answers.get("_conversation_history", [])
-                conversation_history: list[dict[str, str]] = (
-                    list(history_raw) if isinstance(history_raw, list) else []
-                )  # type: ignore
-                conversation_history.append({"role": "user", "content": str(user_answer)})
-                session_state.answers["_conversation_history"] = conversation_history  # type: ignore[assignment]
+                session_state.conversation_history.append({"role": "user", "content": str(user_answer)})
 
             # 5. 移动到下一步
             session_state.current_step_index += 1
@@ -1451,9 +1420,8 @@ async def _collect_with_elicit(
             "step_index": session_state.current_step_index,
             "total_steps": session_state.total_steps,
             "progress": progress,
-            "answers": {
-                k: v for k, v in session_state.answers.items() if k != "_conversation_history"
-            },
+            "answers": session_state.answers,
+            "conversation_history": session_state.conversation_history,
             "completed": session_state.completed,
             "message": "需求收集完成（使用 elicit 模式）",
             "is_dynamic_mode": is_dynamic_mode,
