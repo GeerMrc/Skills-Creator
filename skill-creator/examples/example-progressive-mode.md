@@ -28,181 +28,39 @@
 
 ## 对话流程
 
-### 步骤 1：开始渐进模式
+### 开始收集
 
-**请求**:
 ```json
-{
-  "action": "start",
-  "mode": "progressive"
-}
+{"action": "start", "mode": "progressive"}
 ```
 
-**响应**:
+**响应** - 第一个问题（技能名称）：
 ```json
 {
-  "success": true,
   "session_id": "req_20250123_pro123",
-  "action": "start",
-  "mode": "progressive",
   "current_step": {
     "key": "skill_name",
-    "title": "技能名称",
     "prompt": "请提供技能名称（可跳过，输入 skip）",
     "required": false
   },
-  "total_steps": 5,
-  "progress": 0.0,
   "message": "渐进模式：可以跳过非关键问题"
 }
 ```
 
----
+### 提供核心信息
 
-### 步骤 2：提供技能名称
+步骤 1: `quick-note-taker` → 保存 skill_name
+步骤 2: `快速记录和整理笔记` → 保存 skill_function
+步骤 3: `skip` → 跳过 use_cases
+步骤 4: `minimal` → 保存 template_type
+步骤 5: `skip` → 跳过 additional_features
 
-**请求**:
+### 最终结果
+
 ```json
 {
-  "action": "next",
-  "session_id": "req_20250123_pro123",
-  "user_input": "quick-note-taker"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "current_step": {
-    "key": "skill_function",
-    "title": "主要功能",
-    "prompt": "请描述主要功能（可跳过）"
-  },
-  "step_index": 1,
-  "progress": 20.0,
-  "answers": {
-    "skill_name": "quick-note-taker"
-  }
-}
-```
-
----
-
-### 步骤 3：描述主要功能
-
-**请求**:
-```json
-{
-  "action": "next",
-  "session_id": "req_20250123_pro123",
-  "user_input": "快速记录和整理笔记"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "current_step": {
-    "key": "use_cases",
-    "title": "使用场景",
-    "prompt": "主要使用场景是什么？（可跳过）"
-  },
-  "step_index": 2,
-  "progress": 40.0,
-  "answers": {
-    "skill_name": "quick-note-taker",
-    "skill_function": "快速记录和整理笔记"
-  }
-}
-```
-
----
-
-### 步骤 4：跳过使用场景
-
-**请求**:
-```json
-{
-  "action": "next",
-  "session_id": "req_20250123_pro123",
-  "user_input": "skip"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "current_step": {
-    "key": "template_type",
-    "title": "模板类型",
-    "prompt": "选择模板类型（可跳过，默认 minimal）"
-  },
-  "step_index": 3,
-  "progress": 60.0,
-  "skipped": ["use_cases"],
-  "answers": {
-    "skill_name": "quick-note-taker",
-    "skill_function": "快速记录和整理笔记"
-  },
-  "message": "已跳过使用场景"
-}
-```
-
----
-
-### 步骤 5：选择模板类型
-
-**请求**:
-```json
-{
-  "action": "next",
-  "session_id": "req_20250123_pro123",
-  "user_input": "minimal"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "current_step": {
-    "key": "additional_features",
-    "title": "额外需求",
-    "prompt": "是否有额外需求？（可跳过）"
-  },
-  "step_index": 4,
-  "progress": 80.0,
-  "answers": {
-    "skill_name": "quick-note-taker",
-    "skill_function": "快速记录和整理笔记",
-    "template_type": "minimal"
-  }
-}
-```
-
----
-
-### 步骤 6：跳过额外需求
-
-**请求**:
-```json
-{
-  "action": "next",
-  "session_id": "req_20250123_pro123",
-  "user_input": "skip"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "step_index": 5,
-  "progress": 100.0,
   "completed": true,
+  "progress": 100.0,
   "skipped": ["use_cases", "additional_features"],
   "answers": {
     "skill_name": "quick-note-taker",
@@ -233,33 +91,11 @@ init_skill(name="quick-note-taker", template="minimal")
 
 ## 典型使用场景
 
-### 场景 1：快速原型
-
-**目标**: 快速验证想法
-
-**流程**:
-1. 渐进模式收集核心信息（2 分钟）
-2. 初始化最小技能
-3. 快速开发核心功能
-4. 迭代完善
-
-### 场景 2：逐步明确
-
-**目标**: 需求逐步明确的项目
-
-**流程**:
-1. 先用渐进模式快速开始
-2. 开发过程中明确需求
-3. 逐步补充细节
-
-### 场景 3：探索性开发
-
-**目标**: 探索不同实现方案
-
-**流程**:
-1. 渐进模式快速创建多个原型
-2. 对比不同方案
-3. 选择最佳方案继续完善
+| 场景 | 目标 | 流程 |
+|------|------|------|
+| 快速原型 | 验证想法 | 收集核心信息 → 初始化 → 开发 → 迭代 |
+| 逐步明确 | 需求渐进 | 快速开始 → 开发中明确 → 补充细节 |
+| 探索开发 | 对比方案 | 创建多原型 → 对比选择 → 完善 |
 
 ---
 
@@ -319,21 +155,10 @@ init_skill(name="quick-note-taker", template="minimal")
 
 ## 最佳实践
 
-### 1. 至少提供核心信息
-
-确保提供 `skill_name` 和 `skill_function`，这是技能的基础。
-
-### 2. 使用 skip 明确跳过
-
-使用 "skip" 明确表示跳过，而不是留空，便于理解。
-
-### 3. 记录待补充项
-
-记录哪些信息被跳过，后续需要补充。
-
-### 4. 迭代完善
-
-渐进模式只是开始，后续持续完善技能。
+1. **至少提供核心信息**：确保提供 `skill_name` 和 `skill_function`
+2. **使用 skip 明确跳过**：使用 "skip" 而不是留空
+3. **记录待补充项**：记录跳过的信息以便后续补充
+4. **迭代完善**：渐进模式只是开始，后续持续完善
 
 ---
 

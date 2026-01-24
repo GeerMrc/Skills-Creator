@@ -33,68 +33,31 @@ package_skill(skill_path="/path/to/skill", format="zip")
 
 ## 不同格式
 
-### tar.gz 格式
-
 ```python
-# 打包为 tar.gz
-package_skill(
-    skill_path="/path/to/skill",
-    format="tar.gz"
-)
-```
+# ZIP（默认）
+package_skill(skill_path="/path/to/skill", format="zip")
 
-### tar.bz2 格式
+# tar.gz（Linux 常用）
+package_skill(skill_path="/path/to/skill", format="tar.gz")
 
-```python
-# 打包为 tar.bz2
-package_skill(
-    skill_path="/path/to/skill",
-    format="tar.bz2"
-)
+# tar.bz2（更高压缩率）
+package_skill(skill_path="/path/to/skill", format="tar.bz2")
 ```
 
 ---
 
 ## 高级选项
 
-### 排除测试文件
-
 ```python
-# 不包含测试文件
-package_skill(
-    skill_path="/path/to/skill",
-    format="tar.gz",
-    include_tests=False
-)
-```
+# 排除测试文件
+package_skill(skill_path="/path/to/skill", include_tests=False)
 
-**包含文件对比**:
-- `include_tests=True`: SKILL.md, references/, examples/, tests/
-- `include_tests=False`: SKILL.md, references/, examples/
-
-### 指定输出目录
-
-```python
 # 指定输出目录
-package_skill(
-    skill_path="/path/to/skill",
-    output_dir="./dist"
-)
-```
+package_skill(skill_path="/path/to/skill", output_dir="./dist")
 
-### 打包前验证
+# 打包前验证
+package_skill(skill_path="/path/to/skill", validate_before_package=True)
 
-```python
-# 打包前先验证技能
-package_skill(
-    skill_path="/path/to/skill",
-    validate_before_package=True
-)
-```
-
-### 组合多个选项
-
-```python
 # 组合使用
 package_skill(
     skill_path="/path/to/skill",
@@ -104,6 +67,10 @@ package_skill(
     validate_before_package=True
 )
 ```
+
+**包含文件对比**:
+- `include_tests=True`: SKILL.md, references/, examples/, tests/
+- `include_tests=False`: SKILL.md, references/, examples/
 
 ---
 
@@ -136,84 +103,31 @@ package_skill(
 
 ## 使用场景
 
-### 标准发布
-
-```python
-# 发布前完整流程
-result = package_skill(
-    skill_path="./my-skill",
-    format="zip",
-    output_dir="./dist",
-    validate_before_package=True
-)
-
-if result['success']:
-    print(f"✅ 打包成功: {result['package_path']}")
-    print(f"文件数: {result['files_included']}")
-    print(f"大小: {result['package_size']} 字节")
-else:
-    print("❌ 打包失败")
-```
-
-### 开发版本
-
-```python
-# 开发版本快速打包（不包含测试）
-result = package_skill(
-    skill_path="./my-skill",
-    format="tar.gz",
-    include_tests=False
-)
-```
-
-### 批量打包
-
-```python
-# 批量打包多个技能
-skills = ["skill1", "skill2", "skill3"]
-
-for skill in skills:
-    result = package_skill(
-        skill_path=f"./skills/{skill}",
-        format="zip",
-        output_dir="./dist"
-    )
-    print(f"{skill}: {result['package_path']}")
-```
+| 场景 | 命令 | 说明 |
+|------|------|------|
+| 标准发布 | `package_skill(skill_path, validate_before_package=True)` | 验证后打包 |
+| 开发版本 | `package_skill(skill_path, include_tests=False)` | 不含测试文件 |
+| 批量打包 | 循环调用，指定 `output_dir="./dist"` | 多个技能打包 |
 
 ---
 
 ## 打包验证
 
-### 验证失败处理
-
 ```python
 # 打包前验证
-result = package_skill(
-    skill_path="./my-skill",
-    validate_before_package=True
-)
+result = package_skill(skill_path="./my-skill", validate_before_package=True)
 
 if not result['validation_passed']:
     print("验证失败：")
     for error in result['validation_errors']:
         print(f"- {error}")
-    # 修复问题后重新打包
 else:
-    print("✅ 验证通过，打包成功")
-```
+    print("✅ 验证通过")
 
-### 手动验证后打包
-
-```python
-# 先验证
+# 或先手动验证再打包
 validation = validate_skill(skill_path="./my-skill")
 if validation['valid']:
-    # 验证通过后再打包
-    result = package_skill(
-        skill_path="./my-skill",
-        format="zip"
-    )
+    result = package_skill(skill_path="./my-skill", format="zip")
 ```
 
 ---
@@ -230,85 +144,19 @@ if validation['valid']:
 
 ## 错误处理
 
-### 路径不存在
-
-```python
-# 错误：技能路径不存在
-package_skill(skill_path="/nonexistent/path")
-
-# 响应
-{
-  "success": false,
-  "error": "技能路径不存在"
-}
-```
-
-### 格式不支持
-
-```python
-# 错误：无效的格式
-package_skill(skill_path="./my-skill", format="7z")
-
-# 响应
-{
-  "success": false,
-  "error": "不支持的格式，使用 zip/tar.gz/tar.bz2"
-}
-```
-
-### 验证失败
-
-```python
-# 验证失败但仍打包（如果不设置 validate_before_package）
-result = package_skill(
-    skill_path="./my-skill",
-    validate_before_package=True
-)
-
-# 响应
-{
-  "success": true,
-  "validation_passed": false,
-  "validation_errors": [
-    "SKILL.md 不符合规范"
-  ],
-  "package_path": "/path/to/skill.zip"
-}
-```
+| 错误类型 | 响应 | 处理方式 |
+|----------|------|----------|
+| 路径不存在 | `{"success": false, "error": "技能路径不存在"}` | 检查路径拼写 |
+| 格式不支持 | `{"success": false, "error": "不支持的格式..."}` | 使用 zip/tar.gz/tar.bz2 |
+| 验证失败 | `{"success": true, "validation_passed": false}` | 修复验证错误 |
 
 ---
 
 ## 最佳实践
 
-### 1. 打包前验证
-
-```python
-# 总是验证后再打包
-result = package_skill(
-    skill_path="./my-skill",
-    validate_before_package=True
-)
-```
-
-### 2. 使用输出目录
-
-```python
-# 使用专门的输出目录
-result = package_skill(
-    skill_path="./my-skill",
-    output_dir="./dist"
-)
-```
-
-### 3. 选择合适的格式
-
-```python
-# 通用：ZIP
-package_skill(skill_path="./my-skill", format="zip")
-
-# Linux：tar.gz
-package_skill(skill_path="./my-skill", format="tar.gz")
-```
+1. **打包前验证**：使用 `validate_before_package=True`
+2. **使用输出目录**：指定 `output_dir="./dist"` 保持目录整洁
+3. **选择合适格式**：通用用 ZIP，Linux 用 tar.gz，存储优化用 tar.bz2
 
 ---
 

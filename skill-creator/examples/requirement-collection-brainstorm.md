@@ -18,10 +18,9 @@
 
 ## 完整对话流程
 
-### 第 1 步：启动 Brainstorm 模式
+### 启动 Brainstorm 模式
 
 ```python
-# 调用 collect_requirements 工具
 await collect_requirements(
     ctx=ctx,
     action="start",
@@ -30,150 +29,25 @@ await collect_requirements(
 )
 ```
 
-**工具返回**：
-```json
-{
-  "success": true,
-  "session_id": "doc-analyzer-brainstorm",
-  "action": "start",
-  "mode": "brainstorm",
-  "step_index": 0,
-  "total_steps": 100,
-  "progress": 0,
-  "answers": {},
-  "question": "请描述您希望这个技能实现的核心价值？它主要解决什么问题？",
-  "is_dynamic_mode": true,
-  "is_llm_generated": true,
-  "message": "Brainstorm 模式 - 问题 1"
-}
+**LLM 生成第一个问题**：
+```
+"请描述您希望这个技能实现的核心价值？它主要解决什么问题？"
 ```
 
----
+### 6轮探索对话
 
-### 第 2 步：回答核心价值问题
+| 轮次 | 用户回答 | LLM 追问 | 探索方向 |
+|------|----------|----------|----------|
+| 1 | 提取关键决策和架构设计 | 这些信息以什么形式出现？ | 数据来源 |
+| 2 | 主要是 ADR 和技术规范文档 | 最关心决策本身还是推理过程？ | 关注重点 |
+| 3 | 重要的是理解为什么做选择 | 能否跨文档关联决策演变？ | 创新点 |
+| 4 | 可以展示决策时间线 | 交互式还是静态可视化？ | 交互方式 |
+| 5 | 交互式更好，点击查看片段 | 与现有工具的独特优势？ | 差异化 |
+| 6 | 针对技术文档的专门理解和关联 | （完成收集） | - |
+
+### 完成头脑风暴
 
 ```python
-await collect_requirements(
-    ctx=ctx,
-    action="next",
-    mode="brainstorm",
-    session_id="doc-analyzer-brainstorm",
-    user_input="帮助团队快速理解长篇技术文档的内容，提取关键决策和架构设计"
-)
-```
-
-**LLM 基于答案生成下一个问题**：
-```json
-{
-  "success": true,
-  "question": "您提到要提取关键决策和架构设计，这些信息通常以什么形式出现在文档中？是设计文档、会议记录还是代码注释？",
-  "is_llm_generated": true,
-  "message": "Brainstorm 模式 - 问题 2"
-}
-```
-
----
-
-### 第 3 步：继续探索 - 描述数据来源
-
-```python
-await collect_requirements(
-    ctx=ctx,
-    action="next",
-    mode="brainstorm",
-    session_id="doc-analyzer-brainstorm",
-    user_input="主要是架构设计文档（ADR）和技术规范文档，有时也包括会议纪要"
-)
-```
-
-**LLM 识别到新的探索方向**：
-```json
-{
-  "success": true,
-  "question": "对于架构决策文档，您最关心的是决策本身、决策背后的推理过程，还是决策的影响范围？",
-  "is_llm_generated": true,
-  "message": "Brainstorm 模式 - 问题 3"
-}
-```
-
----
-
-### 第 4 步：深入分析 - 关心决策推理
-
-```python
-await collect_requirements(
-    ctx=ctx,
-    action="next",
-    mode="brainstorm",
-    session_id="doc-analyzer-brainstorm",
-    user_input="最重要的是理解为什么做出某个技术选择，包括权衡考虑和替代方案"
-)
-```
-
-**LLM 探索技术可行性**：
-```json
-{
-  "success": true,
-  "question": "您是否考虑过让这个技能能够跨文档关联相关决策？比如追踪某个技术选型在不同文档中的演变？",
-  "is_llm_generated": true,
-  "message": "Brainstorm 模式 - 问题 4"
-}
-```
-
----
-
-### 第 5 步：创意探索 - 跨文档关联
-
-```python
-await collect_requirements(
-    ctx=ctx,
-    action="next",
-    mode="brainstorm",
-    session_id="doc-analyzer-brainstorm",
-    user_input="这是个好主意！可以展示某个技术决策从提出到演变的完整时间线"
-)
-```
-
-**LLM 探索用户体验**：
-```json
-{
-  "success": true,
-  "question": "对于展示决策时间线，您希望用户能够交互式探索，还是生成静态的可视化图表？",
-  "is_llm_generated": true,
-  "message": "Brainstorm 模式 - 问题 5"
-}
-```
-
----
-
-### 第 6 步：明确交互方式
-
-```python
-await collect_requirements(
-    ctx=ctx,
-    action="next",
-    mode="brainstorm",
-    session_id="doc-analyzer-brainstorm",
-    user_input="交互式更好，用户可以点击某个决策，查看相关的所有文档片段"
-)
-```
-
-**LLM 探索差异化价值**：
-```json
-{
-  "success": true,
-  "question": "与现有的文档分析工具相比，您认为这个技能的独特优势是什么？是更好的上下文理解、更智能的关联推荐，还是更直观的可视化方式？",
-  "is_llm_generated": true,
-  "message": "Brainstorm 模式 - 问题 6"
-}
-```
-
----
-
-### 第 7 步：完成头脑风暴
-
-```python
-# 收集了足够的信息，完成头脑风暴
 await collect_requirements(
     ctx=ctx,
     action="complete",
@@ -182,29 +56,13 @@ await collect_requirements(
 )
 ```
 
-**工具返回所有收集到的信息**：
-```json
-{
-  "success": true,
-  "session_id": "doc-analyzer-brainstorm",
-  "action": "complete",
-  "mode": "brainstorm",
-  "step_index": 6,
-  "total_steps": 100,
-  "progress": 30,
-  "answers": {
-    "answer_0": "帮助团队快速理解长篇技术文档的内容，提取关键决策和架构设计",
-    "answer_1": "主要是架构设计文档（ADR）和技术规范文档，有时也包括会议纪要",
-    "answer_2": "最重要的是理解为什么做出某个技术选择，包括权衡考虑和替代方案",
-    "answer_3": "可以展示某个技术决策从提出到演变的完整时间线",
-    "answer_4": "交互式更好，用户可以点击某个决策，查看相关的所有文档片段",
-    "answer_5": "与现有工具相比，优势在于针对技术文档的专门理解和跨文档的智能关联"
-  },
-  "completed": true,
-  "message": "BRAINSTORM 模式需求收集完成！",
-  "is_dynamic_mode": true
-}
-```
+**收集到的核心信息**：
+- 核心价值：提取决策+跨文档关联+时间线
+- 数据来源：ADR、技术规范、会议纪要
+- 关注重点：决策推理过程（"为什么"）
+- 创新点：跨文档决策时间线
+- 交互方式：交互式探索
+- 差异化：技术文档专门理解
 
 ---
 
@@ -268,78 +126,24 @@ await collect_requirements(
 
 ### DO - 推荐做法
 
-✅ **充分表达想法**
-```
-好的回答：
-"我希望用户能够点击某个决策，看到它在不同文档中被如何讨论，
-包括最初的提议、反对意见、最终决策以及后续的调整"
-
-不好的回答：
-"支持点击查看"
-```
-
-✅ **主动提出新想法**
-```
-用户主动：
-"我还希望能够标记决策之间的依赖关系，
-比如某个基础设施的改变影响了哪些后续决策"
-
-→ LLM 可以基于这个新方向继续探索
-```
-
-✅ **保持开放心态**
-```
-LLM: "您考虑过支持自然语言查询吗？比如'上个月有哪些关于数据库的决策？"
-
-用户：欢迎意料之外的问题
-→ "这个想法不错，可以作为一个高级功能"
-```
+✅ **充分表达想法**：详细描述愿景而非简单关键词
+✅ **主动提出新想法**：引导 LLM 探索你未曾考虑的方向
+✅ **保持开放心态**：欢迎意料之外的问题和建议
 
 ### DON'T - 避免做法
 
-❌ **过早收敛**
-```
-问题：您希望这个技能支持哪些文档格式？
-过早的回答："就 Markdown 和 PDF"
-
-更好：先探索不同格式的不同价值，再决定优先级
-```
-
-❌ **限制思维**
-```
-问题：这个技能可以有哪些创新点？
-限制性的回答："就像现有的文档工具那样"
-
-更好：描述现有工具的不足，探索突破方向
-```
+❌ **过早收敛**：避免过早限制选择范围，先探索再决策
+❌ **限制思维**：不要受现有工具束缚，探索突破方向
 
 ---
 
-## 不同 Brainstorm 风格示例
+## 不同 Brainstorm 风格
 
-### 风格 1：技术探索型
-
-```
-用户：关注技术实现细节
-LLM：生成技术可行性问题
-→ 适合技术导向的技能
-```
-
-### 风格 2：用户中心型
-
-```
-用户：关注用户需求和痛点
-LLM：生成用户体验问题
-→ 适合面向最终用户的技能
-```
-
-### 风格 3：创意发散型
-
-```
-用户：鼓励创新想法
-LLM：生成"如果...会怎样"类型的问题
-→ 适合创新型、实验性技能
-```
+| 风格 | 用户关注 | LLM 生成 | 适用场景 |
+|------|----------|----------|----------|
+| 技术探索型 | 技术实现细节 | 技术可行性问题 | 技术导向的技能 |
+| 用户中心型 | 用户需求和痛点 | 用户体验问题 | 面向最终用户的技能 |
+| 创意发散型 | 创新想法 | "如果...会怎样"类型 | 创新型、实验性技能 |
 
 ---
 

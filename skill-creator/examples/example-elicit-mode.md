@@ -15,18 +15,6 @@ Elicit 模式 (use_elicit=True) 通过 AI 自动调用 `ctx.elicit()` 一键完�
 
 ---
 
-## 模式对比
-
-| 特性 | 传统模式 | Elicit 模式 |
-|------|----------|------------|
-| 调用次数 | 多次（每步一次） | 一次 |
-| 用户交互 | 手动传递 user_input | AI 自动调用 elicit |
-| 状态管理 | 手动管理 session_id | 自动保存每步 |
-| 中断恢复 | 需要保存 session_id | 自动保存 |
-| 适用场景 | 需要精细控制 | 快速完成需求收集 |
-
----
-
 ## 基本用法
 
 ### 一键完成所有收集
@@ -52,65 +40,30 @@ Elicit 模式 (use_elicit=True) 通过 AI 自动调用 `ctx.elicit()` 一键完�
 
 ## 用户交互流程
 
-### 步骤 1：开始 Elicit 模式
+Elicit 模式自动完成5步收集，每步验证并保存：
 
-**用户**: "开始收集需求"
-
-**助手**:
 ```
-请输入技能名称（小写字母、数字、连字符）
-```
+步骤1: 请输入技能名称（小写字母、数字、连字符）
+输入: "pdf-helper"
+→ ✓ 已保存：skill_name = pdf-helper
 
-### 步骤 2：用户输入技能名称
+步骤2: 请简要描述技能的主要功能
+输入: "解析 PDF 文件，提取文本和图片"
+→ ✓ 已保存：skill_function = 解析 PDF 文件，提取文本和图片
 
-**用户**: "pdf-helper"
+步骤3: 请列出技能的主要使用场景
+输入: "文档分析、数据提取、内容归档"
+→ ✓ 已保存：use_cases = 文档分析、数据提取、内容归档
 
-**助手**:
-```
-✓ 已保存：skill_name = pdf-helper
+步骤4: 请选择模板类型（minimal, tool-based, workflow-based, analyzer-based）
+输入: "tool-based"
+→ ✓ 已保存：template_type = tool-based
 
-请简要描述技能的主要功能
-```
+步骤5: 是否有额外需求？（可选）
+输入: "支持 OCR 文字识别"
+→ ✓ 已保存：additional_features = 支持 OCR 文字识别
 
-### 步骤 3：用户输入主要功能
-
-**用户**: "解析 PDF 文件，提取文本和图片"
-
-**助手**:
-```
-✓ 已保存：skill_function = 解析 PDF 文件，提取文本和图片
-
-请列出技能的主要使用场景
-```
-
-### 步骤 4-5：继续输入
-
-**用户**: "文档分析、数据提取、内容归档"
-
-**助手**:
-```
-✓ 已保存：use_cases = 文档分析、数据提取、内容归档
-
-请选择模板类型（minimal, tool-based, workflow-based, analyzer-based）
-```
-
-**用户**: "tool-based"
-
-**助手**:
-```
-✓ 已保存：template_type = tool-based
-
-是否有额外需求？（可选）
-```
-
-**用户**: "支持 OCR 文字识别"
-
-**助手**:
-```
-✓ 已保存：additional_features = 支持 OCR 文字识别
-
-✅ 需求收集完成！
-进度：100% (5/5)
+✅ 需求收集完成！进度：100% (5/5)
 ```
 
 ---
@@ -142,46 +95,29 @@ Elicit 模式 (use_elicit=True) 通过 AI 自动调用 `ctx.elicit()` 一键完�
 
 ## 错误自动重试
 
-### 格式错误自动重试
+### 格式验证
 
-**用户**: "Invalid_Skill_Name"
-
-**助手**:
+输入 `Invalid_Skill_Name`：
 ```
 ❌ 格式错误：只能包含小写字母、数字和连字符
-
-请重新输入技能名称（小写字母、数字、连字符）
-```
-
-**用户**: "pdf-helper" (修正后)
-
-**助手**:
-```
-✓ 已保存：skill_name = pdf-helper
-
-继续下一步...
-```
-
-### 空输入自动重试
-
-**用户**: "" (空字符串)
-
-**助手**:
-```
-❌ 技能名称是必填项
-
 请重新输入技能名称
 ```
+修正为 `pdf-helper` 后自动继续。
+
+### 必填验证
+
+输入空字符串：
+```
+❌ 技能名称是必填项
+请重新输入技能名称
+```
+输入有效值后自动继续。
 
 ---
 
 ## 用户取消
 
-### 用户中途取消
-
-**用户**: [在步骤 3 取消]
-
-**助手**:
+用户中途取消时：
 ```
 ⚠️ 用户取消了输入
 
@@ -197,73 +133,23 @@ Elicit 模式 (use_elicit=True) 通过 AI 自动调用 `ctx.elicit()` 一键完�
 
 ## 不同模式使用 Elicit
 
-### Basic 模式 + Elicit
+| 模式 | 步骤数 | 用途 |
+|------|--------|------|
+| `basic` | 5 | 核心信息收集 |
+| `complete` | 10 | 完整信息收集 |
+| `brainstorm` | 5轮 | 开放性创意发散 |
+| `progressive` | 可变 | 快速原型，可跳过 |
 
-```json
-{
-  "action": "start",
-  "mode": "basic",
-  "use_elicit": true
-}
-```
-
-5 个步骤自动收集。
-
-### Complete 模式 + Elicit
-
-```json
-{
-  "action": "start",
-  "mode": "complete",
-  "use_elicit": true
-}
-```
-
-10 个步骤自动收集。
-
-### Brainstorm 模式 + Elicit
-
-```json
-{
-  "action": "start",
-  "mode": "brainstorm",
-  "use_elicit": true
-}
-```
-
-默认 5 轮开放性问题。
-
-### Progressive 模式 + Elicit
-
-```json
-{
-  "action": "start",
-  "mode": "progressive",
-  "use_elicit": true
-}
-```
-
-核心信息优先，可跳过。
+所有模式都支持 `use_elicit: true` 参数。
 
 ---
 
 ## 最佳实践
 
-### 1. 检查客户端支持
-
-确保客户端支持 `ctx.elicit()` API。
-
-### 2. 提供清晰提示
-
-在开始前说明会自动收集所有输入。
-
-### 3. 处理取消
-
-用户取消时，已收集信息不会丢失。
-
-### 4. 利用重试机制
-
-验证失败时自动重试，无需手动处理。
+1. **检查客户端支持**：确保客户端支持 `ctx.elicit()` API
+2. **提供清晰提示**：在开始前说明会自动收集所有输入
+3. **处理取消**：用户取消时，已收集信息不会丢失
+4. **利用重试机制**：验证失败时自动重试，无需手动处理
 
 ---
 
@@ -289,36 +175,14 @@ Elicit 模式需要客户端支持 `ctx.elicit()` API：
 
 ---
 
-## 完整示例对比
+## 模式对比
 
-### 传统模式（多次调用）
-
-```json
-// 步骤 1
-{"action": "start", "mode": "basic"}
-// → 返回第一个问题
-
-// 步骤 2
-{"action": "next", "session_id": "...", "user_input": "pdf-helper"}
-// → 返回第二个问题
-
-// 步骤 3-5
-{"action": "next", "session_id": "...", "user_input": "..."}
-// → 继续问题
-
-// 步骤 6
-{"action": "complete", "session_id": "..."}
-// → 完成收集
-```
-
-### Elicit 模式（一次调用）
-
-```json
-// 一步完成
-{"action": "start", "mode": "basic", "use_elicit": true}
-// → 自动收集所有输入
-// → 返回完整结果
-```
+| 特性 | 传统模式 | Elicit 模式 |
+|------|----------|------------|
+| 调用次数 | 多次（每步一次） | 一次 |
+| 用户交互 | 手动传递 user_input | AI 自动调用 elicit |
+| 状态管理 | 手动管理 session_id | 自动保存每步 |
+| 示例调用 | `{"action": "next", "user_input": "..."}` | `{"action": "start", "use_elicit": true}` |
 
 ---
 
