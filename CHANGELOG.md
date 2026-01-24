@@ -364,3 +364,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 新增 MCP 资源函数测试：5 个资源函数覆盖测试
   - 新增 MCP Prompt 函数测试：3 个 Prompt 函数覆盖测试
 - **Total**: 414 tests passing, 94% overall coverage
+
+---
+
+## [0.2.2] - 2026-01-24
+
+### Fixed
+- **版本号一致性** (P0):
+  - 修复 `__init__.py` 版本号: 0.1.0 → 0.2.1
+  - 统一与 pyproject.toml 版本号
+
+- **代码质量** (P1):
+  - 清理 server.py 中的 TODO 注释
+  - 将 TODO 占位符改进为更有意义的模板内容
+
+- **文档优化** (P2):
+  - 优化 `brainstorming-techniques.md`: 309行 → 283行
+  - 验证所有示例文件符合 ≤300 行标准
+  - 验证 collect_requirements 工具已在 SKILL.md 中集成
+
+### Added
+- **Server 重构计划** (P1):
+  - 创建 `.claude/plans/server-refactoring-plan.md`
+  - 评估 server.py (2510行) 拆分方案
+  - 规划新增模块: testing.py, skill_generators.py, requirement_collection.py
+
+- **计划管理** (P0):
+  - 归档 3 个已完成的计划文档到 archive/
+  - - dapper-twirling-otter.md (全面审核审计)
+  - - feat-ctx-elicit-integration.md (ctx.elicit 集成)
+  - - fix-fallback-verification-gaps.md (降级验证修复)
+
+### Verified
+- **文档符合度**:
+  - 引用文件: 16/16 ≤300 行 (100%)
+  - 示例文件: 17/17 ≤300 行 (100%)
+- **SKILL.md 集成**: collect_requirements 工具已完整引用

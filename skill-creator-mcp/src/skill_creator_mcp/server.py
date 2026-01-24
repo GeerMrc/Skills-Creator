@@ -308,7 +308,7 @@ async def validate_skill(
             valid=valid,
             skill_path=str(skill_dir),
             skill_name=skill_name,
-            template_type=template_type,
+            template_type=template_type,  # type: ignore[arg-type]
             errors=errors,
             warnings=warnings,
             checks=checks,
@@ -553,7 +553,7 @@ async def refactor_skill(
             structure=structure,
             complexity=complexity,
             quality=quality,
-            suggestions=suggestions,
+            suggestions=suggestions,  # type: ignore[arg-type]
             report=report,
             effort_estimate=effort,
         )
@@ -595,7 +595,7 @@ async def package_skill(
     """
     from pydantic import ValidationError
 
-    from .models.skill_config import PackageResult, PackageSkillInput
+    from .models.skill_config import PackageSkillInput
 
     try:
         # 使用 Pydantic 验证输入参数
@@ -1198,6 +1198,7 @@ async def _validate_and_init_requirement_session(
     """
     from datetime import datetime
     from datetime import timezone as tz
+
     from .models.skill_config import (
         RequirementCollectionInput,
         SessionState,
@@ -1394,6 +1395,7 @@ async def _handle_requirement_start_action(
     """
     from datetime import datetime
     from datetime import timezone as tz
+
     from .models.skill_config import SessionState
 
     # 重置会话状态
@@ -1402,7 +1404,7 @@ async def _handle_requirement_start_action(
         answers={},
         started_at=datetime.now(tz.utc).isoformat(),
         completed=False,
-        mode=mode,  # type: ignore[assignment]
+        mode=mode,  # type: ignore[arg-type]
         total_steps=total_steps,
     )
     # 更新传入的 session_state 对象（就地修改）
@@ -2317,16 +2319,16 @@ async def _create_reference_files(skill_dir: Path, template_type: str) -> None:
 
     ref_mapping = {
         "tool-based": [
-            ("tool-integration.md", "# 工具集成\n\nTODO: 添加工具集成说明"),
-            ("usage-examples.md", "# 使用示例\n\nTODO: 添加使用示例"),
+            ("tool-integration.md", "# 工具集成\n\n本文档说明如何将 MCP 工具集成到技能中。\n\n## 工具列表\n\n- `tool_name_1`: 说明工具用途\n- `tool_name_2`: 说明工具用途\n\n## 集成步骤\n\n1. 在 SKILL.md 中声明工具\n2. 在技能代码中调用工具\n3. 处理工具返回结果"),
+            ("usage-examples.md", "# 使用示例\n\n本文档提供技能的使用示例。\n\n## 示例 1: 基础用法\n\n```\n用户请求：[描述用户输入]\n\n技能响应：[描述技能处理流程]\n```\n\n## 示例 2: 高级用法\n\n```\n用户请求：[描述复杂场景]\n\n技能响应：[描述处理方式]\n```"),
         ],
         "workflow-based": [
-            ("workflow-steps.md", "# 工作流步骤\n\nTODO: 添加工作流步骤说明"),
-            ("decision-points.md", "# 决策点\n\nTODO: 添加决策点说明"),
+            ("workflow-steps.md", "# 工作流步骤\n\n本文档描述技能的工作流程。\n\n## 流程图\n\n```\n[步骤 1] → [步骤 2] → [步骤 3] → [完成]\n```\n\n## 详细步骤\n\n### 步骤 1: [名称]\n- **输入**: [描述输入]\n- **处理**: [描述处理逻辑]\n- **输出**: [描述输出]\n\n### 步骤 2: [名称]\n..."),
+            ("decision-points.md", "# 决策点\n\n本文档描述技能中的关键决策点。\n\n## 决策点 1: [名称]\n\n**条件**: [描述触发条件]\n- **选项 A**: [描述选项及结果]\n- **选项 B**: [描述选项及结果]\n\n**决策依据**: [说明如何做出决策]"),
         ],
         "analyzer-based": [
-            ("analysis-methods.md", "# 分析方法\n\nTODO: 添加分析方法说明"),
-            ("metrics.md", "# 指标\n\nTODO: 添加指标说明"),
+            ("analysis-methods.md", "# 分析方法\n\n本文档描述技能使用的分析方法。\n\n## 方法 1: [名称]\n\n**目的**: [描述分析目的]\n- **输入**: [描述输入数据]\n- **算法**: [描述分析方法]\n- **输出**: [描述输出结果]\n\n## 方法 2: [名称]\n..."),
+            ("metrics.md", "# 指标\n\n本文档定义技能使用的评估指标。\n\n## 准确性指标\n\n- **准确率**: 定义和计算方式\n- **精确率**: 定义和计算方式\n- **召回率**: 定义和计算方式\n\n## 效率指标\n\n- **响应时间**: 定义和目标\n- **资源消耗**: 定义和目标"),
         ],
     }
 
