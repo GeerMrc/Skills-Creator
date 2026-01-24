@@ -211,9 +211,9 @@ async def validate_skill(
         check_content: 是否检查内容格式
 
     Returns:
-        包含验证结果的字典
+        包含验证结果的字典（Pydantic 模型的 JSON 序列化）
     """
-    from .models.skill_config import ValidateSkillInput
+    from .models.skill_config import ValidateSkillInput, ValidationResult
 
     try:
         # 使用 Pydantic 验证输入参数
@@ -232,27 +232,30 @@ async def validate_skill(
         warnings = []
         checks = {}
         template_type = None
+        skill_name = skill_dir.name
 
         # 检查目录是否存在
         if not skill_dir.exists():
-            return {
-                "success": False,
-                "valid": False,
-                "skill_path": skill_path,
-                "errors": [f"目录不存在: {skill_path}"],
-                "warnings": [],
-                "checks": {},
-            }
+            result = ValidationResult(
+                valid=False,
+                skill_path=skill_path,
+                skill_name=skill_name,
+                errors=[f"目录不存在: {skill_path}"],
+                warnings=[],
+                checks={},
+            )
+            return {"success": False, **result.model_dump()}
 
         if not skill_dir.is_dir():
-            return {
-                "success": False,
-                "valid": False,
-                "skill_path": skill_path,
-                "errors": [f"路径不是目录: {skill_path}"],
-                "warnings": [],
-                "checks": {},
-            }
+            result = ValidationResult(
+                valid=False,
+                skill_path=skill_path,
+                skill_name=skill_name,
+                errors=[f"路径不是目录: {skill_path}"],
+                warnings=[],
+                checks={},
+            )
+            return {"success": False, **result.model_dump()}
 
         # 1. 检查目录结构
         if input_data.check_structure:
@@ -272,8 +275,9 @@ async def validate_skill(
             warnings.extend(content_warnings)
             checks["content"] = len(content_errors) == 0
 
-            if detected_template:
-                template_type = detected_template
+            # 确保 template_type 类型正确
+            if detected_template and detected_template in ("minimal", "tool-based", "workflow-based", "analyzer-based"):
+                template_type = detected_template  # type: ignore[assignment]
 
             # 4. 检查模板特定要求
             if template_type:
@@ -284,28 +288,27 @@ async def validate_skill(
         # 判断验证是否通过
         valid = len(errors) == 0
 
-        return {
-            "success": True,
-            "valid": valid,
-            "skill_path": str(skill_dir),
-            "skill_name": skill_dir.name,
-            "template_type": template_type,
-            "errors": errors,
-            "warnings": warnings,
-            "checks": checks,
-            "message": "验证通过" if valid else f"验证失败，发现 {len(errors)} 个错误",
-        }
+        result = ValidationResult(
+            valid=valid,
+            skill_path=str(skill_dir),
+            skill_name=skill_name,
+            template_type=template_type,
+            errors=errors,
+            warnings=warnings,
+            checks=checks,
+        )
+
+        return {"success": True, "message": "验证通过" if valid else f"验证失败，发现 {len(errors)} 个错误", **result.model_dump()}
 
     except Exception as e:
-        return {
-            "success": False,
-            "valid": False,
-            "skill_path": skill_path,
-            "errors": [f"验证过程出错: {e}"],
-            "warnings": [],
-            "checks": {},
-            "error_type": "internal_error",
-        }
+        result = ValidationResult(
+            valid=False,
+            skill_path=skill_path,
+            errors=[f"验证过程出错: {e}"],
+            warnings=[],
+            checks={},
+        )
+        return {"success": False, "error_type": "internal_error", **result.model_dump()}
 
 
 @mcp.tool()

@@ -78,6 +78,30 @@ pip install -e ".[dev]"
 }
 ```
 
+### 环境变量配置（可选）
+
+创建 `.env` 文件来自定义服务器行为：
+
+```bash
+# 复制模板
+cp .env.example .env
+
+# 编辑配置
+vim .env
+```
+
+**可用环境变量**：
+
+| 变量名 | 默认值 | 说明 |
+|--------|--------|------|
+| `SKILL_CREATOR_LOG_LEVEL` | INFO | 日志级别（DEBUG/INFO/WARNING/ERROR） |
+| `SKILL_CREATOR_LOG_FORMAT` | text | 日志格式（text/json） |
+| `SKILL_CREATOR_LOG_FILE` | - | 日志文件路径（可选） |
+| `SKILL_CREATOR_OUTPUT_DIR` | . | 默认输出目录 |
+| `SKILL_CREATOR_MAX_RETRIES` | 3 | 最大重试次数 |
+| `SKILL_CREATOR_TIMEOUT_SECONDS` | 30 | 超时时间（秒） |
+| `SKILL_CREATOR_DEV_MODE` | false | 开发模式（启用详细调试） |
+
 ## 使用
 
 ### collect_requirements - 需求澄清

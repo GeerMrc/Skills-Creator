@@ -14,9 +14,7 @@
 - [返回值](#返回值)
 - [Action 类型](#action-类型)
 - [验证规则](#验证规则)
-- [完整性检查](#完整性检查)
 - [错误处理](#错误处理)
-- [技术实现](#技术实现)
 
 ---
 
@@ -224,28 +222,6 @@ async def collect_requirements(
 
 ---
 
-## 完整性检查
-
-`_check_requirement_completeness` 函数使用 LLM 分析已收集的信息。
-
-### 检查维度
-
-1. **信息完整性**：是否缺少关键信息
-2. **逻辑一致性**：各项需求是否相互矛盾
-3. **可实施性**：技术方案是否可行
-
-### 返回内容
-
-```python
-{
-    "is_complete": bool,      # 需求是否完整
-    "missing_info": list,     # 缺失信息列表
-    "suggestions": list,      # 补充建议列表
-}
-```
-
----
-
 ## 错误处理
 
 ### 常见错误
@@ -270,40 +246,6 @@ print(result["progress"])
 ```python
 # 使用新的 session_id 或不指定（自动生成）
 result = await collect_requirements(action="start", mode="basic")
-```
-
----
-
-## 技术实现
-
-### SessionState 模型
-
-```python
-class SessionState(BaseModel):
-    current_step_index: int = 0
-    answers: dict[str, str] = Field(default_factory=dict)
-    started_at: str | None = None
-    completed: bool = False
-    mode: RequirementCollectionMode = "basic"
-    total_steps: int = 0
-```
-
-### 状态持久化
-
-```python
-# 保存状态
-await ctx.set_state(session_state.model_dump())
-
-# 恢复状态
-stored_state = await ctx.get_state()
-if stored_state:
-    session_state = SessionState.model_validate(stored_state)
-```
-
-### 进度计算
-
-```python
-progress = (current_step_index / total_steps) * 100
 ```
 
 ---

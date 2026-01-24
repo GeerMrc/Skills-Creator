@@ -258,43 +258,6 @@ Q: 根据您的描述，这个技能需要处理哪类数据格式？
 - **辅助函数**: `_generate_brainstorm_question()` (第 1146-1222 行)
 - **会话管理**: 使用 FastMCP Session State API
 
-### 关键代码片段
-
-```python
-async def _generate_brainstorm_question(
-    ctx: Context,
-    answers: dict[str, str],
-    conversation_history: list[dict[str, str]] | None = None,
-) -> dict[str, Any]:
-    """使用 LLM 为 brainstorm 模式动态生成探索性问题."""
-
-    # 构建上下文
-    context_parts = []
-    if answers:
-        context_parts.append("已收集的信息:")
-        for key, value in answers.items():
-            context_parts.append(f"- {key}: {value}")
-
-    if conversation_history:
-        context_parts.append("\n之前的对话:")
-        for msg in conversation_history[-4:]:
-            context_parts.append(f"{msg.get('role', '')}: {msg.get('content', '')}")
-
-    # 调用 LLM 生成问题
-    result = await ctx.sample(
-        messages=prompt,
-        system_prompt="You are a creative skill development consultant...",
-        temperature=0.8,
-    )
-
-    return {
-        "success": True,
-        "question": result.text.strip(),
-        "is_dynamic": True,
-        "source": "llm_generated",
-    }
-```
-
 ---
 
 ## 常见问题
@@ -341,12 +304,6 @@ result = await collect_requirements(
 
 ## 参考资料
 
-- **主文档**: `requirement-collection.md`
-- **示例**: `examples/requirement-collection-basic.md`
-- **工具实现**: `skill-creator-mcp/src/skill_creator_mcp/server.py:772-1123`
-- **FastMCP 文档**: https://gofastmcp.com/servers/context
-
----
-
-**文档维护**: 请在每次功能更新后同步本文档。
-**最后更新**: 2026-01-23
+- **[主文档](requirement-collection.md)** - 需求澄清概述
+- **[示例](../examples/requirement-collection-basic.md)** - 使用示例
+- **[MCP 集成指南](mcp-integration.md)** - MCP 工具配置

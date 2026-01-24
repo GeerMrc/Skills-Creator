@@ -33,15 +33,6 @@ pdf-processor/           # ✓ 命名清晰
 - 基本按能力组织
 - Token 效率 ≥50%
 
-**示例**：
-```
-git-helper/              # △ 命名较模糊
-├── SKILL.md (180行)    # ✓ 可接受
-├── references/
-│   ├── guide.md (300行)
-│   └── workflows.md (320行)  # △ 稍长
-```
-
 ### 及格 (60-74分)
 
 **特征**：
@@ -69,6 +60,8 @@ git-helper/              # △ 命名较模糊
 2. 修正 YAML frontmatter
 3. 重新设计技能结构
 4. 实施渐进式披露
+
+---
 
 ## 常见问题
 
@@ -115,6 +108,8 @@ analyze_skill(skill_path="/path/to/skill")
 - 内容密度百分比
 - 优化建议
 
+---
+
 ## 自动化验证
 
 ### 使用 validate_skill 工具
@@ -147,9 +142,11 @@ python scripts/validate_skill.py /path/to/skill --template tool-based
 python scripts/validate_skill.py /path/to/skill --verbose
 ```
 
-### 集成到 CI/CD
+---
 
-#### GitHub Actions 示例
+## CI/CD 集成
+
+### GitHub Actions 示例
 
 ```yaml
 # .github/workflows/skill-validation.yml
@@ -170,87 +167,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Install dependencies
-        run: |
-          pip install skill-creator-mcp
-
-      - name: Validate Skills
-        run: |
-          # 验证主技能
-          python scripts/validate_skill.py . --template workflow-based
-
-          # 验证子技能（如果存在）
-          for skill in skills/*/; do
-            echo "Validating $skill"
-            python scripts/validate_skill.py "$skill"
-          done
-
-      - name: Upload validation report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: validation-report
-          path: |
-            validation-report.json
-            validation-report.html
+      - run: pip install skill-creator-mcp
+      - run: python scripts/validate_skill.py . --template workflow-based
 ```
 
-#### GitLab CI 示例
-
-```yaml
-# .gitlab-ci.yml
-stages:
-  - validate
-
-validate_skill:
-  stage: validate
-  image: python:3.12
-  script:
-    - pip install skill-creator-mcp
-    - python scripts/validate_skill.py . --template workflow-based
-  artifacts:
-    paths:
-      - validation-report.json
-      - validation-report.html
-    when: always
-  only:
-    - merge_requests
-    - main
-```
-
-#### Pre-commit Hook
+### Pre-commit Hook
 
 ```bash
 # .git/hooks/pre-commit
 #!/bin/bash
-
 echo "Running skill validation..."
-
-# 验证主技能
 python scripts/validate_skill.py . || exit 1
-
-# 验证子技能
-for skill in skills/*/; do
-    python scripts/validate_skill.py "$skill" || exit 1
-done
-
 echo "Validation passed!"
 ```
 
 使用方式：
 ```bash
-# 安装 hook
 cp .git/hooks/pre-commit.example .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 ```
 
-### 本地开发工作流
+---
+
+## 本地开发工作流
 
 ```bash
 # 1. 开发技能
@@ -268,6 +210,8 @@ python scripts/validate_skill.py . --report > report.html
 # 5. 提交前检查
 pre-commit run
 ```
+
+---
 
 ## 评分计算
 
@@ -324,6 +268,8 @@ def get_grade(score: float) -> str:
     else:
         return "不及格"
 ```
+
+---
 
 ## 相关资源
 

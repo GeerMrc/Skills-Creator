@@ -6,6 +6,8 @@
 
 > **提示**：查看 [验证实施指南](validation-guide.md) 了解等级划分、常见问题和自动化验证示例。
 
+---
+
 ## 验证维度
 
 ### 1. 命名验证
@@ -31,30 +33,25 @@
 ✓ git-workflow
 ✓ pdf-processor
 ✓ container-management
-✓ data-analyzer-v2
 ```
 
 **错误示例**：
 ```
-✓ Git-Workflow           # 大写字母
-✓ pdf_processor          # 下划线
-✓ -container-manager     # 连字符开头
-✓ container--manager     # 连续连字符
-✓ container-manager-     # 连字符结尾
-✓ ab                     # 太短
+✗ Git-Workflow           # 大写字母
+✗ pdf_processor          # 下划线
+✗ -container-manager     # 连字符开头
+✗ container--manager     # 连续连字符
 ```
 
 #### 能力命名
 
 **推荐模式**：
-- **动名词形式**：`processing-pdfs`、`analyzing-data`、`managing-containers`
-- **名词短语**：`pdf-processing`、`data-analysis`、`container-management`
+- **动名词形式**：`processing-pdfs`、`analyzing-data`
+- **名词短语**：`pdf-processing`、`data-analysis`
 
-**避免使用**：
-- `helper` - 太模糊
-- `utils` - 太通用
-- `tools` - 按工具组织的信号
-- `manager` - 除非真正管理资源
+**避免使用**：`helper`、`utils`、`tools`、`manager`（除非真正管理资源）
+
+---
 
 ### 2. 描述验证
 
@@ -76,52 +73,21 @@ description: |
 - 描述能力而非工具
 - 1句话，约20字符
 
-**示例**：
-```yaml
-# 正确
-description: |
-  PDF 文档处理能力。提取文本、填充表单、合并文档。
-
-# 错误
-description: |
-  我可以帮助您处理 PDF 文档。  # 第一人称
-  这是一个 PDF 处理工具。      # 不明确
-```
-
 **2. 使用场景**（必须）
 - 2-4个具体场景
 - 每个场景1行
-- 以"何时使用"开头
-
-**示例**：
-```yaml
-description: |
-  ...
-
-  何时使用：
-  - 需要从 PDF 提取文本或图片
-  - 填充 PDF 表单模板
-  - 合并多个 PDF 文件
-```
 
 **3. 触发词**（必须）
 - 3-6个关键词
 - 用户可能使用的词汇
-- 以"触发词"开头
-
-**示例**：
-```yaml
-description: |
-  ...
-
-  触发词：PDF、提取、表单、合并、水印
-```
 
 #### 描述长度
 
 | 指标 | 最小 | 推荐 | 最大 |
 |------|------|------|------|
 | 字符数 | 50 | 150-300 | 1024 |
+
+---
 
 ### 3. 结构验证
 
@@ -131,24 +97,21 @@ description: |
 - 优秀：≤150行
 - 良好：≤200行
 - 及格：≤350行
-- 不及格：>500行
 
 #### 必需章节
 
 **SKILL.md 必须包含**：
-```markdown
-## 技能概述
-## 核心能力
-## 快速开始
-## 详细文档（或导航到引用文件）
-```
+- 技能概述
+- 核心能力
+- 快速开始
+- 详细文档（或导航到引用文件）
 
 #### 目录结构
 
 **最小结构**：
 ```
 skill-name/
-├── SKILL.md
+└── SKILL.md
 ```
 
 **标准结构**：
@@ -179,6 +142,8 @@ SKILL.md → guide.md → internal.md → utils.md
 
 **独立性**：引用文件不应相互引用
 
+---
+
 ### 4. 内容质量验证
 
 #### 第三人称检查
@@ -193,7 +158,6 @@ description: |
 ```yaml
 description: |
   我可以管理容器。           # ❌ 第一人称
-  使用这个工具管理容器。     # ❌ 第二人称
 ```
 
 #### 按能力组织检查
@@ -217,33 +181,18 @@ description: |
 - 独立可执行
 - 有清晰的错误提示
 
-**示例**：
-```python
-#!/usr/bin/env python3
-import argparse
-
-def main():
-    parser = argparse.ArgumentParser(description='验证 Agent-Skill')
-    parser.add_argument('path', help='技能路径')
-    args = parser.parse_args()
-    # ...
-
-if __name__ == '__main__':
-    main()
-```
+---
 
 ### 5. Token 效率验证
 
 #### 首次加载检查
 
-**优秀**：≤1000 tokens
-**良好**：≤2000 tokens
-**及格**：≤3500 tokens
-**不及格**：>5000 tokens
+- 优秀：≤1000 tokens
+- 良好：≤2000 tokens
+- 及格：≤3500 tokens
 
 #### 内容密度检查
 
-计算方法：
 ```
 内容密度 = (核心内容 tokens) / (总 tokens)
 
@@ -252,18 +201,11 @@ if __name__ == '__main__':
 及格：≥30%
 ```
 
-#### 重复内容检查
-
-自动检查：
-- 相同段落出现多次
-- 引用文件内容重复
-- 示例代码重复
+---
 
 ## 验证清单
 
 ### 完整清单
-
-使用以下清单全面验证技能：
 
 **命名检查**：
 - [ ] 名称使用 kebab-case
@@ -284,28 +226,17 @@ if __name__ == '__main__':
 - [ ] 包含必需章节
 - [ ] 引用文件 200-300行
 - [ ] 引用深度 ≤2层
-- [ ] 引用文件独立
 
 **内容检查**：
 - [ ] 使用第三人称
 - [ ] 按能力组织
 - [ ] 脚本有 --help
-- [ ] 无重复内容
 
 **效率检查**：
 - [ ] 首次加载 ≤2000 tokens
 - [ ] 内容密度 ≥50%
-- [ ] 无明显重复
 
-### 快速检查
-
-5分钟快速验证：
-
-1. 检查 YAML frontmatter（30秒）
-2. 数 SKILL.md 行数（10秒）
-3. 验证描述三要素（30秒）
-4. 检查目录结构（30秒）
-5. 运行 validate_skill 工具（3分钟）
+---
 
 ## 评分系统
 
@@ -318,5 +249,7 @@ if __name__ == '__main__':
 | 结构规范 | 30% | ≤150行=100，≤200行=80 |
 | 内容质量 | 20% | 符合规范=100 |
 | Token 效率 | 10% | ≥70%=100，≥50%=70 |
+
+---
 
 > **继续阅读**：[验证实施指南](validation-guide.md) 包含等级划分标准、常见问题解答和 CI/CD 集成示例。
