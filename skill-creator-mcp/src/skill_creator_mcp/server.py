@@ -330,11 +330,14 @@ async def analyze_skill(
         analyze_quality: 是否分析代码质量
 
     Returns:
-        包含分析结果的字典
+        包含分析结果的字典（Pydantic 模型的 JSON 序列化）
     """
     from .models.skill_config import (
+        AnalyzeResult,
         AnalyzeSkillInput,
+        ComplexityMetrics,
         QualityScore,
+        StructureAnalysis,
     )
 
     try:
@@ -400,28 +403,20 @@ async def analyze_skill(
         # 4. 生成改进建议
         suggestions = _generate_suggestions(structure, complexity, quality)
 
+        # 创建 AnalyzeResult 模型实例
+        result = AnalyzeResult(
+            skill_path=str(skill_dir),
+            skill_name=skill_dir.name,
+            structure=structure,
+            complexity=complexity,
+            quality=quality,
+            suggestions=suggestions,
+        )
+
         return {
             "success": True,
-            "skill_path": str(skill_dir),
-            "skill_name": skill_dir.name,
-            "structure": {
-                "total_files": structure.total_files,
-                "total_lines": structure.total_lines,
-                "file_breakdown": structure.file_breakdown,
-            },
-            "complexity": {
-                "cyclomatic_complexity": complexity.cyclomatic_complexity,
-                "maintainability_index": complexity.maintainability_index,
-                "code_duplication": complexity.code_duplication,
-            },
-            "quality": {
-                "overall_score": quality.overall_score,
-                "structure_score": quality.structure_score,
-                "documentation_score": quality.documentation_score,
-                "test_coverage_score": quality.test_coverage_score,
-            },
-            "suggestions": suggestions,
             "summary": _generate_analysis_summary(quality, complexity),
+            **result.model_dump(),
         }
 
     except Exception as e:
@@ -457,7 +452,7 @@ async def refactor_skill(
     Returns:
         包含重构建议的字典
     """
-    from .models.skill_config import RefactorSkillInput
+    from .models.skill_config import RefactorResult, RefactorSkillInput
 
     try:
         # 使用 Pydantic 验证输入参数
@@ -534,30 +529,20 @@ async def refactor_skill(
         # 6. 估算工作量
         effort = estimate_refactor_effort(suggestions)
 
-        return {
-            "success": True,
-            "skill_path": str(skill_dir),
-            "skill_name": skill_dir.name,
-            "structure": {
-                "total_files": structure.total_files,
-                "total_lines": structure.total_lines,
-                "file_breakdown": structure.file_breakdown,
-            },
-            "complexity": {
-                "cyclomatic_complexity": complexity.cyclomatic_complexity,
-                "maintainability_index": complexity.maintainability_index,
-                "code_duplication": complexity.code_duplication,
-            },
-            "quality": {
-                "overall_score": quality.overall_score,
-                "structure_score": quality.structure_score,
-                "documentation_score": quality.documentation_score,
-                "test_coverage_score": quality.test_coverage_score,
-            },
-            "suggestions": suggestions,
-            "report": report,
-            "effort_estimate": effort,
-        }
+        # 创建 RefactorResult 模型实例
+        result = RefactorResult(
+            success=True,
+            skill_path=str(skill_dir),
+            skill_name=skill_dir.name,
+            structure=structure,
+            complexity=complexity,
+            quality=quality,
+            suggestions=suggestions,
+            report=report,
+            effort_estimate=effort,
+        )
+
+        return {"success": True, **result.model_dump()}
 
     except Exception as e:
         return {
@@ -594,7 +579,7 @@ async def package_skill(
     """
     from pydantic import ValidationError
 
-    from .models.skill_config import PackageSkillInput
+    from .models.skill_config import PackageResult, PackageSkillInput
 
     try:
         # 使用 Pydantic 验证输入参数
