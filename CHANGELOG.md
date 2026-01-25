@@ -228,11 +228,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Server 模块化重构完成** (2026-01-25):
+  - 将 server.py 从 2228 行精简到 1041 行 (-53%)
+  - 提取需求收集常量到 constants.py
+  - 提取辅助函数到独立模块:
+    - `utils/requirement_collection.py` - 需求收集函数
+    - `utils/skill_generators.py` - 技能生成函数
+    - `utils/testing.py` - 测试工具函数
+  - 新增完整测试覆盖:
+    - `tests/test_utils/test_requirement_collection.py` (30个测试)
+    - `tests/test_utils/test_skill_generators.py` (21个测试)
+    - `tests/test_utils/test_testing.py` (11个测试)
+    - `tests/test_tools/test_server_helpers.py` (22个测试)
+
 - **Dependencies**: 升级到 FastMCP 3.0.0b1
   - 支持最新的 MCP 协议特性
   - 添加客户端能力检测功能 (`capability_detection.py`)
   - 新增工具: `check_client_capabilities()` 检测 sampling 和 elicitation 支持
   - 更新 pyproject.toml 依赖要求: `fastmcp>=3.0.0b1`
+
+### Fixed
+- **计划管理** (2026-01-25):
+  - 归档 `feat-example-files-optimization.md` (示例文件优化已完成)
+  - 更新 `next-steps-v0.3.0.md` 状态 (保持为 in_progress)
   - 同步 .venv 虚拟环境开发依赖 (pytest, ruff, mypy)
   - 修复代码风格问题 (ruff 自动修复)
   - 验证测试套件通过 (414 passed, 94% coverage)
