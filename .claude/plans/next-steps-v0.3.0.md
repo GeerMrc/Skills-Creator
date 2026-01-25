@@ -105,32 +105,32 @@
 - [x] Pull Request 时运行检查
 - [ ] Coverage 上传到 Codecov
 
-#### 任务 1.4: 更新文档
+#### 任务 1.4: 更新文档 ✅ 已完成 (2026-01-25)
 
 **检查清单**:
 - [x] 更新 README.md 添加 Docker 说明
-- [ ] 创建 `docs/deployment.md` 部署指南
-- [ ] 添加 Docker 相关示例
+- [x] 创建 `docs/deployment.md` 部署指南
+- [x] 添加 Docker 相关示例
 
 ---
 
 ### 阶段 2: 文档生成 + 高级 CI
 
-#### 任务 2.1: API 文档生成
+#### 任务 2.1: API 文档生成 ✅ 已完成 (2026-01-25)
 
 **目标**: 使用 Sphinx 生成 API 文档
 
 **检查清单**:
-- [ ] 安装 Sphinx 和扩展
-- [ ] 创建 `docs/conf.py`
-- [ ] 创建 `docs/api/index.rst`
-- [ ] 配置自动文档提取
-- [ ] 生成 HTML 文档
+- [x] 安装 Sphinx 和扩展
+- [x] 创建 `docs/conf.py`
+- [x] 创建 `docs/api/index.rst`
+- [x] 配置自动文档提取
+- [x] 生成 HTML 文档
 
 **验收标准**:
-- [ ] `make docs` 生成文档
-- [ ] API 文档完整
-- [ ] 文档可在线浏览
+- [x] `uv run sphinx-build` 生成文档
+- [x] API 文档完整
+- [x] 文档可在线浏览
 
 #### 任务 2.2: 高级 CI 工作流
 

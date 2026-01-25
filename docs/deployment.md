@@ -119,7 +119,7 @@ cd skill-creator-mcp
 docker build -t skill-creator-mcp:latest .
 ```
 
-### 运行容器
+### 运行容器（STDIO 模式）
 
 ```bash
 docker run -d \
@@ -127,6 +127,18 @@ docker run -d \
   -v /path/to/output:/app/output \
   -e SKILL_CREATOR_LOG_LEVEL=INFO \
   skill-creator-mcp:latest
+```
+
+### 运行容器（HTTP/SSE 模式）
+
+```bash
+docker run -d \
+  --name skill-creator-http \
+  -p 8000:8000 \
+  -v /path/to/output:/app/output \
+  -e SKILL_CREATOR_LOG_LEVEL=INFO \
+  skill-creator-mcp:latest \
+  python -m skill_creator_mcp.http
 ```
 
 ### Docker Compose
@@ -143,6 +155,57 @@ services:
       - SKILL_CREATOR_LOG_LEVEL=INFO
       - SKILL_CREATOR_OUTPUT_DIR=/app/output
     restart: unless-stopped
+
+  # HTTP 模式服务（可选）
+  skill-creator-http:
+    build: ./skill-creator-mcp
+    container_name: skill-creator-http
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./output:/app/output
+    environment:
+      - SKILL_CREATOR_LOG_LEVEL=INFO
+    restart: unless-stopped
+    command: python -m skill_creator_mcp.http
+```
+
+### Docker 容器管理示例
+
+```bash
+# 查看容器日志
+docker logs -f skill-creator
+
+# 进入容器调试
+docker exec -it skill-creator bash
+
+# 停止容器
+docker stop skill-creator
+
+# 删除容器
+docker rm skill-creator
+
+# 重启容器
+docker restart skill-creator
+```
+
+### 常见环境变量
+
+```bash
+# 日志级别
+-e SKILL_CREATOR_LOG_LEVEL=DEBUG
+
+# 输出目录
+-e SKILL_CREATOR_OUTPUT_DIR=/app/output
+
+# 最大重试次数
+-e SKILL_CREATOR_MAX_RETRIES=5
+
+# 超时时间（秒）
+-e SKILL_CREATOR_TIMEOUT_SECONDS=60
+
+# 开发模式
+-e SKILL_CREATOR_DEV_MODE=true
 ```
 
 ---
