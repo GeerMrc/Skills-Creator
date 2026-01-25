@@ -227,9 +227,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **批量操作工具** (v0.3.0 - 2026-01-25):
+  - 新增 `tools/batch_operations.py` 模块 (233行)
+  - `batch_validate_skills()` - 批量验证多个技能，支持并发控制
+  - `batch_analyze_skills()` - 批量分析多个技能，支持并发控制
+  - 同步包装函数: `batch_validate_skills_sync()`, `batch_analyze_skills_sync()`
+  - Pydantic 数据模型: `BatchValidationInput`, `BatchValidationResult`, `BatchAnalysisInput`, `BatchAnalysisResult`
+  - 新增 8 个测试用例，95% 代码覆盖率
+
+- **健康检查和监控** (v0.3.0 - 2026-01-25):
+  - 新增 `tools/health_check.py` 模块 (252行)
+  - `health_check()` - 完整健康检查，返回系统、缓存、性能指标
+  - `get_quick_status()` - 快速状态摘要
+  - `is_healthy()` - 快速健康判断
+  - `record_request()` - 记录请求性能数据
+  - 支持系统指标监控 (CPU、内存、磁盘使用率)
+  - 支持性能指标统计 (请求总数、成功率、平均响应时间)
+  - 新增 29 个测试用例，97% 代码覆盖率
+
+- **缓存机制** (v0.3.0 - 2026-01-25):
+  - 新增 `utils/cache.py` 模块 (239行)
+  - `MemoryCache` 类 - LRU 内存缓存管理器
+  - `cached` 装饰器 - 函数结果缓存装饰器
+  - `cache_key()` - 缓存键生成
+  - `hash_content()` - 内容哈希计算
+  - 支持 TTL 过期策略
+  - 支持缓存统计和访问计数
+  - 新增 13 个测试用例，99% 代码覆盖率
+
+- **CI/CD 工作流** (v0.3.0 - 2026-01-25):
+  - 新增 `.github/workflows/release.yml` - PyPI 和 Docker 发布自动化
+  - 新增 `.github/workflows/security.yml` - 安全扫描自动化
+    - pip-audit 依赖漏洞扫描
+    - bandit 代码安全扫描
+    - trufflehog 密钥泄露扫描
+    - pip-licenses 许可证合规检查
+
+- **Sphinx 文档** (v0.3.0 - 2026-01-25):
+  - 新增 Sphinx 配置 `docs/conf.py`
+  - 新增文档索引 `docs/index.rst`, `docs/api/index.rst`
+  - 配置自动文档提取 (autodoc, napoleon, typehints)
+  - 使用 Read the Docs 主题
+
+### Changed
+- **依赖更新** (2026-01-25):
+  - 添加 `psutil>=5.9.0` 用于系统监控
+  - 添加 Sphinx 依赖: `sphinx>=7.0.0`, `sphinx-rtd-theme>=2.0.0`, `sphinx-autodoc-typehints>=2.0.0`
+
+- **部署文档增强** (2026-01-25):
+  - 扩展 `docs/deployment.md` Docker 使用示例
+  - 添加 STDIO vs HTTP/SSE 模式容器执行说明
+  - 添加容器管理命令示例 (logs, exec, stop, rm, restart)
+  - 添加 Docker Compose 配置示例
+
 ### Fixed
 - **文档数据更新** (2026-01-25):
-  - 更新测试数量: 414 → 498 个测试
+  - 更新测试数量: 414 → 498 → 548 个测试
   - 更新测试覆盖率: 94% → 98%
   - 同步所有文档中的测试徽章数据 (README.md, CHANGELOG.md, ISSUES.md, next-steps-v0.3.0.md)
 
