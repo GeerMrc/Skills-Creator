@@ -4,11 +4,8 @@
 """
 
 import hashlib
-import json
-import pickle
-from functools import lru_cache
-from pathlib import Path
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
@@ -24,7 +21,7 @@ class CacheEntry(BaseModel):
 
     key: str
     value: Any
-    ttl: Optional[int] = None
+    ttl: int | None = None
     created_at: float
     access_count: int = 0
     last_accessed: float
@@ -48,7 +45,7 @@ class MemoryCache:
         self._cache: dict[str, CacheEntry] = {}
         self._access_order: list[str] = []
 
-    def get(self, key: str, default: Optional[T] = None) -> Optional[T]:
+    def get(self, key: str, default: T | None = None) -> T | None:
         """获取缓存值.
 
         Args:
@@ -80,13 +77,14 @@ class MemoryCache:
         self._access_order.append(key)
 
         logger.debug(f"Cache hit: {key} (access count: {entry.access_count})")
-        return entry.value
+        result: T | None = entry.value
+        return result
 
     def set(
         self,
         key: str,
         value: Any,
-        ttl: Optional[int] = None,
+        ttl: int | None = None,
     ) -> None:
         """设置缓存值.
 
@@ -218,7 +216,7 @@ def cache_key(*args: Any, **kwargs: Any) -> str:
     Returns:
         缓存键字符串
     """
-    key_parts = []
+    key_parts: list[str] = []
     if args:
         key_parts.extend(str(arg) for arg in args)
     if kwargs:

@@ -9,12 +9,6 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from skill_creator_mcp.logging_config import get_logger
-from skill_creator_mcp.server import (
-    analyze_skill,
-    init_skill,
-    package_skill,
-    validate_skill,
-)
 
 logger = get_logger(__name__)
 
@@ -78,7 +72,8 @@ async def batch_validate_skills(
                 logger.info(f"Validating: {path}")
                 # 调用验证函数
                 from skill_creator_mcp.server import validate_skill
-                result = await validate_skill(
+
+                result = await validate_skill(  # type: ignore[operator]
                     skill_path=path,
                     check_structure=check_structure,
                     check_content=check_content,
@@ -144,7 +139,8 @@ async def batch_analyze_skills(
                 logger.info(f"Analyzing: {path}")
                 # 调用分析函数
                 from skill_creator_mcp.server import analyze_skill
-                result = await analyze_skill(
+
+                result = await analyze_skill(  # type: ignore[operator]
                     skill_path=path,
                     analyze_structure=analyze_structure,
                     analyze_complexity=analyze_complexity,

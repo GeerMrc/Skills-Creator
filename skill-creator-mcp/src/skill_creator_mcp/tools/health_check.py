@@ -3,20 +3,34 @@
 提供系统健康状态检查、性能监控和指标收集功能.
 """
 
+import platform
 import sys
 import time
-import platform
 from datetime import datetime
 from functools import lru_cache
 from typing import Any
 
-import psutil
+import psutil  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field
 
 from skill_creator_mcp.logging_config import get_logger
 from skill_creator_mcp.utils.cache import _global_cache
 
 logger = get_logger(__name__)
+
+
+class _PerformanceStats:
+    """性能统计数据."""
+
+    def __init__(self) -> None:
+        self.total_requests: int = 0
+        self.successful_requests: int = 0
+        self.failed_requests: int = 0
+        self.response_times: list[float] = []
+
+
+# 全局性能统计
+_performance_stats = _PerformanceStats()
 
 
 class HealthStatus(BaseModel):
@@ -65,15 +79,6 @@ class HealthCheckResult(BaseModel):
     cache: CacheMetrics
     performance: PerformanceMetrics
     environment: dict[str, Any] = Field(description="环境信息")
-
-
-# 全局性能统计
-_performance_stats = {
-    "total_requests": 0,
-    "successful_requests": 0,
-    "failed_requests": 0,
-    "response_times": [],
-}
 
 
 _start_time = time.time()
@@ -146,12 +151,12 @@ def get_performance_metrics() -> PerformanceMetrics:
     Returns:
         性能指标数据
     """
-    total = _performance_stats["total_requests"]
-    successful = _performance_stats["successful_requests"]
-    failed = _performance_stats["failed_requests"]
+    total = _performance_stats.total_requests
+    successful = _performance_stats.successful_requests
+    failed = _performance_stats.failed_requests
 
     # 计算平均响应时间
-    response_times = _performance_stats["response_times"]
+    response_times = _performance_stats.response_times
     if response_times:
         avg_time = sum(response_times) / len(response_times) * 1000  # 转换为毫秒
     else:
@@ -172,16 +177,16 @@ def record_request(success: bool, response_time: float) -> None:
         success: 请求是否成功
         response_time: 响应时间(秒)
     """
-    _performance_stats["total_requests"] += 1
+    _performance_stats.total_requests += 1
     if success:
-        _performance_stats["successful_requests"] += 1
+        _performance_stats.successful_requests += 1
     else:
-        _performance_stats["failed_requests"] += 1
+        _performance_stats.failed_requests += 1
 
     # 只保留最近1000次响应时间
-    _performance_stats["response_times"].append(response_time)
-    if len(_performance_stats["response_times"]) > 1000:
-        _performance_stats["response_times"].pop(0)
+    _performance_stats.response_times.append(response_time)
+    if len(_performance_stats.response_times) > 1000:
+        _performance_stats.response_times.pop(0)
 
 
 def get_environment_info() -> dict[str, Any]:
@@ -294,12 +299,7 @@ def get_quick_status() -> str:
 def reset_performance_stats() -> None:
     """重置性能统计数据."""
     global _performance_stats
-    _performance_stats = {
-        "total_requests": 0,
-        "successful_requests": 0,
-        "failed_requests": 0,
-        "response_times": [],
-    }
+    _performance_stats = _PerformanceStats()
     logger.info("Performance statistics reset")
 
 
