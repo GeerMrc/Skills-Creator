@@ -16,9 +16,13 @@ description: |
   - 技能创建
   - 技能初始化
   - 技能验证
+  - 批量验证
   - 技能分析
+  - 批量分析
   - 技能重构
   - 技能模板
+  - 健康检查
+  - 系统监控
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 mcp_servers: ["skill-creator"]
 ---
@@ -34,10 +38,12 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 1. **需求澄清** - AI 驱动的对话式需求收集，支持会话恢复和进度跟踪
 2. **技能初始化** - 一键生成符合渐进式披露架构的技能目录结构
 3. **规范验证** - 自动检查命名、描述、结构是否符合最佳实践
-4. **结构分析** - 分析 token 效率、识别常见反模式
-5. **重构建议** - 基于官方规范提供具体的改进建议
-6. **模板资源** - 访问四种预定义技能模板（minimal/tool-based/workflow-based/analyzer-based）
-7. **最佳实践** - 内置完整的开发规范和验证标准
+4. **批量操作** - 并发验证和分析多个技能，提高效率
+5. **健康检查** - 系统监控、性能指标、缓存统计
+6. **结构分析** - 分析 token 效率、识别常见反模式
+7. **重构建议** - 基于官方规范提供具体的改进建议
+8. **模板资源** - 访问四种预定义技能模板（minimal/tool-based/workflow-based/analyzer-based）
+9. **最佳实践** - 内置完整的开发规范和验证标准
 
 ## 快速开始
 
@@ -73,6 +79,24 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 识别 token 效率问题和结构反模式。
 
+### 批量验证多个技能
+
+```
+"批量验证 /path/to/skill1 /path/to/skill2 /path/to/skill3"
+```
+
+并发验证多个技能，提高验证效率（支持并发控制）。
+
+### 系统健康检查
+
+```
+"健康检查"
+```
+
+获取系统健康状态、CPU/内存使用率、缓存统计等性能指标。
+
+> 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md) | [缓存机制指南](references/cache-mechanism.md)
+
 ## 工作流程
 
 ```
@@ -97,6 +121,11 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 | `analyze_skill` | 分析技能质量 |
 | `refactor_skill` | 生成重构建议 |
 | `package_skill` | 打包技能为分发格式 |
+| `batch_validate_skills_tool` | **批量验证** - 并发验证多个技能（支持并发控制） |
+| `batch_analyze_skills_tool` | **批量分析** - 并发分析多个技能（支持并发控制） |
+| `health_check_tool` | **健康检查** - 系统健康状态、性能指标、缓存统计 |
+| `quick_status_tool` | **快速状态** - 系统状态摘要（CPU、内存、请求数） |
+| `is_healthy_tool` | **健康判断** - 快速判断系统是否健康 |
 
 ## MCP 资源访问
 
@@ -134,6 +163,6 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 
 ## 架构说明
 
-Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（6 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
+Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（11 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
 
 详见：[混合架构 ADR](../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md) | [需求收集示例](examples/requirement-collection-basic.md)

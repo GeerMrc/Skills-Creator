@@ -272,6 +272,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **测试数量更新** (v0.3.0 - 2026-01-25):
   - 498 → 548 个测试 (+50个测试)
 
+- **文档完善** (v0.3.0 - 2026-01-25):
+  - 更新 SKILL.md:
+    - MCP工具列表: 6个 → 11个工具
+    - 添加批量操作和健康检查说明
+    - 更新架构说明: 6工具 → 11工具
+    - 添加新触发词: 批量验证、批量分析、健康检查、系统监控
+  - 新增示例文档:
+    - `examples/mcp-batch-operations.md` - 批量操作使用示例
+    - `examples/mcp-health-check.md` - 健康检查使用示例
+  - 新增引用文档:
+    - `references/cache-mechanism.md` - 缓存机制使用指南
+
 - **CI/CD 工作流** (v0.3.0 - 2026-01-25):
   - 新增 `.github/workflows/release.yml` - PyPI 和 Docker 发布自动化
   - 新增 `.github/workflows/security.yml` - 安全扫描自动化
