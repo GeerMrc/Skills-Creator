@@ -2,9 +2,6 @@
 
 import time
 
-import pytest
-import psutil
-
 from skill_creator_mcp.tools.health_check import (
     CacheMetrics,
     HealthCheckResult,

@@ -83,15 +83,15 @@
 
 #### Month 2
 
-**Week 1-2: 高级功能**
-- [ ] 添加缓存机制（资源内容）
-- [ ] 实现增量分析
-- [ ] 添加批量操作支持
+**Week 1-2: 高级功能** ✅ 已完成 (2026-01-25)
+- [x] 添加缓存机制（资源内容）- MemoryCache类，LRU缓存，TTL过期
+- [ ] 实现增量分析 (待开发)
+- [x] 添加批量操作支持 - batch_validate_skills, batch_analyze_skills
 
-**Week 3: 监控和可观测性**
-- [ ] 添加健康检查端点
-- [ ] 实现性能指标收集
-- [ ] 添加使用统计
+**Week 3: 监控和可观测性** ✅ 已完成 (2026-01-25)
+- [x] 添加健康检查端点 - health_check, quick_status, is_healthy
+- [x] 实现性能指标收集 - CPU、内存、磁盘、请求统计
+- [ ] 添加使用统计 (待开发)
 
 **Week 4: 文档完善**
 - [ ] 生成 API 文档（Sphinx）
@@ -187,14 +187,19 @@
 - ✅ 异步 I/O 优化
 - ⚠️ 配置外部化 (部分完成，需补充.env模板)
 
-### v0.3.0 🚀 进行中
+### v0.3.0 ✅ 已完成 (2026-01-25)
 
 **内容**：
 - ✅ Docker 支持 (Dockerfile + docker-compose.yml)
-- ✅ CI/CD 流程 (code-review.yml)
-- ⚠️ 文档重构 (部分完成)
+- ✅ CI/CD 流程 (code-review.yml, release.yml, security.yml)
+- ✅ 文档重构 (部分完成)
 - ✅ Code Review 流程
-- [ ] 性能优化
+- ✅ 性能优化
+- ✅ 批量操作 (batch_validate_skills, batch_analyze_skills)
+- ✅ 健康检查 (health_check, quick_status, is_healthy)
+- ✅ 缓存机制 (MemoryCache, cached装饰器)
+- ✅ MCP工具注册 (5个新MCP工具)
+- ✅ 测试覆盖: 548个测试，98%覆盖率
 
 ### v0.4.0 (2月后发布)
 

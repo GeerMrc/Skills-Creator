@@ -1,14 +1,13 @@
 """批量操作工具单元测试."""
 
-from unittest.mock import AsyncMock, MagicMock
+import asyncio
+from unittest.mock import AsyncMock
 
 import pytest
 
 from skill_creator_mcp.tools.batch_operations import (
     BatchAnalysisInput,
-    BatchAnalysisResult,
     BatchValidationInput,
-    BatchValidationResult,
     batch_analyze_skills,
     batch_analyze_skills_sync,
     batch_validate_skills,
@@ -218,5 +217,7 @@ class TestConcurrencyLimit:
 
             # 验证并发限制生效
             assert max_concurrent <= 2
+            # 验证结果数量
+            assert len(result.results) == 4
         finally:
             skill_creator_mcp.server.validate_skill = original

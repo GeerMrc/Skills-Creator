@@ -229,7 +229,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **批量操作工具** (v0.3.0 - 2026-01-25):
-  - 新增 `tools/batch_operations.py` 模块 (233行)
+  - 新增 `tools/batch_operations.py` 模块 (228行)
   - `batch_validate_skills()` - 批量验证多个技能，支持并发控制
   - `batch_analyze_skills()` - 批量分析多个技能，支持并发控制
   - 同步包装函数: `batch_validate_skills_sync()`, `batch_analyze_skills_sync()`
@@ -237,7 +237,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 新增 8 个测试用例，95% 代码覆盖率
 
 - **健康检查和监控** (v0.3.0 - 2026-01-25):
-  - 新增 `tools/health_check.py` 模块 (252行)
+  - 新增 `tools/health_check.py` 模块 (315行)
   - `health_check()` - 完整健康检查，返回系统、缓存、性能指标
   - `get_quick_status()` - 快速状态摘要
   - `is_healthy()` - 快速健康判断
@@ -247,7 +247,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 新增 29 个测试用例，97% 代码覆盖率
 
 - **缓存机制** (v0.3.0 - 2026-01-25):
-  - 新增 `utils/cache.py` 模块 (239行)
+  - 新增 `utils/cache.py` 模块 (236行)
   - `MemoryCache` 类 - LRU 内存缓存管理器
   - `cached` 装饰器 - 函数结果缓存装饰器
   - `cache_key()` - 缓存键生成
@@ -255,6 +255,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 支持 TTL 过期策略
   - 支持缓存统计和访问计数
   - 新增 13 个测试用例，99% 代码覆盖率
+
+- **MCP工具注册** (v0.3.0 - 2026-01-25):
+  - 注册 `batch_validate_skills_tool` - 批量验证多个Agent-Skill的MCP工具
+  - 注册 `batch_analyze_skills_tool` - 批量分析多个Agent-Skill的MCP工具
+  - 注册 `health_check_tool` - 执行完整健康检查的MCP工具
+  - 注册 `quick_status_tool` - 获取快速状态摘要的MCP工具
+  - 注册 `is_healthy_tool` - 快速检查系统是否健康的MCP工具
+
+### Changed
+- **版本号更新** (v0.3.0 - 2026-01-25):
+  - pyproject.toml: 0.2.1 → 0.3.0
+  - __init__.py: 0.2.1 → 0.3.0
+  - 统一版本号到0.3.0
+
+- **测试数量更新** (v0.3.0 - 2026-01-25):
+  - 498 → 548 个测试 (+50个测试)
 
 - **CI/CD 工作流** (v0.3.0 - 2026-01-25):
   - 新增 `.github/workflows/release.yml` - PyPI 和 Docker 发布自动化

@@ -20,6 +20,15 @@ from .resources import (
     get_validation_rules,
     list_templates,
 )
+from .tools.batch_operations import (
+    batch_analyze_skills,
+    batch_validate_skills,
+)
+from .tools.health_check import (
+    get_quick_status,
+    health_check,
+    is_healthy,
+)
 
 # 新模块导入（第二阶段重构：替换函数体）
 # 使用模块导入避免函数名冲突
@@ -923,6 +932,177 @@ async def test_requirement_completeness(ctx: Context, requirement: str) -> dict[
         包含测试结果的字典，包括完整性分析和缺失信息列表
     """
     return await testing.test_requirement_completeness(ctx, requirement)
+
+
+# ==================== 批量操作工具 ====================
+
+
+@mcp.tool()
+async def batch_validate_skills_tool(
+    ctx: Context,
+    skill_paths: list[str],
+    check_structure: bool = True,
+    check_content: bool = True,
+    concurrent_limit: int = 5,
+) -> dict[str, Any]:
+    """批量验证多个Agent-Skill.
+
+    并发验证多个技能的结构和内容，提高验证效率。
+
+    Args:
+        ctx: MCP 上下文
+        skill_paths: 技能目录路径列表
+        check_structure: 是否检查目录结构（默认 True）
+        check_content: 是否检查内容格式（默认 True）
+        concurrent_limit: 并发限制（默认 5）
+
+    Returns:
+        包含批量验证结果的字典，包括每个技能的验证结果和汇总信息
+    """
+    try:
+        result = await batch_validate_skills(
+            skill_paths=skill_paths,
+            check_structure=check_structure,
+            check_content=check_content,
+            concurrent_limit=concurrent_limit,
+        )
+        return {
+            "success": True,
+            "results": result.results,
+            "summary": result.summary,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"批量验证出错: {e}",
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def batch_analyze_skills_tool(
+    ctx: Context,
+    skill_paths: list[str],
+    analyze_structure: bool = True,
+    analyze_complexity: bool = True,
+    analyze_quality: bool = True,
+    concurrent_limit: int = 5,
+) -> dict[str, Any]:
+    """批量分析多个Agent-Skill.
+
+    并发分析多个技能的代码质量、复杂度和结构。
+
+    Args:
+        ctx: MCP 上下文
+        skill_paths: 技能目录路径列表
+        analyze_structure: 是否分析代码结构（默认 True）
+        analyze_complexity: 是否分析代码复杂度（默认 True）
+        analyze_quality: 是否分析代码质量（默认 True）
+        concurrent_limit: 并发限制（默认 5）
+
+    Returns:
+        包含批量分析结果的字典，包括每个技能的分析结果和汇总信息
+    """
+    try:
+        result = await batch_analyze_skills(
+            skill_paths=skill_paths,
+            analyze_structure=analyze_structure,
+            analyze_complexity=analyze_complexity,
+            analyze_quality=analyze_quality,
+            concurrent_limit=concurrent_limit,
+        )
+        return {
+            "success": True,
+            "results": result.results,
+            "summary": result.summary,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"批量分析出错: {e}",
+            "error_type": "internal_error",
+        }
+
+
+# ==================== 健康检查工具 ====================
+
+
+@mcp.tool()
+async def health_check_tool(ctx: Context) -> dict[str, Any]:
+    """执行完整健康检查.
+
+    返回系统健康状态、系统指标、缓存指标和性能指标。
+
+    Args:
+        ctx: MCP 上下文
+
+    Returns:
+        包含完整健康检查结果的字典
+    """
+    try:
+        result = health_check()
+        return {
+            "success": True,
+            **result.model_dump(),
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"健康检查出错: {e}",
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def quick_status_tool(ctx: Context) -> dict[str, Any]:
+    """获取快速状态摘要.
+
+    返回简化的系统状态信息字符串。
+
+    Args:
+        ctx: MCP 上下文
+
+    Returns:
+        包含状态摘要字符串的字典
+    """
+    try:
+        status = get_quick_status()
+        return {
+            "success": True,
+            "status": status,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"获取状态出错: {e}",
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def is_healthy_tool(ctx: Context) -> dict[str, Any]:
+    """快速检查系统是否健康.
+
+    返回布尔值表示系统健康状态。
+
+    Args:
+        ctx: MCP 上下文
+
+    Returns:
+        包含健康状态布尔值的字典
+    """
+    try:
+        healthy = is_healthy()
+        return {
+            "success": True,
+            "healthy": healthy,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"健康检查出错: {e}",
+            "error_type": "internal_error",
+        }
 
 
 def _generate_skill_md_content(name: str, template: str) -> str:

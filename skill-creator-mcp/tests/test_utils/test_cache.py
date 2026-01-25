@@ -2,8 +2,6 @@
 
 import time
 
-import pytest
-
 from skill_creator_mcp.utils.cache import (
     MemoryCache,
     cache_key,
