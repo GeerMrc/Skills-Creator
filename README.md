@@ -1,8 +1,8 @@
 # Skills-Creator
 
-> **版本**: v0.2.0-alpha
+> **版本**: v0.2.1-alpha
 > **项目类型**: MCP Server + Agent-Skill 混合架构
-> **测试覆盖率**: 94% (414 tests)
+> **测试覆盖率**: 98% (498 tests)
 
 > **📢 目录结构变更通知 (v0.2.0)**: Agent-Skill 相关代码已统一到 `skill-creator/` 目录。如果您直接引用 `SKILL.md`、`examples/` 或 `references/`，请参阅 [迁移指南](MIGRATION.md) 更新您的路径配置。
 
@@ -226,7 +226,7 @@ uv run python -m skill_creator_mcp.http
 
 ## 路线图
 
-当前版本为 v0.2.0-alpha，主要开发计划参见 [ROADMAP.md](ROADMAP.md)。
+当前版本为 v0.2.1-alpha，主要开发计划参见 [ROADMAP.md](ROADMAP.md)。
 
 ---
 
