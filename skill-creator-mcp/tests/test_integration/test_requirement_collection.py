@@ -262,7 +262,7 @@ class TestDifferentModes:
 
     async def test_basic_mode_has_5_steps(self):
         """测试基础模式有 5 个步骤."""
-        from skill_creator_mcp.server import BASIC_REQUIREMENT_STEPS
+        from skill_creator_mcp.constants import BASIC_REQUIREMENT_STEPS
 
         assert len(BASIC_REQUIREMENT_STEPS) == 5
 
@@ -279,7 +279,7 @@ class TestDifferentModes:
 
     async def test_complete_mode_has_10_steps(self):
         """测试完整模式有 10 个步骤."""
-        from skill_creator_mcp.server import BASIC_REQUIREMENT_STEPS, COMPLETE_REQUIREMENT_STEPS
+        from skill_creator_mcp.constants import BASIC_REQUIREMENT_STEPS, COMPLETE_REQUIREMENT_STEPS
 
         total_steps = len(BASIC_REQUIREMENT_STEPS) + len(COMPLETE_REQUIREMENT_STEPS)
         assert total_steps == 10

@@ -10,8 +10,10 @@ from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
 
-from skill_creator_mcp.server import (
+from skill_creator_mcp.constants import (
     BASIC_REQUIREMENT_STEPS,
+)
+from skill_creator_mcp.utils.requirement_collection import (
     _generate_brainstorm_question,
     _generate_progressive_question,
     _validate_requirement_answer,

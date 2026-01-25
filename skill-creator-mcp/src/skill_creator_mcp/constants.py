@@ -3,6 +3,8 @@
 定义项目中使用的各种常量，避免魔法数字。
 """
 
+from typing import Any
+
 # ==================== SKILL.md 行数限制 ====================
 
 # SKILL.md 推荐最大行数
@@ -142,6 +144,134 @@ EFFORT_HIGH: int = 8
 EFFORT_MEDIUM: int = 4
 EFFORT_LOW: int = 1
 
+# ==================== 需求收集相关常量 ====================
+
+# 基础模式需求收集步骤（5步）
+BASIC_REQUIREMENT_STEPS: list[dict[str, Any]] = [
+    {
+        "key": "skill_name",
+        "title": "技能名称",
+        "prompt": "请输入技能名称（小写字母、数字、连字符，如：pdf-parser、git-helper）",
+        "validation": {
+            "field": "skill_name",
+            "required": True,
+            "pattern": r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "min_length": 1,
+            "max_length": 64,
+            "help_text": "技能名称只能包含小写字母、数字和连字符，不能以连字符开头或结尾",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "skill_function",
+        "title": "主要功能",
+        "prompt": "请描述这个技能的主要功能是什么？",
+        "validation": {
+            "field": "skill_function",
+            "required": True,
+            "min_length": 10,
+            "help_text": "请详细描述技能的主要功能，至少10个字符",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "use_cases",
+        "title": "使用场景",
+        "prompt": "请描述这个技能的使用场景（至少2个）",
+        "validation": {
+            "field": "use_cases",
+            "required": True,
+            "min_length": 20,
+            "help_text": "请提供至少2个具体的使用场景",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "template_type",
+        "title": "模板类型",
+        "prompt": "选择技能模板类型：minimal（最小化）、tool-based（工具封装）、workflow-based（工作流）、analyzer-based（分析器）",
+        "validation": {
+            "field": "template_type",
+            "required": True,
+            "options": ["minimal", "tool-based", "workflow-based", "analyzer-based"],
+            "help_text": "请选择一个有效的模板类型",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+    {
+        "key": "additional_features",
+        "title": "额外需求",
+        "prompt": "是否有其他额外功能需求？（可选）",
+        "validation": {
+            "field": "additional_features",
+            "required": False,
+            "help_text": "可选：描述任何额外功能需求",
+        },
+        "modes": ["basic", "complete", "brainstorm", "progressive"],
+    },
+]
+
+# 完整模式额外步骤（5步）
+COMPLETE_REQUIREMENT_STEPS: list[dict[str, Any]] = [
+    {
+        "key": "target_users",
+        "title": "目标用户",
+        "prompt": "这个技能的目标用户是谁？",
+        "validation": {
+            "field": "target_users",
+            "required": True,
+            "min_length": 10,
+            "help_text": "请描述目标用户群体",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "tech_stack",
+        "title": "技术栈偏好",
+        "prompt": "是否有技术栈偏好或限制？（可选）",
+        "validation": {
+            "field": "tech_stack",
+            "required": False,
+            "help_text": "可选：描述技术栈偏好",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "dependencies",
+        "title": "外部依赖",
+        "prompt": "是否需要外部依赖或 API？（可选）",
+        "validation": {
+            "field": "dependencies",
+            "required": False,
+            "help_text": "可选：列出所需的外部依赖",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "testing_requirements",
+        "title": "测试要求",
+        "prompt": "有什么特殊的测试要求？（可选）",
+        "validation": {
+            "field": "testing_requirements",
+            "required": False,
+            "help_text": "可选：描述测试要求",
+        },
+        "modes": ["complete"],
+    },
+    {
+        "key": "documentation_level",
+        "title": "文档级别",
+        "prompt": "期望的文档详细程度？基础/标准/详细",
+        "validation": {
+            "field": "documentation_level",
+            "required": False,
+            "options": ["基础", "标准", "详细"],
+            "help_text": "选择文档详细程度",
+        },
+        "modes": ["complete"],
+    },
+]
+
 __all__ = [
     # SKILL.md 行数限制
     "SKILL_MD_RECOMMENDED_MAX_LINES",
@@ -207,4 +337,7 @@ __all__ = [
     "EFFORT_HIGH",
     "EFFORT_MEDIUM",
     "EFFORT_LOW",
+    # 需求收集相关常量
+    "BASIC_REQUIREMENT_STEPS",
+    "COMPLETE_REQUIREMENT_STEPS",
 ]

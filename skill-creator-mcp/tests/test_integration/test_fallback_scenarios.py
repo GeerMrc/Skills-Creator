@@ -13,11 +13,11 @@ from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
 
-from skill_creator_mcp.server import (
+from skill_creator_mcp.server import collect_requirements
+from skill_creator_mcp.utils.requirement_collection import (
     _check_requirement_completeness,
     _generate_brainstorm_question,
     _generate_progressive_question,
-    collect_requirements,
 )
 
 # ============================================================================

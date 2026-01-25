@@ -28,11 +28,11 @@ async def test_collect_requirements_basic_mode_full_workflow():
     模拟从开始到完成的完整需求收集对话流程。
     注意：由于 collect_requirements 是 MCP 工具，这里测试其核心逻辑组件.
     """
+    from skill_creator_mcp.constants import BASIC_REQUIREMENT_STEPS
     from skill_creator_mcp.models.skill_config import (
         RequirementCollectionInput,
     )
-    from skill_creator_mcp.server import (
-        BASIC_REQUIREMENT_STEPS,
+    from skill_creator_mcp.utils.requirement_collection import (
         _validate_requirement_answer,
     )
 
@@ -120,7 +120,7 @@ async def test_collect_requirements_brainstorm_mode_dynamic_generation():
     mock_sampling_result.text = "您希望这个技能解决用户什么样的痛点？"
     mock_ctx.sample = AsyncMock(return_value=mock_sampling_result)
 
-    from skill_creator_mcp.server import _generate_brainstorm_question
+    from skill_creator_mcp.utils.requirement_collection import _generate_brainstorm_question
 
     # 调用问题生成函数
     result = await _generate_brainstorm_question(
@@ -161,7 +161,7 @@ async def test_collect_requirements_progressive_mode_adaptive_questions():
     """
     mock_ctx.sample = AsyncMock(return_value=mock_sampling_result)
 
-    from skill_creator_mcp.server import _generate_progressive_question
+    from skill_creator_mcp.utils.requirement_collection import _generate_progressive_question
 
     # 调用问题生成函数
     result = await _generate_progressive_question(

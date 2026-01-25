@@ -100,7 +100,7 @@ class TestRequirementSteps:
 
     def test_basic_steps_structure(self):
         """测试基础模式步骤结构."""
-        from skill_creator_mcp.server import BASIC_REQUIREMENT_STEPS
+        from skill_creator_mcp.constants import BASIC_REQUIREMENT_STEPS
 
         assert len(BASIC_REQUIREMENT_STEPS) == 5
 
@@ -112,7 +112,7 @@ class TestRequirementSteps:
 
     def test_complete_steps_structure(self):
         """测试完整模式步骤结构."""
-        from skill_creator_mcp.server import COMPLETE_REQUIREMENT_STEPS
+        from skill_creator_mcp.constants import COMPLETE_REQUIREMENT_STEPS
 
         assert len(COMPLETE_REQUIREMENT_STEPS) == 5
 
@@ -127,7 +127,7 @@ class TestValidateRequirementAnswer:
 
     def test_valid_required_answer(self):
         """测试有效的必填答案."""
-        from skill_creator_mcp.server import _validate_requirement_answer
+        from skill_creator_mcp.utils.requirement_collection import _validate_requirement_answer
 
         validation = {
             "field": "skill_name",
@@ -143,7 +143,7 @@ class TestValidateRequirementAnswer:
 
     def test_empty_required_answer(self):
         """测试空的必填答案."""
-        from skill_creator_mcp.server import _validate_requirement_answer
+        from skill_creator_mcp.utils.requirement_collection import _validate_requirement_answer
 
         validation = {
             "field": "skill_name",
@@ -157,7 +157,7 @@ class TestValidateRequirementAnswer:
 
     def test_empty_optional_answer(self):
         """测试空的可选答案."""
-        from skill_creator_mcp.server import _validate_requirement_answer
+        from skill_creator_mcp.utils.requirement_collection import _validate_requirement_answer
 
         validation = {
             "field": "additional_features",
@@ -170,7 +170,7 @@ class TestValidateRequirementAnswer:
 
     def test_min_length_validation(self):
         """测试最小长度验证."""
-        from skill_creator_mcp.server import _validate_requirement_answer
+        from skill_creator_mcp.utils.requirement_collection import _validate_requirement_answer
 
         validation = {
             "field": "skill_function",
@@ -185,7 +185,7 @@ class TestValidateRequirementAnswer:
 
     def test_max_length_validation(self):
         """测试最大长度验证."""
-        from skill_creator_mcp.server import _validate_requirement_answer
+        from skill_creator_mcp.utils.requirement_collection import _validate_requirement_answer
 
         validation = {
             "field": "skill_name",
@@ -200,7 +200,7 @@ class TestValidateRequirementAnswer:
 
     def test_options_validation(self):
         """测试选项验证."""
-        from skill_creator_mcp.server import _validate_requirement_answer
+        from skill_creator_mcp.utils.requirement_collection import _validate_requirement_answer
 
         validation = {
             "field": "template_type",
@@ -218,7 +218,7 @@ class TestValidateRequirementAnswer:
 
     def test_pattern_validation(self):
         """测试正则表达式验证."""
-        from skill_creator_mcp.server import _validate_requirement_answer
+        from skill_creator_mcp.utils.requirement_collection import _validate_requirement_answer
 
         validation = {
             "field": "skill_name",

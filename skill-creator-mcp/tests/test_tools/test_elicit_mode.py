@@ -14,14 +14,12 @@ from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
 
+from skill_creator_mcp.constants import BASIC_REQUIREMENT_STEPS
 from skill_creator_mcp.models.skill_config import (
     RequirementCollectionInput,
     SessionState,
 )
-from skill_creator_mcp.server import (
-    BASIC_REQUIREMENT_STEPS,
-    _collect_with_elicit,
-)
+from skill_creator_mcp.utils.requirement_collection import _collect_with_elicit
 
 # ============================================================================
 # Elicit 模式核心组件测试

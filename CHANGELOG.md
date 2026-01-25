@@ -73,6 +73,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2026-01-24
+
+### Added
+- **服务器模块化重构** (P1 - 已完成):
+  - 新增 `utils/testing.py` 模块 (222 行) - 5 个测试工具函数
+  - 新增 `utils/skill_generators.py` 模块 (204 行) - 4 个技能生成函数
+  - 新增 `utils/requirement_collection.py` 模块 (1078 行) - 11 个需求收集函数
+  - 新增 `tests/test_tools/test_server_helpers.py` (524 行) - 22 个新测试用例
+  - 新增 `tests/test_utils/test_testing.py` (234 行) - 11 个新测试用例
+  - 新增常量定义: `BASIC_REQUIREMENT_STEPS`, `COMPLETE_REQUIREMENT_STEPS`
+
+### Changed
+- **函数替换完成**: 8 个 server.py 函数已替换为调用新模块
+  - `_generate_skill_md_content` → `skill_generators._generate_skill_md_content`
+  - `_create_reference_files` → `skill_generators._create_reference_files`
+  - `_create_example_scripts` → `skill_generators._create_example_scripts`
+  - `_create_example_examples` → `skill_generators._create_example_examples`
+  - `test_llm_sampling` → `testing.test_llm_sampling`
+  - `test_user_elicitation` → `testing.test_user_elicitation`
+  - `test_conversation_loop` → `testing.test_conversation_loop`
+  - `test_requirement_completeness` → `testing.test_requirement_completeness`
+- **server.py 优化**: 2514 行 → 2228 行 (-286 行, -11.4%)
+- **导入优化**: server.py 添加新模块导入（带别名前缀）
+- **类型注解**: 所有新模块完整类型注解，通过 mypy 检查
+
+### Fixed
+- **导入路径**: 修复 utils 子目录相对导入（`..models`, `..constants`）
+- **pytest 冲突**: 添加 `__test__ = False` 到 testing.py 模块
+- **测试隔离**: 在 test_utils/test_testing.py 中使用本地导入避免冲突
+
+### Technical Details
+- **测试统计**: 414 → 447 个测试 (+33 个测试)
+- **测试覆盖率**: 78% → 84% (server.py: 92% → 96%)
+- **代码质量**: ruff 0 错误, mypy 0 错误, 所有测试通过
+- **新模块总计**: 1507 行代码
+
+### 重构效果总结
+- ✅ server.py 从 2514 行减少到 2228 行 (-11.4%)
+- ✅ 创建 3 个新模块共 1507 行代码
+- ✅ server.py 测试覆盖率从 92% 提升到 96%
+- ✅ 新增 33 个测试用例覆盖边界情况
+- ✅ 所有代码质量检查通过
+- 📝 注意: 由于 MCP 架构要求，`@mcp.tool()` 装饰器必须在 server.py 中，因此保留包装函数
+
+### 代码清理完成 (P0)
+- ✅ 删除 server.py 中的重复常量定义 (BASIC_REQUIREMENT_STEPS, COMPLETE_REQUIREMENT_STEPS)
+- ✅ 删除 server.py 中的重复函数实现 (~1186 行)
+- ✅ 更新所有测试文件的导入路径
+- ✅ **最终成果**: server.py 从 2228 行减少到 1041 行 (-53%)
+- ✅ **测试统计**: 447 个测试用例，98% 覆盖率
+- ✅ **代码质量**: ruff 0 错误, mypy 0 错误
+
+### 测试补充完成 (P0)
+- ✅ 新增 `tests/test_utils/test_requirement_collection.py` (699行，30个测试用例)
+- ✅ 新增 `tests/test_utils/test_skill_generators.py` (448行，21个测试用例)
+- ✅ **最终成果**: 498 个测试用例，98% 覆盖率
+- ✅ **模块覆盖**: requirement_collection.py 96%, skill_generators.py 100%
+- ✅ **代码质量**: ruff 0 错误, mypy 0 错误
+
+---
+
 ## [0.2.1] - 2026-01-23
 
 ### Fixed
