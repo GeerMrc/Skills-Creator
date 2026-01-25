@@ -227,7 +227,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **文档数据更新** (2026-01-25):
+  - 更新测试数量: 414 → 498 个测试
+  - 更新测试覆盖率: 94% → 98%
+  - 同步所有文档中的测试徽章数据 (README.md, CHANGELOG.md, ISSUES.md, next-steps-v0.3.0.md)
+
+- **版本号一致性** (2026-01-25):
+  - 更新根目录 README.md 版本: v0.2.0-alpha → v0.2.1-alpha
+
 ### Changed
+- **全面审计与优化** (2026-01-25):
+  - SKILL.md 精简: 152 行 → 139 行（符合 ≤150 行推荐）
+  - 删除备份文件 server.py.backup2
+  - 更新 .gitignore 添加 *.backup* 模式
+  - 提交 Git 计划归档变更
+
 - **Server 模块化重构完成** (2026-01-25):
   - 将 server.py 从 2228 行精简到 1041 行 (-53%)
   - 提取需求收集常量到 constants.py
