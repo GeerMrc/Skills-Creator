@@ -69,3 +69,4 @@ Thumbs.db
 # Project specific
 *.log
 .SKILL.md.bak
+*.backup*
