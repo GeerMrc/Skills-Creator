@@ -1,8 +1,8 @@
 # Skills-Creator
 
-> **版本**: v0.2.1-alpha
+> **版本**: v0.3.0
 > **项目类型**: MCP Server + Agent-Skill 混合架构
-> **测试覆盖率**: 98% (498 tests)
+> **测试覆盖率**: 96% (548 tests)
 
 > **📢 目录结构变更通知 (v0.2.0)**: Agent-Skill 相关代码已统一到 `skill-creator/` 目录。如果您直接引用 `SKILL.md`、`examples/` 或 `references/`，请参阅 [迁移指南](MIGRATION.md) 更新您的路径配置。
 
@@ -126,7 +126,7 @@ Skills-Creator/
 │   │   ├── resources/          # 3个资源
 │   │   ├── prompts/            # 3个提示模板
 │   │   └── utils/              # 工具函数
-│   ├── tests/                  # 测试套件 (98% 覆盖率, 498个测试)
+│   ├── tests/                  # 测试套件 (96% 覆盖率, 548个测试)
 │   └── pyproject.toml          # 项目配置
 ├── docs/                       # 项目文档
 │   └── adr/
@@ -175,6 +175,8 @@ Skills-Creator/
 
 ## MCP 工具列表
 
+### 核心工具（5个）
+
 | 工具 | 功能 |
 |------|------|
 | `init_skill` | 初始化新技能结构 |
@@ -182,6 +184,22 @@ Skills-Creator/
 | `analyze_skill` | 分析技能质量 |
 | `refactor_skill` | 生成重构建议 |
 | `package_skill` | 打包技能为分发格式 |
+
+### 扩展工具（11个）
+
+| 工具 | 功能 |
+|------|------|
+| `collect_requirements` | AI 驱动的需求澄清 |
+| `batch_validate_skills_tool` | 批量验证多个技能 |
+| `batch_analyze_skills_tool` | 批量分析多个技能 |
+| `health_check_tool` | 系统健康检查（完整） |
+| `quick_status_tool` | 快速状态摘要 |
+| `is_healthy_tool` | 健康状态判断 |
+| `test_llm_sampling` | 测试 LLM Sampling 能力 |
+| `test_user_elicitation` | 测试用户征询能力 |
+| `test_conversation_loop` | 测试对话循环能力 |
+| `check_client_capabilities` | 检测客户端能力 |
+| `test_requirement_completeness` | 测试需求完整性 |
 
 ---
 
@@ -217,7 +235,7 @@ uv run python -m skill_creator_mcp.http
 
 | 指标 | 当前值 | 目标值 |
 |------|--------|--------|
-| 测试覆盖率 | 98% (498个测试) | ≥95% |
+| 测试覆盖率 | 96% (548个测试) | ≥95% |
 | 代码规范 | ✅ 通过 | 0错误 |
 | 类型检查 | ✅ 通过 | 0错误 |
 | 安全检查 | ✅ 通过 | 0高危 |
@@ -226,7 +244,7 @@ uv run python -m skill_creator_mcp.http
 
 ## 路线图
 
-当前版本为 v0.2.1-alpha，主要开发计划参见 [ROADMAP.md](ROADMAP.md)。
+当前版本为 v0.3.0，主要开发计划参见 [ROADMAP.md](ROADMAP.md)。
 
 ---
 
