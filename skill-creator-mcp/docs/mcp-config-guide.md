@@ -31,6 +31,168 @@ uv --help | grep "directory"
 
 ---
 
+## 工作目录机制详解
+
+### ⚠️ 重要概念区分
+
+MCP 配置中有**两个不同的目录概念**：
+
+| 配置项 | 作用范围 | 控制对象 | 默认值 |
+|--------|----------|----------|--------|
+| `uv --directory` | MCP Server | Server 启动位置 | 无 |
+| `cwd` | MCP Server | Server 工作目录 | 无 |
+| `output_dir` | 工具参数 | 技能创建位置 | `"."` |
+| `SKILL_CREATOR_OUTPUT_DIR` | 环境变量 | 全局默认输出目录 | `"."` |
+
+### 工作流程图
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Claude Code 启动目录                      │
+│                  (如 /path/to/Skills-Creator)                │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │   MCP Server 启动目录                                 │  │
+│  │   (--directory 指定)                                  │  │
+│  │                                                      │  │
+│  │   /path/to/Skills-Creator/skill-creator-mcp          │  │
+│  │                                                      │  │
+│  │   Python 进程运行在此                                │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │   技能创建目录 (output_dir=".")                        │  │
+│  │                                                      │  │
+│  │   技能创建在 Claude Code 启动目录下                    │  │
+│  │                                                      │  │
+│  │   /path/to/Skills-Creator/my-skill/                  │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 实际行为分析
+
+**配置 A：使用 `--directory`（推荐）**
+
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/Skills-Creator/skill-creator-mcp",
+        "run",
+        "python",
+        "-m",
+        "skill_creator_mcp"
+      ]
+    }
+  }
+}
+```
+
+| 操作 | 执行位置 | 说明 |
+|------|----------|------|
+| MCP Server 启动 | `skill-creator-mcp/` | ✅ 正确位置 |
+| 导入 `skill_creator_mcp` | ✅ 成功 | 在正确目录 |
+| 创建技能 (默认) | Claude Code 启动目录 | ✅ 用户期望位置 |
+| 创建技能 (指定 output_dir) | 指定目录 | ✅ 灵活控制 |
+
+---
+
+**配置 B：不使用 `--directory`（有问题）**
+
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "python",
+      "args": ["-m", "skill_creator_mcp"]
+    }
+  }
+}
+```
+
+| 操作 | 执行位置 | 说明 |
+|------|----------|------|
+| MCP Server 启动 | Claude Code 启动目录 | ❌ 可能错误 |
+| 导入 `skill_creator_mcp` | ❌ 可能失败 | 模块找不到 |
+| 创建技能 (默认) | Claude Code 启动目录 | ⚠️ 取决于启动位置 |
+
+**问题**：
+- 如果不在 `skill-creator-mcp/` 目录启动 Claude Code，模块导入失败
+- 依赖 `PYTHONPATH` 或系统 Python 安装
+
+---
+
+**配置 C：使用 `cwd`（替代方案）**
+
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "python",
+      "args": ["-m", "skill_creator_mcp"],
+      "cwd": "/absolute/path/to/Skills-Creator/skill-creator-mcp"
+    }
+  }
+}
+```
+
+| 操作 | 执行位置 | 说明 |
+|------|----------|------|
+| MCP Server 启动 | `cwd` 指定目录 | ✅ 类似 `--directory` |
+| 导入 `skill_creator_mcp` | ✅ 成功 | 在正确目录 |
+| 创建技能 (默认) | Claude Code 启动目录 | ✅ 用户期望位置 |
+
+---
+
+### 推荐的项目结构
+
+**标准项目布局**：
+
+```
+/path/to/Skills-Creator/          ← Claude Code 启动目录
+├── skill-creator/                 ← Agent-Skill
+├── skill-creator-mcp/             ← MCP Server (--directory 指向这里)
+└── my-skills/                     ← 新技能创建在这里
+    ├── my-first-skill/
+    └── my-second-skill/
+```
+
+**配置示例**：
+
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/Skills-Creator/skill-creator-mcp",
+        "run",
+        "python",
+        "-m",
+        "skill_creator_mcp"
+      ],
+      "env": {
+        "SKILL_CREATOR_OUTPUT_DIR": "/path/to/Skills-Creator/my-skills"
+      }
+    }
+  }
+}
+```
+
+**效果**：
+- ✅ MCP Server 在 `skill-creator-mcp/` 启动
+- ✅ 新技能默认创建在 `my-skills/` 目录
+- ✅ 与项目代码分离，结构清晰
+
+---
+
 ## 推荐配置方案
 
 ### 方案一：使用 uv（推荐）
