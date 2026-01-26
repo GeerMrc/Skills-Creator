@@ -35,67 +35,18 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 核心能力
 
-1. **需求澄清** - AI 驱动的对话式需求收集，支持会话恢复和进度跟踪
-2. **技能初始化** - 一键生成符合渐进式披露架构的技能目录结构
-3. **规范验证** - 自动检查命名、描述、结构是否符合最佳实践
-4. **批量操作** - 并发验证和分析多个技能，提高效率
-5. **健康检查** - 系统监控、性能指标、缓存统计
-6. **结构分析** - 分析 token 效率、识别常见反模式
-7. **重构建议** - 基于官方规范提供具体的改进建议
-8. **模板资源** - 访问四种预定义技能模板（minimal/tool-based/workflow-based/analyzer-based）
-9. **最佳实践** - 内置完整的开发规范和验证标准
+需求澄清 | 技能初始化 | 规范验证 | 批量操作 | 健康检查 | 结构分析 | 重构建议 | 模板资源 | 最佳实践
 
 ## 快速开始
 
-### 需求澄清（推荐）
+**需求澄清**: "我想创建一个技能，帮我梳理需求"
+**创建技能**: "创建一个名为 'git-helper' 的技能"
+**验证技能**: "验证 /path/to/skill"
+**分析质量**: "分析 /path/to/skill"
+**批量操作**: "批量验证 /path/to/skill1 /path/to/skill2"
+**健康检查**: "健康检查"
 
-```
-"我想创建一个技能，帮我梳理需求"
-```
-
-通过 AI 对话逐步收集技能名称、功能、使用场景、模板类型等关键信息。
-
-### 创建新技能
-
-```
-"创建一个名为 'git-helper' 的技能"
-```
-
-选择模板类型，自动生成目录结构和 SKILL.md 模板。
-
-### 验证现有技能
-
-```
-"验证 /path/to/skill"
-```
-
-获取包含命名、描述、结构分析的完整验证报告。
-
-### 分析技能质量
-
-```
-"分析 /path/to/skill"
-```
-
-识别 token 效率问题和结构反模式。
-
-### 批量验证多个技能
-
-```
-"批量验证 /path/to/skill1 /path/to/skill2 /path/to/skill3"
-```
-
-并发验证多个技能，提高验证效率（支持并发控制）。
-
-### 系统健康检查
-
-```
-"健康检查"
-```
-
-获取系统健康状态、CPU/内存使用率、缓存统计等性能指标。
-
-> 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md) | [缓存机制指南](references/cache-mechanism.md)
+> 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md)
 
 ## 工作流程
 
@@ -109,40 +60,13 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 
 > 详见：[需求澄清指南](references/requirement-collection.md) | [回退机制说明](references/fallback-mechanism.md)
 
-## MCP 工具集成
+## MCP 组件
 
-本技能通过 skill-creator-mcp 提供的 MCP 工具执行操作：
+**工具 (11)**: collect_requirements | init_skill | validate_skill | analyze_skill | refactor_skill | package_skill | batch_validate | batch_analyze | health_check | quick_status | is_healthy
 
-| 工具 | 功能 |
-|------|------|
-| `collect_requirements` | **需求澄清** - AI 对话式收集技能创建信息 |
-| `init_skill` | 初始化新技能结构 |
-| `validate_skill` | 验证技能规范 |
-| `analyze_skill` | 分析技能质量 |
-| `refactor_skill` | 生成重构建议 |
-| `package_skill` | 打包技能为分发格式 |
-| `batch_validate_skills_tool` | **批量验证** - 并发验证多个技能（支持并发控制） |
-| `batch_analyze_skills_tool` | **批量分析** - 并发分析多个技能（支持并发控制） |
-| `health_check_tool` | **健康检查** - 系统健康状态、性能指标、缓存统计 |
-| `quick_status_tool` | **快速状态** - 系统状态摘要（CPU、内存、请求数） |
-| `is_healthy_tool` | **健康判断** - 快速判断系统是否健康 |
+**资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
 
-## MCP 资源访问
-
-| 资源 URI | 内容 |
-|----------|------|
-| `http://skills/schema/templates` | 所有可用模板列表 |
-| `http://skills/schema/templates/{type}` | 指定类型技能模板内容 |
-| `http://skills/schema/best-practices` | 最佳实践指南 |
-| `http://skills/schema/validation-rules` | 验证规则详情 |
-
-## MCP Prompts 模板
-
-| Prompt 名称 | 功能 |
-|-------------|------|
-| `create-skill` | 创建新技能的引导提示模板 |
-| `validate-skill` | 验证技能的引导提示模板 |
-| `refactor-skill` | 重构技能的引导提示模板 |
+**Prompts (3)**: create-skill | validate-skill | refactor-skill
 
 ## 详细文档
 

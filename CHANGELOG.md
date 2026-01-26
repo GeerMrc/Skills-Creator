@@ -18,9 +18,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 增强快速参考章节，新增命令速查表
 - 删除重复的TODO管理规范章节
 
-**计划归档**:
+**Agent-Skill优化**:
+- `SKILL.md` 精简45%（168行→92行）
+- 核心能力列表压缩为单行展示
+- 快速开始部分合并为紧凑格式
+- MCP组件表格改为简洁列表
+
+**数据修正**:
+- MCP Server README.md 覆盖率徽章修正为96%
+- CLAUDE.md 工具数量更新为"16 Tools (5类)"
+
+**计划管理**:
 - 归档 `clever-meandering-wolf.md` 到 `.claude/plans/archive/`
 - 九步法流程已在 CLAUDE.md v1.2 实施完成
+- 归档 v0.3.0 相关阶段报告（stage1, stage2, completion）
+- 归档过时的开发规范计划（elegant-stargazing-bonbon.md）
+- 归档 v0.3.0 发布准备计划（whimsical-herding-iverson.md）
 
 ## [0.3.0] - 2026-01-26
 
