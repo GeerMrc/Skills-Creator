@@ -32,7 +32,22 @@ pip install skill-creator-mcp
 pip install skill-creator-mcp
 ```
 
-### MCP 配置
+### Claude Code 配置
+
+**方式1：使用 claude mcp add（简单）**
+```bash
+claude mcp add skill-creator stdio python -m skill_creator_mcp --scope user
+```
+
+**方式2：使用 claude mcp add-json（推荐）**
+```bash
+claude mcp add-json "skill-creator" '{
+  "command": "python",
+  "args": ["-m", "skill_creator_mcp"]
+}' --scope user
+```
+
+### Claude Desktop 配置
 
 **配置文件**：`~/.config/Claude/claude_desktop_config.json`
 
@@ -84,7 +99,29 @@ cd Skills-Creator/skill-creator-mcp
 uv sync --dev
 ```
 
-### MCP 配置
+### Claude Code 配置
+
+**方式1：使用 claude mcp add**
+```bash
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp --scope user
+```
+
+**方式2：使用 claude mcp add-json（推荐）**
+```bash
+claude mcp add-json "skill-creator" '{
+  "command": "uv",
+  "args": [
+    "--directory",
+    "/absolute/path/to/Skills-Creator/skill-creator-mcp",
+    "run",
+    "python",
+    "-m",
+    "skill_creator_mcp"
+  ]
+}' --scope user
+```
+
+### Claude Desktop 配置
 
 **使用 uv --directory**（推荐）：
 

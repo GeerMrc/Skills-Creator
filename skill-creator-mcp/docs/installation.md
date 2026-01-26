@@ -229,11 +229,46 @@ pip install skill-creator-mcp
 
 ### Claude Code
 
+> 💡 **详细配置**：请参考 [Claude Code 配置完整指南](./claude-code-config.md)
+
+**全局安装用户**：
 ```bash
-# 添加 MCP 服务器
-cd /path/to/Skills-Creator
-claude mcp add skill-creator stdio python -m skill_creator_mcp
+# 方式1：使用 claude mcp add（简单）
+claude mcp add skill-creator stdio python -m skill_creator_mcp --scope user
+
+# 方式2：使用 claude mcp add-json（推荐）
+claude mcp add-json "skill-creator" '{
+  "command": "python",
+  "args": ["-m", "skill_creator_mcp"]
+}' --scope user
 ```
+
+**源码开发用户**：
+```bash
+# 方式1：使用 claude mcp add
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp --scope user
+
+# 方式2：使用 claude mcp add-json（推荐）
+claude mcp add-json "skill-creator" '{
+  "command": "uv",
+  "args": [
+    "--directory",
+    "/absolute/path/to/Skills-Creator/skill-creator-mcp",
+    "run",
+    "python",
+    "-m",
+    "skill_creator_mcp"
+  ]
+}' --scope user
+```
+
+**scope 参数说明**：
+
+| scope | 存储位置 | 可提交VC | 适用场景 |
+|-------|----------|----------|----------|
+| `project` | `.mcp.json` | ✅ | 团队协作开发 |
+| `user` | `~/.claude/settings.json` | ❌ | 跨项目使用（推荐） |
+| `local` | `.claude/settings.json` | ❌ | 临时测试 |
 
 详细的 IDE 配置请参考：
 - [IDE 集成配置](./ide-config.md)

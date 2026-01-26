@@ -119,12 +119,35 @@ pip install skill-creator-mcp
 
 ### 快速开始
 
+**全局安装用户**：
 ```bash
-# 进入项目目录
-cd /path/to/Skills-Creator
+# 方式1：使用 claude mcp add（简单）
+claude mcp add skill-creator stdio python -m skill_creator_mcp --scope user
 
-# 添加 MCP 服务器
-claude mcp add skill-creator stdio python -m skill_creator_mcp
+# 方式2：使用 claude mcp add-json（推荐）
+claude mcp add-json "skill-creator" '{
+  "command": "python",
+  "args": ["-m", "skill_creator_mcp"]
+}' --scope user
+```
+
+**源码开发用户**：
+```bash
+# 方式1：使用 claude mcp add
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp --scope user
+
+# 方式2：使用 claude mcp add-json（推荐）
+claude mcp add-json "skill-creator" '{
+  "command": "uv",
+  "args": [
+    "--directory",
+    "/absolute/path/to/Skills-Creator/skill-creator-mcp",
+    "run",
+    "python",
+    "-m",
+    "skill_creator_mcp"
+  ]
+}' --scope user
 ```
 
 ### 配置文件方式

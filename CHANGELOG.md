@@ -18,6 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - 添加 scope 参数说明表
   - `skill-creator-mcp/README.md` - 在快速开始中添加 add-json 示例
   - `README.md` - 在配置部分添加 add-json 示例
+  - `skill-creator-mcp/docs/installation.md` - Claude Code 配置区分全局/源码开发
+  - `skill-creator-mcp/docs/ide-config.md` - Claude Code 快速开始区分全局/源码开发
+  - `skill-creator-mcp/docs/mcp-config-guide.md` - 两个场景都添加 add-json 配置方式
+
+**文档一致性审核**:
+- 全面审核配置文档中 `command` 字段使用（python vs uv vs uvx）
+- 验证安装方式与配置方式对应关系
+- 检查 scope 参数说明在所有文档中一致
+- 验证所有交叉引用链接有效
 
 ### Fixed
 
