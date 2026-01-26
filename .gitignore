@@ -77,3 +77,4 @@ Thumbs.db
 # Local Claude settings
 settings.local.json
 .claude/settings.local.json
+.mcp.json
