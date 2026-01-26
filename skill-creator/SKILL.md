@@ -62,7 +62,7 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 
 ## MCP 组件
 
-**工具 (16)**: collect_requirements | init_skill | validate_skill | analyze_skill | refactor_skill | package_skill | batch_validate_skills_tool | batch_analyze_skills_tool | health_check_tool | quick_status_tool | is_healthy_tool | check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
+**工具 (17)**: collect_requirements | init_skill | validate_skill | analyze_skill | refactor_skill | package_skill | package_agent_skill | batch_validate_skills_tool | batch_analyze_skills_tool | health_check_tool | quick_status_tool | is_healthy_tool | check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
 
 > 注：包含11个用户工具 + 5个Phase 0技术验证工具
 

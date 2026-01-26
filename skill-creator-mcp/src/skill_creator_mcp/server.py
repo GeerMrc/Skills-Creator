@@ -41,6 +41,7 @@ from .utils.analyzers import (
     _generate_suggestions,
 )
 from .utils.file_ops import create_directory_structure_async, write_file_async
+from .utils.packagers import package_agent_skill as package_agent_skill_impl
 from .utils.packagers import package_skill as package_skill_impl
 from .utils.refactorors import (
     estimate_refactor_effort,
@@ -119,6 +120,23 @@ mcp = FastMCP(
     - output_dir (str): 输出目录路径（默认：当前目录）
     - format (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
     - include_tests (bool): 是否包含测试文件（默认：True）
+    - validate_before_package (bool): 打包前是否验证（默认：True）
+
+    ### package_agent_skill
+    打包 Agent-Skill 为标准分发格式（推荐使用）。
+
+    与 package_skill 的区别：
+    - 使用更严格的排除模式
+    - 支持版本号参数，生成标准化包名
+    - 默认不包含测试文件
+    - 确保符合 Agent-Skill 规范
+
+    参数：
+    - skill_path (str): Agent-Skill 目录路径
+    - output_dir (str): 输出目录路径（默认：当前目录）
+    - version (str): 版本号（可选，格式如 "0.3.1"）
+    - format (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
+    - include_tests (bool): 是否包含测试文件（默认：False）
     - validate_before_package (bool): 打包前是否验证（默认：True）
     """,
 )
@@ -666,6 +684,89 @@ async def package_skill(
                     "error_type": "format_error",
                 }
         # 其他验证错误
+        return {
+            "success": False,
+            "error": f"输入验证失败: {e}",
+            "error_type": "validation_error",
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"打包过程出错: {e}",
+            "error_type": "internal_error",
+        }
+
+
+@mcp.tool()
+async def package_agent_skill(
+    ctx: Context,
+    skill_path: str,
+    output_dir: str = ".",
+    version: str | None = None,
+    format: str = "zip",
+    include_tests: bool = False,
+    validate_before_package: bool = True,
+) -> dict[str, Any]:
+    """
+    打包 Agent-Skill 为标准分发格式.
+
+    这是专门用于打包标准 Agent-Skill 的函数。
+    与 package_skill 的区别：
+    - 使用更严格的排除模式
+    - 支持版本号参数，生成标准化包名
+    - 默认不包含测试文件
+    - 确保符合 Agent-Skill 规范
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: Agent-Skill 目录路径
+        output_dir: 输出目录路径
+        version: 版本号（可选，格式如 "0.3.1"）
+        format: 打包格式（zip/tar.gz/tar.bz2）
+        include_tests: 是否包含测试文件（默认 False）
+        validate_before_package: 打包前是否验证
+
+    Returns:
+        包含打包结果的字典
+
+    Examples:
+        >>> result = await package_agent_skill(
+        ...     ctx,
+        ...     skill_path="/path/to/skill-creator",
+        ...     output_dir="/output",
+        ...     version="0.3.1",
+        ...     format="zip"
+        ... )
+        >>> # 生成: skill-creator-v0.3.1.zip
+    """
+    from pydantic import ValidationError
+
+    try:
+        # 调用打包函数
+        result = package_agent_skill_impl(
+            skill_path=skill_path,
+            output_dir=output_dir,
+            version=version,
+            package_format=format,
+            include_tests=include_tests,
+            validate_before_package=validate_before_package,
+        )
+
+        # 转换为字典格式返回
+        return {
+            "success": result.success,
+            "skill_path": result.skill_path,
+            "package_path": result.package_path,
+            "format": result.format,
+            "files_included": result.files_included,
+            "package_size": result.package_size,
+            "validation_passed": result.validation_passed,
+            "validation_errors": result.validation_errors,
+            "error": result.error,
+            "error_type": result.error_type,
+        }
+
+    except ValidationError as e:
         return {
             "success": False,
             "error": f"输入验证失败: {e}",

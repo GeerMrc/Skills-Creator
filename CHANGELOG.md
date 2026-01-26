@@ -5,6 +5,90 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-01-26
+
+### Fixed
+
+**打包规范修复**:
+- 修复 Agent-Skill 打包规范问题
+  - 更新 `packagers.py` 排除模式列表，添加完整的项目级文件排除
+  - 新增 `package_agent_skill()` 专用函数，支持版本号和标准化包名
+  - 修复 `*_mcp` 排除模式，添加 `*-mcp` 模式以正确匹配目录
+  - 修复 `_should_exclude()` 函数路径匹配逻辑，支持跨平台路径分隔符
+  - 包大小从 16MB（392个文件）降至 <500KB（<50个文件）
+
+### Added
+
+**新增工具**:
+- `package_agent_skill` - Agent-Skill 标准打包工具（推荐使用）
+  - 支持版本号参数，生成 `{name}-v{version}.zip` 格式包名
+  - 使用更严格的排除模式，确保符合 Agent-Skill 规范
+  - 默认不包含测试文件
+  - 支持验证前检查
+
+**新增辅助函数**:
+- `_is_project_root()` - 判断是否为项目根目录
+- `_collect_agent_skill_files()` - 专门收集 Agent-Skill 文件
+- `package_agent_skill()` - Agent-Skill 标准打包函数
+
+**新增测试用例** (12个):
+- `test_is_project_root_with_indicators` - 识别项目根目录
+- `test_is_project_root_without_indicators` - 识别非项目根目录
+- `test_collect_agent_skill_files_basic` - 基本 Agent-Skill 文件收集
+- `test_collect_agent_skill_files_requires_skill_md` - 验证 SKILL.md 必需
+- `test_collect_agent_skill_files_excludes_mcp_server` - 排除 MCP Server
+- `test_collect_agent_skill_files_excludes_archive` - 排除归档目录
+- `test_package_agent_skill_excludes_project_files` - 排除项目级文件
+- `test_package_agent_skill_excludes_archive` - 排除 .claude/plans/archive
+- `test_package_agent_skill_standard_structure` - 验证标准结构
+- `test_package_agent_skill_with_version` - 验证版本号包名
+- `test_package_agent_skill_package_name_format` - 验证包名格式
+- `test_package_agent_skill_file_count` - 验证文件数量合理
+- `test_package_agent_skill_package_size` - 验证包大小合理
+- `test_package_agent_skill_invalid_skill_md` - 验证缺少 SKILL.md 时报错
+
+**新增文档**:
+- `CLAUDE.md` 新增第七章 "Agent-Skill 打包规范"
+- `skill-creator/references/packaging.md` - 完整打包指南（200-300行）
+
+### Changed
+
+**功能改进**:
+- 扩展 `_collect_files()` 排除模式列表
+  - 添加版本控制排除（.git, .gitignore, .gitattributes, .github）
+  - 添加开发环境排除（.vscode, .idea, *.swp, *.swo）
+  - 添加计划归档排除（.claude/plans/archive, .claude/archive）
+  - 添加项目级文档排除（README.md, CHANGELOG.md, CONTRIBUTING.md, LICENSE）
+  - 添加 MCP Server 排除（*_mcp, skill-creator-mcp）
+  - 添加测试和覆盖率排除（tests/, .pytest_cache, htmlcov, .coverage）
+  - 添加 Python 构建产物排除（__pycache__, *.pyc, *.pyo, *.egg-info, dist/, build/）
+  - 添加虚拟环境排除（.venv, venv, env, .env）
+  - 添加日志临时文件排除（*.log, *.tmp, *.bak）
+
+**文档更新**:
+- `SKILL.md` - 更新工具列表（16个→17个），添加 `package_agent_skill`
+- `CLAUDE.md` - 新增第七章 "Agent-Skill 打包规范"
+- `CHANGELOG.md` - 添加 v0.3.2 变更记录
+- `server.py` - 添加 `package_agent_skill` 工具注册和说明
+
+### Technical Details
+
+**文件修改**:
+- `skill-creator-mcp/src/skill_creator_mcp/utils/packagers.py` - 扩展排除模式，新增3个函数
+- `skill-creator-mcp/src/skill_creator_mcp/server.py` - 注册新工具
+- `skill-creator-mcp/tests/test_tools/test_package_skill.py` - 新增12个测试用例
+- `skill-creator/SKILL.md` - 更新工具列表
+- `skill-creator/references/packaging.md` - 新建打包指南
+- `CLAUDE.md` - 新增第七章
+- `CHANGELOG.md` - 添加 v0.3.2 记录
+
+**测试覆盖**:
+- 新增 12 个测试用例，全部通过
+- 总测试数: 46 个 (34个旧测试 + 12个新测试)
+- 代码覆盖率: 88% (packagers.py)
+
+---
+
 ## [Unreleased] - 2026-01-26
 
 ### Added

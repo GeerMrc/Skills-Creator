@@ -5,12 +5,15 @@ import zipfile
 from pathlib import Path
 
 from skill_creator_mcp.utils.packagers import (
+    _collect_agent_skill_files,
     _collect_files,
     _create_tar_package,
     _create_zip_package,
     _format_size,
+    _is_project_root,
     _should_exclude,
     generate_package_manifest,
+    package_agent_skill,
     package_skill,
 )
 
@@ -556,3 +559,351 @@ def test_generate_package_manifest_large_size():
     )
 
     assert "5.0 MB" in manifest
+
+
+# ==================== _is_project_root 测试 ====================
+
+
+def test_is_project_root_with_indicators(temp_dir: Path):
+    """测试识别项目根目录."""
+    project_dir = temp_dir / "project"
+    project_dir.mkdir()
+    (project_dir / "pyproject.toml").write_text("[project]")
+    (project_dir / "skill-creator").mkdir()
+    (project_dir / "skill-creator-mcp").mkdir()
+    (project_dir / ".claude").mkdir()
+    (project_dir / "CHANGELOG.md").write_text("# Changelog")
+
+    assert _is_project_root(project_dir) is True
+
+
+def test_is_project_root_without_indicators(temp_dir: Path):
+    """测试非项目根目录."""
+    non_project_dir = temp_dir / "non-project"
+    non_project_dir.mkdir()
+    (non_project_dir / "somefile.txt").write_text("content")
+
+    assert _is_project_root(non_project_dir) is False
+
+
+# ==================== _collect_agent_skill_files 测试 ====================
+
+
+def test_collect_agent_skill_files_basic(temp_dir: Path):
+    """测试基本 Agent-Skill 文件收集."""
+    skill_dir = temp_dir / "test-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Test")
+    (skill_dir / "README.md").write_text("# Readme")
+
+    files = _collect_agent_skill_files(skill_dir, include_tests=False)
+
+    # 应该包含 SKILL.md，排除 README.md（项目级文档）
+    assert len(files) == 1
+    assert files[0].name == "SKILL.md"
+
+
+def test_collect_agent_skill_files_requires_skill_md(temp_dir: Path):
+    """测试缺少 SKILL.md 时抛出异常."""
+    skill_dir = temp_dir / "invalid-skill"
+    skill_dir.mkdir(parents=True)
+    # 没有 SKILL.md
+
+    try:
+        _collect_agent_skill_files(skill_dir)
+        assert False, "应该抛出 ValueError"
+    except ValueError as e:
+        assert "SKILL.md" in str(e)
+
+
+def test_collect_agent_skill_files_excludes_mcp_server(temp_dir: Path):
+    """测试排除 MCP Server 目录."""
+    skill_dir = temp_dir / "test-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Test")
+
+    # 创建 MCP Server 相关目录
+    (skill_dir / "skill-creator-mcp").mkdir()
+    ((skill_dir / "skill-creator-mcp") / "server.py").write_text("# MCP")
+
+    files = _collect_agent_skill_files(skill_dir, include_tests=False)
+
+    # MCP Server 目录应该被排除
+    assert len(files) == 1
+    assert files[0].name == "SKILL.md"
+
+
+def test_collect_agent_skill_files_excludes_archive(temp_dir: Path):
+    """测试排除归档目录."""
+    skill_dir = temp_dir / "test-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Test")
+
+    # 创建归档目录
+    claude_dir = skill_dir / ".claude"
+    claude_dir.mkdir()
+    plans_dir = claude_dir / "plans"
+    plans_dir.mkdir()
+    archive_dir = plans_dir / "archive"
+    archive_dir.mkdir()
+    (archive_dir / "old-plan.md").write_text("# Old Plan")
+
+    files = _collect_agent_skill_files(skill_dir, include_tests=False)
+
+    # 归档目录应该被排除
+    assert len(files) == 1
+    assert files[0].name == "SKILL.md"
+
+
+# ==================== package_agent_skill 测试 ====================
+
+
+def test_package_agent_skill_excludes_project_files(temp_dir: Path):
+    """测试排除项目级文件."""
+    skill_dir = temp_dir / "skill-creator"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: skill-creator\ndescription: Test\nallowed-tools: [Read]\n---\n# Test"
+    )
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    # 创建项目级文件
+    (skill_dir / "README.md").write_text("# Project README")
+    (skill_dir / "CHANGELOG.md").write_text("# Changelog")
+    (skill_dir / "CONTRIBUTING.md").write_text("# Contributing")
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="0.3.1",
+        package_format="zip",
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    # 项目级文件应该被排除，只包含 SKILL.md 和必需目录
+    assert result.files_included < 10
+
+
+def test_package_agent_skill_excludes_archive(temp_dir: Path):
+    """测试排除 .claude/plans/archive."""
+    skill_dir = temp_dir / "skill-creator"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: skill-creator\ndescription: Test\nallowed-tools: [Read]\n---\n# Test"
+    )
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+
+    # 创建归档目录
+    claude_dir = skill_dir / ".claude"
+    claude_dir.mkdir()
+    plans_dir = claude_dir / "plans"
+    plans_dir.mkdir()
+    archive_dir = plans_dir / "archive"
+    archive_dir.mkdir()
+    (archive_dir / "old-plan.md").write_text("# Old Plan")
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="0.3.1",
+        package_format="zip",
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    # 归档文件不应该被包含
+    assert result.files_included < 10
+
+
+def test_package_agent_skill_standard_structure(temp_dir: Path):
+    """验证标准 Agent-Skill 结构."""
+    skill_dir = temp_dir / "skill-creator"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: skill-creator\ndescription: Test\nallowed-tools: [Read]\n---\n# Test"
+    )
+
+    # 创建标准目录结构
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="0.3.1",
+        package_format="zip",
+        include_tests=False,
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+
+    # 验证包内容
+    package_path = Path(result.package_path)
+    with zipfile.ZipFile(package_path, "r") as zf:
+        names = zf.namelist()
+        # 必须包含 SKILL.md
+        assert any("SKILL.md" in name for name in names)
+
+
+def test_package_agent_skill_with_version(temp_dir: Path):
+    """测试版本号正确添加到包名."""
+    skill_dir = temp_dir / "skill-creator"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: skill-creator\ndescription: Test\nallowed-tools: [Read]\n---\n# Test"
+    )
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="0.3.1",
+        package_format="zip",
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    # 包名应该包含版本号
+    assert "skill-creator-v0.3.1.zip" in result.package_path
+
+
+def test_package_agent_skill_package_name_format(temp_dir: Path):
+    """测试包名格式正确."""
+    skill_dir = temp_dir / "skill-creator"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: skill-creator\ndescription: Test\nallowed-tools: [Read]\n---\n# Test"
+    )
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    # 测试带版本号的包名
+    result_with_version = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="1.0.0",
+        package_format="zip",
+        validate_before_package=False,
+    )
+    assert "skill-creator-v1.0.0.zip" in result_with_version.package_path
+
+    # 测试不带版本号的包名
+    result_without_version = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version=None,
+        package_format="zip",
+        validate_before_package=False,
+    )
+    assert "skill-creator.zip" in result_without_version.package_path
+    # 确保没有 -v
+    assert "-v" not in result_without_version.package_path
+
+
+def test_package_agent_skill_file_count(temp_dir: Path):
+    """测试文件数量合理 (<50)."""
+    skill_dir = temp_dir / "skill-creator"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: skill-creator\ndescription: Test\nallowed-tools: [Read]\n---\n# Test"
+    )
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="0.3.1",
+        package_format="zip",
+        include_tests=False,
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    # 文件数量应该远小于原来的 392 个
+    assert result.files_included < 50
+
+
+def test_package_agent_skill_package_size(temp_dir: Path):
+    """测试包大小合理 (<500KB)."""
+    skill_dir = temp_dir / "skill-creator"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: skill-creator\ndescription: Test\nallowed-tools: [Read]\n---\n# Test"
+    )
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="0.3.1",
+        package_format="zip",
+        include_tests=False,
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    # 包大小应该小于 500KB
+    assert result.package_size is not None
+    assert result.package_size < 500 * 1024  # 500KB
+
+
+def test_package_agent_skill_invalid_skill_md(temp_dir: Path):
+    """测试缺少 SKILL.md 时返回错误."""
+    skill_dir = temp_dir / "invalid-skill"
+    skill_dir.mkdir(parents=True)
+    # 没有 SKILL.md
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_agent_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        version="0.3.1",
+        package_format="zip",
+        validate_before_package=False,
+    )
+
+    assert result.success is False
+    assert "SKILL.md" in result.error

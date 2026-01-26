@@ -573,5 +573,120 @@ uv run python -m skill_creator_mcp.http
 
 ---
 
+## 七、Agent-Skill 打包规范
+
+### 7.1 打包规范概述
+
+Agent-Skill 打包是发布和分发技能的重要环节。标准化的打包格式确保用户可以轻松安装和使用技能。
+
+**核心原则**:
+- **最小化**: 只包含必需文件，排除开发文件
+- **标准化**: 使用统一的包名格式和版本号
+- **可验证**: 打包后可验证结构和内容
+
+### 7.2 标准包结构
+
+**正确的 Agent-Skill 包结构**:
+```
+skill-creator-v0.3.1.zip
+└── skill-creator/
+    ├── SKILL.md          # 必需
+    ├── examples/         # 可选
+    ├── references/       # 可选
+    └── scripts/          # 可选
+```
+
+**质量指标**:
+| 指标 | 推荐值 | 最大值 |
+|------|--------|--------|
+| 文件数量 | 20-40 | <50 |
+| 包大小 | 100-300KB | <500KB |
+
+### 7.3 排除文件列表
+
+**必须排除的文件和目录**:
+
+| 类别 | 排除项 | 原因 |
+|------|--------|------|
+| 版本控制 | `.git`, `.gitignore`, `.gitattributes`, `.github` | 开发专用 |
+| 开发环境 | `.vscode`, `.idea`, `*.swp`, `*.swo` | IDE 配置 |
+| 计划归档 | `.claude/plans/archive`, `.claude/archive` | 开发历史 |
+| 项目文档 | `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `LICENSE` | 项目级 |
+| MCP Server | `*-mcp`, `*_mcp`, `mcp-server` | 独立打包 |
+| 测试文件 | `tests/`, `.pytest_cache`, `htmlcov`, `.coverage` | 开发专用 |
+| Python 构建 | `__pycache__`, `*.pyc`, `*.pyo`, `*.egg-info`, `dist/`, `build/` | 构建产物 |
+| 虚拟环境 | `.venv`, `venv`, `env`, `.env` | 环境特定 |
+| 日志临时 | `*.log`, `*.tmp`, `*.bak` | 临时文件 |
+
+### 7.4 打包命令示例
+
+**使用 package_agent_skill（推荐）**:
+```python
+from skill_creator_mcp.utils.packagers import package_agent_skill
+
+result = package_agent_skill(
+    skill_path="/path/to/skill-creator",
+    output_dir="/output",
+    version="0.3.1",
+    package_format="zip",
+    include_tests=False,
+    validate_before_package=True
+)
+
+# 结果: skill-creator-v0.3.1.zip
+```
+
+**使用 MCP 工具**:
+```python
+# 在 Claude Code 中调用 MCP 工具
+await package_agent_skill(
+    ctx,
+    skill_path="/path/to/skill-creator",
+    output_dir="/output",
+    version="0.3.1",
+    format="zip"
+)
+```
+
+### 7.5 验证包质量
+
+**解压验证**:
+```bash
+# 列出包内容（前30行）
+unzip -l skill-creator-v0.3.1.zip | head -30
+
+# 统计文件数量
+unzip -l skill-creator-v0.3.1.zip | tail -1
+
+# 检查包大小
+ls -lh skill-creator-v0.3.1.zip
+```
+
+**结构验证**:
+```bash
+# 解压到临时目录
+unzip -q skill-creator-v0.3.1.zip -d /tmp/test-skill
+cd /tmp/test-skill/skill-creator
+
+# 验证排除项
+[ -d ".claude/plans/archive" ] && echo "❌" || echo "✅ 归档已排除"
+[ -f "README.md" ] && echo "❌" || echo "✅ README 已排除"
+[ -d "../skill-creator-mcp" ] && echo "❌" || echo "✅ MCP 已排除"
+
+# 验证包含项
+[ -f "SKILL.md" ] && echo "✅" || echo "❌ 缺少 SKILL.md"
+[ -d "examples" ] && echo "✅" || echo "❌ 缺少 examples/"
+```
+
+### 7.6 发布流程
+
+1. **打包**: 使用 `package_agent_skill()` 创建标准包
+2. **验证**: 检查包结构和质量指标
+3. **测试**: 在新环境中解压并验证
+4. **发布**: 上传到 GitHub Releases 或其他分发平台
+5. **文档**: 更新 CHANGELOG.md 和发布说明
+
+---
+
 **文档维护**: 请在每次重大变更后更新本文档。
-**最后更新**: 2026-01-26 (v1.3 - 文档结构优化)
+**最后更新**: 2026-01-26 (v1.4 - 新增第七章打包规范)
