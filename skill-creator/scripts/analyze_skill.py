@@ -19,7 +19,7 @@ script_dir = Path(__file__).parent.parent
 mcp_src = script_dir / "skill-creator-mcp" / "src"
 sys.path.insert(0, str(mcp_src))
 
-from skill_creator_mcp.utils.analyzers import (
+from skill_creator_mcp.utils.analyzers import (  # noqa: E402
     _analyze_complexity,
     _analyze_quality,
     _analyze_structure,

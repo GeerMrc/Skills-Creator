@@ -19,7 +19,7 @@ script_dir = Path(__file__).parent.parent
 mcp_src = script_dir / "skill-creator-mcp" / "src"
 sys.path.insert(0, str(mcp_src))
 
-from skill_creator_mcp.utils.validators import (
+from skill_creator_mcp.utils.validators import (  # noqa: E402
     _validate_naming,
     _validate_skill_md,
     _validate_structure,
