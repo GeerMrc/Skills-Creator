@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2026-01-26
 
+### Added
+
+**文档更新**:
+- 新增 `claude mcp add-json` 配置方式说明
+  - `skill-creator-mcp/docs/claude-code-config.md` - 添加 add-json 命令详细说明
+    - 新增 1.2 小节介绍 claude mcp add-json
+    - 提供全局安装和源码开发两种方式的示例
+    - 添加 claude mcp add vs add-json 对比表
+    - 添加 scope 参数说明表
+  - `skill-creator-mcp/README.md` - 在快速开始中添加 add-json 示例
+  - `README.md` - 在配置部分添加 add-json 示例
+
 ### Fixed
 
 **项目全面审核与优化**:

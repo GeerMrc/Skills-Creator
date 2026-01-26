@@ -64,7 +64,9 @@ claude mcp add skill-creator stdio uv run python -m skill_creator_mcp
 
 ### 方式1：CLI 命令（推荐）
 
-使用 `claude mcp` 命令快速配置：
+#### 1.1 claude mcp add（基础方式）
+
+使用 `claude mcp add` 命令快速配置：
 
 **全局安装用户**：
 ```bash
@@ -85,6 +87,65 @@ claude mcp add skill-creator stdio uv run python -m skill_creator_mcp
 claude mcp add skill-creator stdio uv run python -m skill_creator_mcp \
   --env SKILL_CREATOR_LOG_LEVEL=DEBUG
 ```
+
+#### 1.2 claude mcp add-json（复杂配置推荐）
+
+使用 `claude mcp add-json` 命令直接传递 JSON 配置：
+
+**全局安装用户**：
+```bash
+# 基础配置
+claude mcp add-json "skill-creator" '{"command": "python", "args": ["-m", "skill_creator_mcp"]}' --scope user
+
+# 带环境变量
+claude mcp add-json "skill-creator" '{
+  "command": "python",
+  "args": ["-m", "skill_creator_mcp"],
+  "env": {
+    "SKILL_CREATOR_LOG_LEVEL": "DEBUG"
+  }
+}' --scope user
+```
+
+**源码开发用户**：
+```bash
+# 使用 uv --directory 配置（推荐）
+claude mcp add-json "skill-creator" '{
+  "command": "uv",
+  "args": [
+    "--directory",
+    "/absolute/path/to/Skills-Creator/skill-creator-mcp",
+    "run",
+    "python",
+    "-m",
+    "skill_creator_mcp"
+  ]
+}' --scope user
+
+# 使用 cwd 配置
+claude mcp add-json "skill-creator" '{
+  "command": "python",
+  "args": ["-m", "skill_creator_mcp"],
+  "cwd": "/absolute/path/to/Skills-Creator/skill-creator-mcp"
+}' --scope user
+```
+
+**命令对比**：
+
+| 特性 | `claude mcp add` | `claude mcp add-json` |
+|------|-----------------|----------------------|
+| **适用场景** | 简单配置 | 复杂配置 |
+| **环境变量** | `--env KEY=VALUE` | JSON 中配置 |
+| **源码配置** | 需要多行转义 | JSON 格式清晰 |
+| **配置范围** | `--scope <scope>` | `--scope <scope>` |
+
+**scope 参数说明**：
+
+| scope | 存储位置 | 可提交VC | 适用场景 |
+|-------|----------|----------|----------|
+| `project` | `.mcp.json` | ✅ | 团队协作开发 |
+| `user` | `~/.claude/settings.json` | ❌ | 跨项目使用（推荐） |
+| `local` | `.claude/settings.json` | ❌ | 临时测试 |
 
 ### 方式2：配置文件
 
@@ -140,11 +201,21 @@ claude mcp add skill-creator stdio uv run python -m skill_creator_mcp \
 ### 基础命令
 
 ```bash
-# 添加 MCP 服务器
+# 方式1：claude mcp add（简单配置）
 claude mcp add <name> stdio <command> [args...]
 
-# 示例
+# 方式2：claude mcp add-json（复杂配置）
+claude mcp add-json <name> '<JSON配置>' --scope <scope>
+
+# 示例：简单配置
 claude mcp add skill-creator stdio python -m skill_creator_mcp
+
+# 示例：复杂配置（推荐使用 add-json）
+claude mcp add-json "skill-creator" '{
+  "command": "python",
+  "args": ["-m", "skill_creator_mcp"],
+  "env": {"SKILL_CREATOR_LOG_LEVEL": "DEBUG"}
+}' --scope user
 
 # 列出所有服务器
 claude mcp list
