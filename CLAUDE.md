@@ -226,6 +226,22 @@ git push -u origin feature/your-feature-name
 | `test` | 测试相关 | 添加测试、修复测试 |
 | `chore` | 构建过程或辅助工具变动 | 依赖更新、配置修改 |
 
+**Scope（作用域）说明**:
+
+| 规则 | 说明 | 示例 |
+|------|------|------|
+| **推荐使用** | 对于涉及特定模块或组件的更改 | `fix(test): 修复导入错误` |
+| **可省略** | 对于涉及多个模块或通用性更改 | `docs: 更新README` |
+| **常用scope** | mcp/skill/test/docs/audit/plan | `feat(mcp): 添加新工具` |
+| **避免过细** | 不需要指定到具体函数或类 | ❌ `fix(utils/validators.py:validate_naming): ...` |
+
+**何时使用scope**:
+- ✅ 修复特定模块的bug → `fix(test): 修复测试导入`
+- ✅ 添加功能到特定组件 → `feat(mcp): 添加批量验证`
+- ✅ 更新特定文档 → `docs(api): 更新API文档`
+- ⚠️ 多个模块改动 → 可省略或使用通用scope
+- ❌ 微小改动（如拼写修复） → 直接用type即可
+
 **提交示例**:
 ```
 feat(工具): 添加批量验证功能

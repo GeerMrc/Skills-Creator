@@ -1,20 +1,37 @@
 # 计划文档归档索引
 
-> **最后更新**: 2026-01-23
-> **归档文件数**: 16个
+> **最后更新**: 2026-01-26
+> **归档文件数**: 62个
+
+> **说明**: 本目录包含所有已完成的开发计划和阶段报告，按类型和日期组织。
 
 ---
 
-## 最新归档
+## 最新归档 (2026-01-26)
 
-| 文件名 | 归档原因 | 归档日期 |
-|--------|----------|----------|
-| `audit-project-comprehensive.md` | 项目审核审计完成，报告已生成 | 2026-01-23 |
-| `COMPREHENSIVE_AUDIT_REPORT_2026-01-22.md` | 综合审核报告已归档 | 2026-01-23 |
-| `cross-validation-checklist.md` | 交叉验证检查清单已完成 | 2026-01-23 |
-| `main-skill-creator-dev.md` | 主开发计划已完成 | 2026-01-23 |
-| `main-skill-creator-dev-simple.md` | 简化版开发计划已完成 | 2026-01-23 |
-| `release-preparation-plan.md` | 发布准备计划已完成 | 2026-01-23 |
+| 文件名 | 类型 | 归档原因 |
+|--------|------|----------|
+| `fluttering-cuddling-mountain.md` | 功能计划 | MCP集成优化方案v3.1（评估后决定仅集成GitHub+Thinking） |
+| `phase-report-2026-01-26-comprehensive-audit.md` | 阶段报告 | 全面审核审计完成 |
+| `elegant-stargazing-bonbon.md` | 功能计划 | 需求澄清工具优化 |
+| `clever-meandering-wolf.md` | 修复计划 | 测试数据统一 |
+
+## 最新归档 (2026-01-25)
+
+| 文件名 | 类型 | 归档原因 |
+|--------|------|----------|
+| `phase-report-2026-01-25-v0.3.0-completion.md` | 阶段报告 | v0.3.0完成报告 |
+| `phase-report-2026-01-25-v0.3.0-stage2.md` | 阶段报告 | v0.3.0阶段2报告 |
+| `phase-report-2026-01-25-v0.3.0-stage1.md` | 阶段报告 | v0.3.0阶段1报告 |
+| `comprehensive-audit-2026-01-25.md` | 审计报告 | 综合审核审计 |
+
+## 最新归档 (2026-01-24)
+
+| 文件名 | 类型 | 归档原因 |
+|--------|------|----------|
+| `2026-01-24-comprehensive-audit-report.md` | 审计报告 | 综合审核审计 |
+| `dapper-twirling-otter.md` | 功能计划 | 上下文集成优化 |
+| `audit-report-2026-01-24.md` | 审计报告 | 审核审计 |
 
 ---
 

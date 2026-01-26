@@ -896,11 +896,13 @@ pending → in_progress → completed
 1. ✅ **GitHub MCP** - 需求跟踪 + Git自动化（P0）
 2. ✅ **Thinking MCP** - 思考记录（P0）
 
-**暂不集成**:
+**暂不集成**（以下MCP服务器已评估后故意不集成，非遗漏）:
 - ❌ RegistryTools - 技能数量还少
 - ❌ Context7 - 文档更新频率低
 - ❌ web-reader - 使用场景有限
 - ❌ zai-mcp-server - 偏离核心功能
+
+> **注意**: 以上4个MCP服务器经过充分评估后决定不集成。评估记录见本文档相关章节。这不是技术限制，而是基于项目优先级和实用价值的决策。
 
 ### 8.2 实施原则
 
