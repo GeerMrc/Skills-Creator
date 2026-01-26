@@ -2,6 +2,8 @@
 
 import time
 
+import pytest
+
 from skill_creator_mcp.tools.health_check import (
     CacheMetrics,
     HealthCheckResult,
@@ -475,3 +477,163 @@ class TestHealthCheckResult:
         assert result.cache.size == 10
         assert result.performance.total_requests == 100
         assert result.environment["python_version"] == "3.12.0"
+
+
+# ==================== Server.py Tool 异常处理测试 ====================
+
+
+class TestServerHealthCheckToolsExceptionHandling:
+    """测试server.py中健康检查工具的异常处理 (覆盖 lines 1143-1154, 1169-1180, 1195-1206)."""
+
+    @pytest.mark.asyncio
+    async def test_health_check_tool_exception_handling(self):
+        """测试health_check_tool的异常处理."""
+        from unittest.mock import patch
+        from skill_creator_mcp.server import health_check_tool
+        from skill_creator_mcp.tools.health_check import health_check
+
+        # 创建mock context
+        class MockContext:
+            pass
+
+        # Mock health_check抛出异常
+        with patch(
+            "skill_creator_mcp.server.health_check",
+            side_effect=RuntimeError("Simulated health check error"),
+        ):
+            result = await health_check_tool(MockContext())
+
+            assert result["success"] is False
+            assert "健康检查出错" in result["error"]
+            assert result["error_type"] == "internal_error"
+
+    @pytest.mark.asyncio
+    async def test_quick_status_tool_exception_handling(self):
+        """测试quick_status_tool的异常处理."""
+        from unittest.mock import patch
+        from skill_creator_mcp.server import quick_status_tool
+        from skill_creator_mcp.tools.health_check import get_quick_status
+
+        class MockContext:
+            pass
+
+        # Mock get_quick_status抛出异常
+        with patch(
+            "skill_creator_mcp.server.get_quick_status",
+            side_effect=RuntimeError("Simulated status error"),
+        ):
+            result = await quick_status_tool(MockContext())
+
+            assert result["success"] is False
+            assert "获取状态出错" in result["error"]
+            assert result["error_type"] == "internal_error"
+
+    @pytest.mark.asyncio
+    async def test_is_healthy_tool_exception_handling(self):
+        """测试is_healthy_tool的异常处理."""
+        from unittest.mock import patch
+        from skill_creator_mcp.server import is_healthy_tool
+        from skill_creator_mcp.tools.health_check import is_healthy
+
+        class MockContext:
+            pass
+
+        # Mock is_healthy抛出异常
+        with patch(
+            "skill_creator_mcp.server.is_healthy",
+            side_effect=RuntimeError("Simulated is_healthy error"),
+        ):
+            result = await is_healthy_tool(MockContext())
+
+            assert result["success"] is False
+            assert "健康检查出错" in result["error"]
+            assert result["error_type"] == "internal_error"
+
+
+class TestServerBatchToolsExceptionHandling:
+    """测试server.py中批量工具的异常处理 (覆盖 lines 1063-1076, 1107-1121)."""
+
+    @pytest.mark.asyncio
+    async def test_batch_validate_skills_tool_exception_handling(self):
+        """测试batch_validate_skills_tool的异常处理."""
+        from unittest.mock import patch, AsyncMock
+        from skill_creator_mcp.server import batch_validate_skills_tool
+        from skill_creator_mcp.tools.batch_operations import batch_validate_skills
+
+        class MockContext:
+            pass
+
+        # Mock batch_validate_skills抛出异常
+        with patch(
+            "skill_creator_mcp.server.batch_validate_skills",
+            side_effect=RuntimeError("Simulated batch validation error"),
+        ):
+            result = await batch_validate_skills_tool(
+                MockContext(),
+                skill_paths=["/skill1", "/skill2"],
+                check_structure=True,
+                check_content=True,
+                concurrent_limit=2,
+            )
+
+            assert result["success"] is False
+            assert "批量验证出错" in result["error"]
+            assert result["error_type"] == "internal_error"
+
+    @pytest.mark.asyncio
+    async def test_batch_analyze_skills_tool_exception_handling(self):
+        """测试batch_analyze_skills_tool的异常处理."""
+        from unittest.mock import patch
+        from skill_creator_mcp.server import batch_analyze_skills_tool
+        from skill_creator_mcp.tools.batch_operations import batch_analyze_skills
+
+        class MockContext:
+            pass
+
+        # Mock batch_analyze_skills抛出异常
+        with patch(
+            "skill_creator_mcp.server.batch_analyze_skills",
+            side_effect=RuntimeError("Simulated batch analysis error"),
+        ):
+            result = await batch_analyze_skills_tool(
+                MockContext(),
+                skill_paths=["/skill1", "/skill2"],
+                analyze_structure=True,
+                analyze_complexity=True,
+                analyze_quality=True,
+                concurrent_limit=2,
+            )
+
+            assert result["success"] is False
+            assert "批量分析出错" in result["error"]
+            assert result["error_type"] == "internal_error"
+
+
+class TestServerPackageToolExceptionHandling:
+    """测试server.py中打包工具的异常处理 (覆盖 lines 742-776)."""
+
+    @pytest.mark.asyncio
+    async def test_package_agent_skill_internal_error_handling(self):
+        """测试package_agent_skill的内部异常处理."""
+        from unittest.mock import patch
+        from skill_creator_mcp.server import package_agent_skill
+
+        class MockContext:
+            pass
+
+        # Mock package_agent_skill_impl抛出一般异常
+        with patch(
+            "skill_creator_mcp.server.package_agent_skill_impl",
+            side_effect=RuntimeError("Simulated packaging error"),
+        ):
+            result = await package_agent_skill(
+                MockContext(),
+                skill_path="/path/to/skill",
+                output_dir="/output",
+                version="0.3.1",
+                format="zip",
+            )
+
+            assert result["success"] is False
+            assert "打包过程出错" in result["error"]
+            assert result["error_type"] == "internal_error"
