@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+**项目全面审核与优化**:
+- 修复 SKILL.md 工具命名不一致（5个工具名称与MCP实现对齐）
+- 修复测试覆盖率配置（pytest配置从路径改为模块名，覆盖率从0%→96%）
+- 归档前一阶段计划文件到正确位置
+- 清理根目录zip文件，保持代码库整洁
+- 拆分 cache-mechanism.md 为核心+高级两个文档（371行→272+高级版）
+- 删除过时的 fix/revert-invalid-mcp-references 分支（内容已被更全面的修复覆盖）
+
+**CI/CD**:
+- 新增 `.github/workflows/code-review.yml` 自动化工作流
+  - 代码质量检查 (Ruff + MyPy)
+  - 单元测试和覆盖率报告
+  - 安全检查 (bandit)
+
 **架构合规性修复** (46处违规引用):
 - 删除 MCP Server 反向引用 Agent-Skill (8处)
 - 清理 Agent-Skill SKILL.md 中的 Claude Code 配置章节 (行96-158)

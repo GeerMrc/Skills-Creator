@@ -104,14 +104,14 @@ disallow_untyped_defs = false
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = [
-    "--cov=src/skill_creator_mcp",
+    "--cov=skill_creator_mcp",
     "--cov-report=html",
     "--cov-report=term-missing",
     "-v",
 ]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["skill_creator_mcp"]
 omit = [
     "*/tests/*",
     "*/test_*.py",

@@ -1,6 +1,8 @@
-# 缓存机制使用指南
+# 缓存机制 - 核心指南
 
-本文档介绍 Skill-Creator MCP Server 的缓存机制，包括 MemoryCache 类、cached 装饰器的使用方法和最佳实践。
+本文档介绍 Skill-Creator MCP Server 的缓存机制核心概念和基本用法。
+
+> **高级用法**: 参见 [缓存机制高级指南](cache-mechanism-advanced.md)
 
 ---
 
@@ -10,10 +12,12 @@
 
 ### 核心组件
 
-- **`MemoryCache`** - LRU 内存缓存管理器
-- **`cached`** - 函数结果缓存装饰器
-- **`cache_key()`** - 缓存键生成
-- **`hash_content()`** - 内容哈希计算
+| 组件 | 说明 | 用途 |
+|------|------|------|
+| **`MemoryCache`** | LRU 内存缓存管理器 | 管理缓存条目，自动淘汰 |
+| **`cached`** | 函数结果缓存装饰器 | 自动缓存函数返回值 |
+| **`cache_key()`** | 缓存键生成函数 | 生成标准化的缓存键 |
+| **`hash_content()`** | 内容哈希计算 | 为大数据生成唯一标识 |
 
 ---
 
@@ -177,8 +181,6 @@ def process_large_dataset(data: list) -> dict:
 
 ## 全局缓存实例
 
-### 使用全局缓存
-
 ```python
 from skill_creator_mcp.utils.cache import _global_cache
 
@@ -262,110 +264,9 @@ def get_file_metadata() -> dict:
 
 ---
 
-## 性能优化建议
-
-### 1. 预热缓存
-
-```python
-def warm_up_cache():
-    """应用启动时预热缓存"""
-    # 预加载常用数据
-    cache.set("config:default", load_default_config())
-    cache.set("template:minimal", load_minimal_template())
-    cache.set("validation:rules", load_validation_rules())
-```
-
-### 2. 批量操作使用缓存
-
-```python
-# 批量验证时启用缓存
-cache.set("batch:validation:active", True)
-
-try:
-    results = await batch_validate_skills(
-        skill_paths=skill_list,
-        concurrent_limit=5,
-    )
-finally:
-    cache.delete("batch:validation:active")
-```
-
-### 3. 缓存失效策略
-
-```python
-# 主动失效相关缓存
-def update_user_data(user_id: int, new_data: dict):
-    # 更新数据
-    save_to_db(user_id, new_data)
-
-    # 失效相关缓存
-    cache.delete(f"user:{user_id}:profile")
-    cache.delete(f"user:{user_id}:settings")
-```
-
----
-
-## 缓存相关配置
-
-### 环境变量
-
-```bash
-# 缓存大小（默认256）
-export SKILL_CREATOR_CACHE_SIZE=512
-
-# 缓存 TTL（默认300秒）
-export SKILL_CREATOR_CACHE_TTL=600
-```
-
-### Python 配置
-
-```python
-from skill_creator_mcp.utils.cache import MemoryCache
-
-# 自定义缓存配置
-cache = MemoryCache(
-    max_size=512,           # 最大条目数
-    default_ttl=300,        # 默认 TTL（秒）
-)
-```
-
----
-
-## 故障排查
-
-### 缓存未生效
-
-```python
-# 检查缓存是否创建
-cache = MemoryCache()
-print(cache.get_stats())
-
-# 检查键是否正确
-key = cache_key("func", arg1, arg2)
-print(f"缓存键: {key}")
-
-# 检查缓存是否存在
-print(cache.exists(key))
-```
-
-### 内存占用过高
-
-```python
-# 减小缓存大小
-cache = MemoryCache(max_size=128)
-
-# 或者清理缓存
-cache.clear()
-
-# 获取内存占用
-stats = cache.get_stats()
-print(f"缓存大小: {stats['size']}/{stats['max_size']}")
-```
-
----
-
 ## 相关文档
 
+- [缓存机制高级指南](cache-mechanism-advanced.md) - 性能优化和故障排查
 - [批量操作示例](../examples/mcp-batch-operations.md) - 批量操作中的缓存应用
 - [健康检查示例](../examples/mcp-health-check.md) - 缓存统计监控
-- [MCP 集成指南](../references/mcp-integration.md) - MCP 工具配置
+- [MCP 集成指南](mcp-integration.md) - MCP 工具配置
