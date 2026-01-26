@@ -23,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 单元测试和覆盖率报告
   - 安全检查 (bandit)
 
+**构建配置**:
+- 完善 `.gitignore` 配置
+  - 添加 `*.zip` 规则，忽略 release 包
+  - 添加 `*.whl`、`*.tar.gz` 规则，忽略构建产物
+  - 确保构建产物和 release 包不被 git 跟踪
+
 **架构合规性修复** (46处违规引用):
 - 删除 MCP Server 反向引用 Agent-Skill (8处)
 - 清理 Agent-Skill SKILL.md 中的 Claude Code 配置章节 (行96-158)
