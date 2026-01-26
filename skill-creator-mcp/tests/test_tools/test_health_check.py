@@ -325,7 +325,7 @@ class TestHealthCheck:
 
         assert result.health.status in ["healthy", "degraded", "unhealthy"]
         assert result.health.uptime_seconds >= 0
-        assert result.health.version in ["unknown", "0.2.1", "0.3.0"]
+        assert result.health.version in ["unknown", "0.2.1", "0.3.0", "0.3.3"]
 
 
 class TestGetQuickStatus:

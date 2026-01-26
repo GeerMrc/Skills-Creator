@@ -1,6 +1,6 @@
 # Skill Creator MCP IDE 配置指南
 
-> 版本: 0.3.0
+> 版本: 0.3.3
 > 更新日期: 2026-01-26
 > 适用对象: Claude Desktop、Claude Code、Cursor、Continue.dev 等 MCP 客户端用户
 

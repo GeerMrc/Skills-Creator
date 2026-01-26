@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-01-26
+
 ### Added
 - `init_skill`, `package_skill`, `package_agent_skill` 工具支持 `SKILL_CREATOR_OUTPUT_DIR` 环境变量
 - `InitSkillInput`, `PackageSkillInput`, `PackageAgentSkillInput` 路径验证器：
@@ -25,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `init_skill`, `package_skill`, `package_agent_skill` 的 `output_dir` 参数改为可选，默认使用环境变量配置
 - `output_dir` 验证器使用 `model_validator(mode="after")` 确保默认值也被处理
 - 更新文档说明路径解析规则和推荐用法
+- 版本号统一为 0.3.3
+- README.md 完善安装配置说明
+- 添加 package_agent_skill 工具文档
+- 修复测试数据不一致 (563 → 589)
 
 ### Technical Details
 - 配置优先级：工具参数 > 环境变量 `SKILL_CREATOR_OUTPUT_DIR` > 默认值 "."

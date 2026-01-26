@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.abspath("../src"))
 project = "Skill Creator MCP Server"
 copyright = "2026, Skill Creator Team"
 author = "Skill Creator Team"
-version = "0.2.1"
-release = "0.2.1-alpha"
+version = "0.3.3"
+release = "0.3.3"
 
 # Extensions
 extensions = [

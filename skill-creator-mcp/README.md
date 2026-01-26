@@ -27,13 +27,13 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 > 🚧 **项目正在开发中**
 >
-> 当前版本：v0.3.2
+> 当前版本：v0.3.3
 >
 > 这是 Skill-Creator 项目的 MCP Server 组件，提供创建、验证、分析和重构 Agent-Skills 的工具。
 
 ## 特性
 
-### 核心开发工具（6个）
+### 核心开发工具（7个）
 
 - ✅ **collect_requirements** - AI 驱动的需求澄清工具（支持会话恢复）
 - ✅ **init_skill** - 初始化新的 Agent-Skill 项目（支持 4 种模板）
@@ -41,6 +41,7 @@ Agent-Skills 开发与质量保证 MCP Server。
 - ✅ **analyze_skill** - 分析代码质量和复杂度
 - ✅ **refactor_skill** - 重构建议生成（P0/P1/P2 优先级）
 - ✅ **package_skill** - 打包发布工具（zip/tar.gz/tar.bz2）
+- ✅ **package_agent_skill** - Agent-Skill 标准打包（推荐，支持版本号）
 
 ### 批量操作（2个）
 
@@ -270,10 +271,11 @@ vim .env
 | `SKILL_CREATOR_LOG_LEVEL` | INFO | 日志级别（DEBUG/INFO/WARNING/ERROR） |
 | `SKILL_CREATOR_LOG_FORMAT` | text | 日志格式（text/json） |
 | `SKILL_CREATOR_LOG_FILE` | - | 日志文件路径（可选） |
-| `SKILL_CREATOR_OUTPUT_DIR` | . | 默认输出目录 |
+| `SKILL_CREATOR_OUTPUT_DIR` | . | 默认输出目录（支持环境变量） |
 | `SKILL_CREATOR_MAX_RETRIES` | 3 | 最大重试次数 |
 | `SKILL_CREATOR_TIMEOUT_SECONDS` | 30 | 超时时间（秒） |
-| `SKILL_CREATOR_DEV_MODE` | false | 开发模式（启用详细调试） |
+
+**配置优先级**：工具参数 > 环境变量 `SKILL_CREATOR_OUTPUT_DIR` > 默认值 `.`
 
 ## 使用
 
