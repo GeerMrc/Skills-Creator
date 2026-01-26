@@ -55,6 +55,7 @@ claude mcp list
 |------|------|---------|
 | [安装指南](./installation.md) | 详细的安装和配置说明 | 新用户 |
 | [配置参数参考](./configuration.md) | 所有环境变量的完整参考 | 高级用户 |
+| [MCP 配置说明](./mcp-config-guide.md) | uv/venv/全局安装配置方案与最佳实践 | 所有用户 |
 | [IDE集成配置](./ide-config.md) | Claude Desktop/Cursor/Continue.dev 等配置 | IDE用户 |
 | [Claude Code 配置指南](./claude-code-config.md) | Claude Code CLI 完整配置 | Claude Code 用户 |
 | [SSE配置指南](./sse-guide.md) | SSE 模式远程部署指南 | 运维人员 |

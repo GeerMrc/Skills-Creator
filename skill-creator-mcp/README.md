@@ -133,6 +133,8 @@ pip install -e ".[dev]"
 
 ### Claude Code 配置
 
+**使用 uv（推荐，需要 uv >= 0.5.0）**：
+
 编辑 `~/.config/Claude/claude_desktop_config.json`：
 
 ```json
@@ -142,7 +144,7 @@ pip install -e ".[dev]"
       "command": "uv",
       "args": [
         "--directory",
-        "/path/to/skill-creator-mcp",
+        "/absolute/path/to/Skills-Creator/skill-creator-mcp",
         "run",
         "python",
         "-m",
@@ -152,6 +154,27 @@ pip install -e ".[dev]"
   }
 }
 ```
+
+**检查 uv 版本**：
+```bash
+uv --version  # 需要 >= 0.5.0
+```
+
+**使用 Python（替代方案）**：
+
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "python",
+      "args": ["-m", "skill_creator_mcp"],
+      "cwd": "/absolute/path/to/Skills-Creator/skill-creator-mcp"
+    }
+  }
+}
+```
+
+> 📘 **详细配置**：查看 [MCP 配置完整指南](docs/mcp-config-guide.md)
 
 ### 环境变量配置（可选）
 
