@@ -62,7 +62,9 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 
 ## MCP 组件
 
-**工具 (11)**: collect_requirements | init_skill | validate_skill | analyze_skill | refactor_skill | package_skill | batch_validate | batch_analyze | health_check | quick_status | is_healthy
+**工具 (16)**: collect_requirements | init_skill | validate_skill | analyze_skill | refactor_skill | package_skill | batch_validate | batch_analyze | health_check | quick_status | is_healthy | check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
+
+> 注：包含11个用户工具 + 5个Phase 0技术验证工具
 
 **资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
 
@@ -87,6 +89,6 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 
 ## 架构说明
 
-Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（11 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
+Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（16 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
 
 详见：[混合架构 ADR](../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md) | [需求收集示例](examples/requirement-collection-basic.md)
