@@ -147,7 +147,7 @@ async def init_skill(
     ctx: Context,
     name: str,
     template: str = "minimal",
-    output_dir: str = ".",
+    output_dir: str | None = None,
     with_scripts: bool = False,
     with_examples: bool = False,
 ) -> dict[str, Any]:
@@ -160,16 +160,22 @@ async def init_skill(
         ctx: MCP 上下文
         name: 技能名称（小写字母、数字、连字符，1-64字符）
         template: 模板类型（minimal/tool-based/workflow-based/analyzer-based）
-        output_dir: 输出目录路径
+        output_dir: 输出目录路径（可选，优先级：参数 > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值）
         with_scripts: 是否包含示例脚本
         with_examples: 是否包含使用示例
 
     Returns:
         包含创建结果的字典（Pydantic 模型的 JSON 序列化）
     """
+    from .config import get_config
     from .models.skill_config import InitResult, InitSkillInput
 
     try:
+        # 优先级：工具参数 > 环境变量 > 默认值
+        config = get_config()
+        if output_dir is None:
+            output_dir = str(config.output_dir)
+
         # 使用 Pydantic model_validate 方法进行输入验证
         # 这种方法可以处理类型转换和验证，避免静态类型检查错误
         input_data = InitSkillInput.model_validate(
@@ -612,7 +618,7 @@ async def refactor_skill(
 async def package_skill(
     ctx: Context,
     skill_path: str,
-    output_dir: str = ".",
+    output_dir: str | None = None,
     format: str = "zip",
     include_tests: bool = True,
     validate_before_package: bool = True,
@@ -625,7 +631,7 @@ async def package_skill(
     Args:
         ctx: MCP 上下文
         skill_path: 技能目录路径
-        output_dir: 输出目录路径
+        output_dir: 输出目录路径（可选，优先级：参数 > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值）
         format: 打包格式（zip/tar.gz/tar.bz2）
         include_tests: 是否包含测试文件
         validate_before_package: 打包前是否验证
@@ -635,9 +641,15 @@ async def package_skill(
     """
     from pydantic import ValidationError
 
+    from .config import get_config
     from .models.skill_config import PackageSkillInput
 
     try:
+        # 优先级：工具参数 > 环境变量 > 默认值
+        config = get_config()
+        if output_dir is None:
+            output_dir = str(config.output_dir)
+
         # 使用 Pydantic 验证输入参数
         # 注意：format 是 Python 保留字，在模型中映射到 format 字段
         input_data = PackageSkillInput.model_validate(
@@ -701,7 +713,7 @@ async def package_skill(
 async def package_agent_skill(
     ctx: Context,
     skill_path: str,
-    output_dir: str = ".",
+    output_dir: str | None = None,
     version: str | None = None,
     format: str = "zip",
     include_tests: bool = False,
@@ -720,7 +732,7 @@ async def package_agent_skill(
     Args:
         ctx: MCP 上下文
         skill_path: Agent-Skill 目录路径
-        output_dir: 输出目录路径
+        output_dir: 输出目录路径（可选，优先级：参数 > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值）
         version: 版本号（可选，格式如 "0.3.1"）
         format: 打包格式（zip/tar.gz/tar.bz2）
         include_tests: 是否包含测试文件（默认 False）
@@ -741,15 +753,35 @@ async def package_agent_skill(
     """
     from pydantic import ValidationError
 
+    from .config import get_config
+    from .models.skill_config import PackageAgentSkillInput
+
     try:
+        # 优先级：工具参数 > 环境变量 > 默认值
+        config = get_config()
+        if output_dir is None:
+            output_dir = str(config.output_dir)
+
+        # 使用 Pydantic 验证输入参数
+        input_data = PackageAgentSkillInput.model_validate(
+            {
+                "skill_path": skill_path,
+                "output_dir": output_dir,
+                "version": version,
+                "format": format,
+                "include_tests": include_tests,
+                "validate_before_package": validate_before_package,
+            }
+        )
+
         # 调用打包函数
         result = package_agent_skill_impl(
-            skill_path=skill_path,
-            output_dir=output_dir,
-            version=version,
-            package_format=format,
-            include_tests=include_tests,
-            validate_before_package=validate_before_package,
+            skill_path=input_data.skill_path,
+            output_dir=input_data.output_dir,
+            version=input_data.version,
+            package_format=input_data.format,
+            include_tests=input_data.include_tests,
+            validate_before_package=input_data.validate_before_package,
         )
 
         # 转换为字典格式返回

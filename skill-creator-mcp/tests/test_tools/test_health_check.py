@@ -613,7 +613,7 @@ class TestServerPackageToolExceptionHandling:
     """测试server.py中打包工具的异常处理 (覆盖 lines 742-776)."""
 
     @pytest.mark.asyncio
-    async def test_package_agent_skill_internal_error_handling(self):
+    async def test_package_agent_skill_internal_error_handling(self, temp_dir):
         """测试package_agent_skill的内部异常处理."""
         from unittest.mock import patch
         from skill_creator_mcp.server import package_agent_skill
@@ -629,7 +629,7 @@ class TestServerPackageToolExceptionHandling:
             result = await package_agent_skill(
                 MockContext(),
                 skill_path="/path/to/skill",
-                output_dir="/output",
+                output_dir=str(temp_dir),  # 使用临时目录以通过路径验证
                 version="0.3.1",
                 format="zip",
             )

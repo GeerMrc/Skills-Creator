@@ -48,6 +48,19 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 > 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md)
 
+### 环境配置（推荐）
+
+设置 `SKILL_CREATOR_OUTPUT_DIR` 环境变量，统一管理技能输出位置：
+
+```bash
+# 添加到 ~/.bashrc 或 ~/.zshrc
+export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
+```
+
+这样所有通过 `init_skill`、`package_skill`、`package_agent_skill` 创建的技能都会输出到指定目录。
+
+> 详见：[MCP 集成指南 - 路径解析规则](references/mcp-integration.md#路径解析规则)
+
 ## 工作流程
 
 ```

@@ -1,6 +1,8 @@
 """测试 init_skill 工具."""
 
+import os
 import pytest
+from pathlib import Path
 
 from skill_creator_mcp.utils.file_ops import (
     create_directory_structure,
@@ -179,3 +181,114 @@ mcp_servers: []
 
 [简要描述这个技能的功能和用途]
 """
+
+
+# ==================== 路径验证测试 ====================
+
+
+def test_output_dir_validation_with_nonexistent_path(temp_dir):
+    """测试不存在的路径自动创建."""
+    from skill_creator_mcp.models.skill_config import InitSkillInput
+
+    nonexistent = temp_dir / "new" / "nested" / "dir"
+    result = InitSkillInput.model_validate({
+        "name": "test-skill",
+        "output_dir": str(nonexistent),
+    })
+
+    assert result.output_dir == str(nonexistent.resolve())
+    assert nonexistent.exists()
+    assert nonexistent.is_dir()
+
+
+def test_output_dir_validation_with_file_instead_of_dir(temp_dir):
+    """测试路径是文件而非目录时报错."""
+    from skill_creator_mcp.models.skill_config import InitSkillInput
+
+    file_path = temp_dir / "not-a-dir"
+    file_path.write_text("content")
+
+    with pytest.raises(ValueError, match="不是目录"):
+        InitSkillInput.model_validate({
+            "name": "test-skill",
+            "output_dir": str(file_path),
+        })
+
+
+def test_output_dir_expands_tilde():
+    """测试 ~ 展开为用户主目录."""
+    from skill_creator_mcp.models.skill_config import InitSkillInput
+
+    input_data = InitSkillInput.model_validate({
+        "name": "test-skill",
+        "output_dir": "~/test-skill-output",
+    })
+
+    home = Path.home()
+    expected = str(home / "test-skill-output")
+    assert input_data.output_dir == expected
+
+
+def test_output_dir_validates_read_only_directory(temp_dir):
+    """测试只读目录报错."""
+    from skill_creator_mcp.models.skill_config import InitSkillInput
+    import stat
+
+    readonly_dir = temp_dir / "readonly"
+    readonly_dir.mkdir()
+
+    try:
+        # 设置只读权限
+        readonly_dir.chmod(stat.S_IRUSR | stat.S_IXUSR)
+
+        with pytest.raises(ValueError, match="不可写"):
+            InitSkillInput.model_validate({
+                "name": "test-skill",
+                "output_dir": str(readonly_dir),
+            })
+    finally:
+        # 恢复权限以便清理
+        readonly_dir.chmod(stat.S_IRWXU)
+
+
+def test_output_dir_converts_relative_to_absolute(temp_dir):
+    """测试相对路径转换为绝对路径."""
+    from skill_creator_mcp.models.skill_config import InitSkillInput
+
+    # 在临时目录中创建相对路径
+    os.chdir(temp_dir)
+
+    input_data = InitSkillInput.model_validate({
+        "name": "test-skill",
+        "output_dir": "./relative/path",
+    })
+
+    # 应该是绝对路径
+    assert Path(input_data.output_dir).is_absolute()
+    # 应该包含 temp_dir
+    assert str(temp_dir) in input_data.output_dir
+
+
+@pytest.mark.asyncio
+async def test_init_skill_respects_env_var(monkeypatch, temp_dir):
+    """测试工具读取环境变量."""
+    from skill_creator_mcp.models.skill_config import InitSkillInput
+    from skill_creator_mcp.config import reload_config
+
+    env_dir = temp_dir / "env-output"
+    monkeypatch.setenv("SKILL_CREATOR_OUTPUT_DIR", str(env_dir))
+
+    # 重新加载配置以获取新的环境变量
+    reload_config()
+    from skill_creator_mcp.config import get_config
+
+    config = get_config()
+    assert str(env_dir) in str(config.output_dir) or env_dir == config.output_dir
+
+    # 验证 InitSkillInput 可以使用环境变量值
+    input_data = InitSkillInput.model_validate({
+        "name": "test-skill",
+        "output_dir": str(config.output_dir),
+    })
+
+    assert "env-output" in input_data.output_dir

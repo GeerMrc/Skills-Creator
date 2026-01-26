@@ -2,11 +2,15 @@
 
 通过环境变量提供可配置的设置，支持运行时行为调整。
 
-环境变量:
+环境变量：
     SKILL_CREATOR_LOG_LEVEL: 日志级别 (DEBUG/INFO/WARNING/ERROR/CRITICAL)，默认 INFO
     SKILL_CREATOR_LOG_FORMAT: 日志格式 (default/simple/detailed)，默认 default
     SKILL_CREATOR_LOG_FILE: 日志文件路径（可选），默认输出到 stderr
-    SKILL_CREATOR_OUTPUT_DIR: 默认输出目录，默认为当前目录
+    SKILL_CREATOR_OUTPUT_DIR: 默认输出目录
+        - 由 init_skill, package_skill, package_agent_skill 使用
+        - 优先级：工具参数 > 环境变量 > 默认值 "."
+        - 默认值：当前目录（MCP Server 启动目录）
+        - 推荐：设置为绝对路径如 ~/my-skills
     SKILL_CREATOR_MAX_RETRIES: 最大重试次数，默认 3
     SKILL_CREATOR_TIMEOUT_SECONDS: 操作超时时间（秒），默认 30
 """

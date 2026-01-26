@@ -1,6 +1,7 @@
 """测试数据模型."""
 
 import pytest
+from pathlib import Path
 from pydantic import ValidationError
 
 from skill_creator_mcp.models.skill_config import (
@@ -13,7 +14,7 @@ from skill_creator_mcp.models.skill_config import (
 
 def test_init_skill_input_valid():
     """测试有效的 InitSkillInput."""
-    # 最小有效输入
+    # 最小有效输入 - output_dir 会被验证器转换为绝对路径
     input_data = {
         "name": "test-skill",
         "template": "minimal",
@@ -24,7 +25,8 @@ def test_init_skill_input_valid():
     model = InitSkillInput(**input_data)
     assert model.name == "test-skill"
     assert model.template == "minimal"
-    assert model.output_dir == "."
+    # 验证器会将相对路径转换为绝对路径
+    assert Path(model.output_dir).is_absolute()
     assert model.with_scripts is False
     assert model.with_examples is False
 
@@ -33,7 +35,8 @@ def test_init_skill_input_defaults():
     """测试 InitSkillInput 默认值."""
     model = InitSkillInput(name="test")
     assert model.template == "minimal"
-    assert model.output_dir == "."
+    # 验证器会将默认值 "." 转换为绝对路径
+    assert Path(model.output_dir).is_absolute()
     assert model.with_scripts is False
     assert model.with_examples is False
 

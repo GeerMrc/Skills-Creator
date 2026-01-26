@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `init_skill`, `package_skill`, `package_agent_skill` 工具支持 `SKILL_CREATOR_OUTPUT_DIR` 环境变量
+- `InitSkillInput`, `PackageSkillInput`, `PackageAgentSkillInput` 路径验证器：
+  - 自动创建不存在的目录
+  - 检查路径可写性
+  - 支持 `~` 展开为用户主目录
+  - 相对路径自动转换为绝对路径
+- `PackageAgentSkillInput` 数据模型，用于 `package_agent_skill` 工具的输入验证
+
+### Fixed
+- 环境变量 `SKILL_CREATOR_OUTPUT_DIR` 现在在 `init_skill`, `package_skill`, `package_agent_skill` 工具中生效
+- 路径解析相对于 MCP Server 启动目录的问题，添加环境变量支持作为解决方案
+- `output_dir` 参数默认值现在通过模型验证器处理，确保路径一致性
+
+### Changed
+- `init_skill`, `package_skill`, `package_agent_skill` 的 `output_dir` 参数改为可选，默认使用环境变量配置
+- `output_dir` 验证器使用 `model_validator(mode="after")` 确保默认值也被处理
+- 更新文档说明路径解析规则和推荐用法
+
+### Technical Details
+- 配置优先级：工具参数 > 环境变量 `SKILL_CREATOR_OUTPUT_DIR` > 默认值 "."
+- 路径验证在模型级别执行，使用 `@model_validator(mode="after")` 装饰器
+- 所有路径验证器包含相同的验证逻辑：展开、创建、验证目录、验证可写性
+
 ## [0.3.2] - 2026-01-26
 
 ### Fixed

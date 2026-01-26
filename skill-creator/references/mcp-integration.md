@@ -40,12 +40,46 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 
 可通过环境变量自定义行为：
 
-| 环境变量 | 说明 | 默认值 |
-|---------|------|--------|
-| `SKILL_CREATOR_LOG_LEVEL` | 日志级别 | INFO |
-| `SKILL_CREATOR_LOG_FORMAT` | 日志格式 | default |
-| `SKILL_CREATOR_LOG_FILE` | 日志文件路径 | 无（输出到 stderr） |
-| `SKILL_CREATOR_OUTPUT_DIR` | 默认输出目录 | 当前目录 |
+| 环境变量 | 说明 | 默认值 | 工具支持 |
+|---------|------|--------|----------|
+| `SKILL_CREATOR_LOG_LEVEL` | 日志级别 | INFO | - |
+| `SKILL_CREATOR_LOG_FORMAT` | 日志格式 | default | - |
+| `SKILL_CREATOR_LOG_FILE` | 日志文件路径 | 无（输出到 stderr） | - |
+| `SKILL_CREATOR_OUTPUT_DIR` | 默认输出目录 | 当前目录 | `init_skill`, `package_skill`, `package_agent_skill` |
+
+### 路径解析规则
+
+**重要说明**: `output_dir` 参数是相对于 **MCP Server 启动目录** 的路径，而非用户当前目录。
+
+**配置优先级**:
+```
+工具参数 output_dir="xxx" > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值 "."
+```
+
+**推荐做法**:
+
+1. **设置环境变量统一管理输出目录** (推荐):
+   ```bash
+   # 添加到 ~/.bashrc 或 ~/.zshrc
+   export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
+   ```
+
+2. **使用绝对路径避免歧义**:
+   ```python
+   init_skill(name="test", output_dir="/home/user/project")
+   ```
+
+3. **使用 `~` 简化路径**:
+   ```python
+   init_skill(name="test", output_dir="~/my-skills")
+   ```
+
+**路径验证**:
+- 路径不存在时自动创建
+- 验证路径是否为目录（文件路径会报错）
+- 验证路径是否可写
+- 支持 `~` 展开为用户主目录
+- 相对路径自动转换为绝对路径
 
 ### 验证连接
 
