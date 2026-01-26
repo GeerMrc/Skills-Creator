@@ -3,7 +3,7 @@
 import os
 import re
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -25,8 +25,8 @@ class InitSkillInput(BaseModel):
         description="技能模板类型",
     )
     output_dir: str = Field(
-        default=".",
-        description="输出目录路径",
+        default="",
+        description="输出目录路径（默认使用 SKILL_CREATOR_OUTPUT_DIR 环境变量）",
     )
     with_scripts: bool = Field(
         default=False,
@@ -36,6 +36,28 @@ class InitSkillInput(BaseModel):
         default=False,
         description="是否包含使用示例",
     )
+
+    @field_validator("output_dir", mode="before")
+    @classmethod
+    def apply_default_output_dir(cls, v: Any) -> str:
+        """应用默认输出目录.
+
+        如果 v 为 None 或未提供，从配置获取默认值。
+        """
+        # Pydantic 可能传递 PydanticUndefined 或其他特殊值
+        if v is None or v == "" or not isinstance(v, (str, Path)):
+            from ..utils.path_helpers import get_output_dir
+            return str(get_output_dir(fallback=True))
+        # 确保 v 是字符串
+        return str(v) if isinstance(v, (str, Path)) else str(get_output_dir(fallback=True))
+
+    @model_validator(mode="after")
+    def apply_default_output_dir_after(self) -> "InitSkillInput":
+        """在所有字段验证后，确保 output_dir 有值."""
+        if self.output_dir is None or self.output_dir == "":
+            from ..utils.path_helpers import get_output_dir
+            self.output_dir = str(get_output_dir(fallback=True))
+        return self
 
     @field_validator("name")
     @classmethod
@@ -67,6 +89,11 @@ class InitSkillInput(BaseModel):
     @model_validator(mode="after")
     def validate_output_dir_model(self) -> "InitSkillInput":
         """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
+        # 如果 output_dir 为 None，说明字段验证器尚未处理，跳过验证
+        # （会在后续验证中通过 apply_default_output_dir 处理）
+        if self.output_dir is None:
+            return self
+
         # 处理 output_dir
         original = self.output_dir
         path = Path(original).expanduser().resolve()
@@ -462,8 +489,8 @@ class PackageSkillInput(BaseModel):
         description="技能目录路径",
     )
     output_dir: str = Field(
-        default=".",
-        description="输出目录路径",
+        default="",
+        description="输出目录路径（默认使用 SKILL_CREATOR_OUTPUT_DIR 环境变量）",
     )
     format: Literal["zip", "tar.gz", "tar.bz2"] = Field(
         default="zip",
@@ -478,9 +505,35 @@ class PackageSkillInput(BaseModel):
         description="打包前是否验证",
     )
 
+    @field_validator("output_dir", mode="before")
+    @classmethod
+    def apply_default_output_dir(cls, v: Any) -> str:
+        """应用默认输出目录.
+
+        如果 v 为 None 或未提供，从配置获取默认值。
+        """
+        # Pydantic 可能传递 PydanticUndefined 或其他特殊值
+        if v is None or v == "" or not isinstance(v, (str, Path)):
+            from ..utils.path_helpers import get_output_dir
+            return str(get_output_dir(fallback=True))
+        # 确保 v 是字符串
+        return str(v) if isinstance(v, (str, Path)) else str(get_output_dir(fallback=True))
+
+    @model_validator(mode="after")
+    def apply_default_output_dir_after(self) -> "PackageSkillInput":
+        """在所有字段验证后，确保 output_dir 有值."""
+        if self.output_dir is None or self.output_dir == "":
+            from ..utils.path_helpers import get_output_dir
+            self.output_dir = str(get_output_dir(fallback=True))
+        return self
+
     @model_validator(mode="after")
     def validate_output_dir_model(self) -> "PackageSkillInput":
         """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
+        # 如果 output_dir 为 None，说明字段验证器尚未处理，跳过验证
+        if self.output_dir is None:
+            return self
+
         # 处理 output_dir
         original = self.output_dir
         path = Path(original).expanduser().resolve()
@@ -561,8 +614,8 @@ class PackageAgentSkillInput(BaseModel):
         description="Agent-Skill 目录路径",
     )
     output_dir: str = Field(
-        default=".",
-        description="输出目录路径",
+        default="",
+        description="输出目录路径（默认使用 SKILL_CREATOR_OUTPUT_DIR 环境变量）",
     )
     version: str | None = Field(
         default=None,
@@ -581,9 +634,35 @@ class PackageAgentSkillInput(BaseModel):
         description="打包前是否验证",
     )
 
+    @field_validator("output_dir", mode="before")
+    @classmethod
+    def apply_default_output_dir(cls, v: Any) -> str:
+        """应用默认输出目录.
+
+        如果 v 为 None 或未提供，从配置获取默认值。
+        """
+        # Pydantic 可能传递 PydanticUndefined 或其他特殊值
+        if v is None or v == "" or not isinstance(v, (str, Path)):
+            from ..utils.path_helpers import get_output_dir
+            return str(get_output_dir(fallback=True))
+        # 确保 v 是字符串
+        return str(v) if isinstance(v, (str, Path)) else str(get_output_dir(fallback=True))
+
+    @model_validator(mode="after")
+    def apply_default_output_dir_after(self) -> "PackageAgentSkillInput":
+        """在所有字段验证后，确保 output_dir 有值."""
+        if self.output_dir is None or self.output_dir == "":
+            from ..utils.path_helpers import get_output_dir
+            self.output_dir = str(get_output_dir(fallback=True))
+        return self
+
     @model_validator(mode="after")
     def validate_output_dir_model(self) -> "PackageAgentSkillInput":
         """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
+        # 如果 output_dir 为 None，说明字段验证器尚未处理，跳过验证
+        if self.output_dir is None:
+            return self
+
         # 处理 output_dir
         original = self.output_dir
         path = Path(original).expanduser().resolve()

@@ -33,15 +33,17 @@ class MemoryCache:
     使用 LRU (Least Recently Used) 策略管理缓存。
     """
 
-    def __init__(self, max_size: int = 128, default_ttl: int = 3600):
+    def __init__(self, max_size: int | None = None, default_ttl: int | None = None):
         """初始化内存缓存.
 
         Args:
-            max_size: 最大缓存条目数
-            default_ttl: 默认过期时间（秒）
+            max_size: 最大缓存条目数（None 时从配置获取）
+            default_ttl: 默认过期时间（秒）（None 时从配置获取）
         """
-        self.max_size = max_size
-        self.default_ttl = default_ttl
+        from ..config import get_config
+        config = get_config()
+        self.max_size = max_size if max_size is not None else config.cache_size
+        self.default_ttl = default_ttl if default_ttl is not None else config.cache_ttl
         self._cache: dict[str, CacheEntry] = {}
         self._access_order: list[str] = []
 

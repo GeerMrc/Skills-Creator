@@ -66,7 +66,7 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 
 2. **使用绝对路径避免歧义**:
    ```python
-   init_skill(name="test", output_dir="/home/user/project")
+   init_skill(name="test", output_dir="~/project")
    ```
 
 3. **使用 `~` 简化路径**:

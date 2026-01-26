@@ -1,6 +1,5 @@
 """打包工具函数."""
 
-import os
 import tarfile
 import zipfile
 from pathlib import Path
@@ -201,7 +200,10 @@ def _should_exclude(
     Returns:
         是否应该排除
     """
+    from .path_helpers import split_path_parts
+
     path_str = str(relative_path)
+    path_parts = split_path_parts(relative_path)
 
     # 检查排除模式
     for pattern in exclude_patterns:
@@ -215,23 +217,20 @@ def _should_exclude(
             if relative_path.name.endswith(suffix):
                 return True
             # 检查路径中任何部分是否以后缀结尾
-            parts = path_str.split("/") if "/" in path_str else path_str.split(os.sep)
-            if any(part.endswith(suffix) for part in parts):
+            if any(part.endswith(suffix) for part in path_parts):
                 return True
         else:
             # 精确匹配或目录匹配
-            # 检查路径中是否包含该模式（支持 / 和 os.sep）
-            if pattern in path_str or pattern in path_str.replace("/", os.sep):
+            # 检查路径中是否包含该模式
+            if pattern in path_str:
                 return True
             # 也检查各部分是否精确匹配
-            parts = path_str.split("/") if "/" in path_str else path_str.split(os.sep)
-            if pattern in parts:
+            if pattern in path_parts:
                 return True
 
     # 检查是否排除测试文件
     if not include_tests:
-        parts = path_str.split("/") if "/" in path_str else path_str.split(os.sep)
-        if "tests" in parts or "test" in parts:
+        if "tests" in path_parts or "test" in path_parts:
             return True
         if relative_path.name.startswith("test_"):
             return True
@@ -387,6 +386,8 @@ def _collect_agent_skill_files(
     files_to_include = []
 
     # Agent-Skill 专用的排除模式（更严格）
+    from ..config import get_config
+    plan_archive_dir = str(get_config().plan_archive_dir)
     exclude_patterns = [
         # 版本控制
         ".git",
@@ -398,7 +399,8 @@ def _collect_agent_skill_files(
         "*.swp",
         "*.swo",
         # 计划和归档（关键！）
-        ".claude/plans/archive",
+        # 从配置获取计划归档目录
+        plan_archive_dir,  # 如 ".claude/plans/archive"
         ".claude/archive",
         # 项目级文档（不属于单个 Agent-Skill）
         "README.md",
@@ -455,7 +457,7 @@ def _collect_agent_skill_files(
 
 def package_agent_skill(
     skill_path: str,
-    output_dir: str = ".",
+    output_dir: str | None = None,
     version: str | None = None,
     package_format: str = "zip",
     include_tests: bool = False,
@@ -490,10 +492,17 @@ def package_agent_skill(
         ... )
         >>> # 生成: skill-creator-v0.3.1.zip
     """
+    from ..config import get_config
     from ..models.skill_config import PackageResult
+    from .path_helpers import normalize_path
 
-    skill_dir = Path(skill_path).resolve()
-    out_dir = Path(output_dir).resolve()
+    # 优先级：参数 > 环境变量 > 默认值
+    if output_dir is None:
+        output_dir = str(get_config().output_dir)
+
+    # 规范化路径
+    skill_dir = normalize_path(skill_path)
+    out_dir = normalize_path(output_dir)
 
     # 检查技能目录是否存在
     if not skill_dir.exists():

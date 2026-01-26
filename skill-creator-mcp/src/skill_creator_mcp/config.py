@@ -6,11 +6,22 @@
     SKILL_CREATOR_LOG_LEVEL: 日志级别 (DEBUG/INFO/WARNING/ERROR/CRITICAL)，默认 INFO
     SKILL_CREATOR_LOG_FORMAT: 日志格式 (default/simple/detailed)，默认 default
     SKILL_CREATOR_LOG_FILE: 日志文件路径（可选），默认输出到 stderr
-    SKILL_CREATOR_OUTPUT_DIR: 默认输出目录
+    SKILL_CREATOR_OUTPUT_DIR: 输出目录
         - 由 init_skill, package_skill, package_agent_skill 使用
-        - 优先级：工具参数 > 环境变量 > 默认值 "."
-        - 默认值：当前目录（MCP Server 启动目录）
+        - 优先级：工具参数 > 环境变量 > 默认值
+        - 默认值：SKILL_CREATOR_DEFAULT_OUTPUT_DIR 或 ~/agent-skills
         - 推荐：设置为绝对路径如 ~/my-skills
+    SKILL_CREATOR_DEFAULT_OUTPUT_DIR: 默认输出目录（当 OUTPUT_DIR 未设置时）
+        - 默认值：~/agent-skills
+        - 优先级：环境变量 > ~/agent-skills
+    SKILL_CREATOR_CACHE_SIZE: 缓存最大条目数
+        - 默认值：128
+        - 推荐值：根据内存调整（64-512）
+    SKILL_CREATOR_CACHE_TTL: 缓存过期时间（秒）
+        - 默认值：3600（1小时）
+        - 推荐值：根据数据更新频率调整
+    SKILL_CREATOR_PLAN_ARCHIVE_DIR: 计划归档目录
+        - 默认值：.claude/plans/archive
     SKILL_CREATOR_MAX_RETRIES: 最大重试次数，默认 3
     SKILL_CREATOR_TIMEOUT_SECONDS: 操作超时时间（秒），默认 30
 """
@@ -40,11 +51,29 @@ class Config:
         self._log_file: str | None = os.getenv("SKILL_CREATOR_LOG_FILE")
 
         # 工作目录配置
-        self._output_dir: Path = Path(os.getenv("SKILL_CREATOR_OUTPUT_DIR", "."))
+        # 新逻辑：优先使用 SKILL_CREATOR_OUTPUT_DIR，否则使用 SKILL_CREATOR_DEFAULT_OUTPUT_DIR 或 ~/agent-skills
+        default_output = os.getenv(
+            "SKILL_CREATOR_DEFAULT_OUTPUT_DIR",
+            "~/agent-skills"
+        )
+        output_dir_value = os.getenv("SKILL_CREATOR_OUTPUT_DIR", default_output)
+        self._output_dir: Path = Path(output_dir_value).expanduser().resolve()
+
+        # 新增：默认输出目录
+        self._default_output_dir: Path = Path(default_output).expanduser().resolve()
 
         # 操作配置
         self._max_retries: int = int(os.getenv("SKILL_CREATOR_MAX_RETRIES", "3"))
         self._timeout_seconds: int = int(os.getenv("SKILL_CREATOR_TIMEOUT_SECONDS", "30"))
+
+        # 新增：缓存配置
+        self._cache_size: int = int(os.getenv("SKILL_CREATOR_CACHE_SIZE", "128"))
+        self._cache_ttl: int = int(os.getenv("SKILL_CREATOR_CACHE_TTL", "3600"))
+
+        # 新增：计划归档目录
+        plan_archive_value = os.getenv("SKILL_CREATOR_PLAN_ARCHIVE_DIR", ".claude/plans/archive")
+        # 不立即解析路径，因为目录可能不存在
+        self._plan_archive_dir: Path = Path(plan_archive_value)
 
     @property
     def log_level(self) -> LogLevel:
@@ -75,6 +104,26 @@ class Config:
     def timeout_seconds(self) -> int:
         """获取操作超时时间（秒）."""
         return self._timeout_seconds
+
+    @property
+    def default_output_dir(self) -> Path:
+        """获取默认输出目录."""
+        return self._default_output_dir
+
+    @property
+    def cache_size(self) -> int:
+        """获取缓存大小."""
+        return self._cache_size
+
+    @property
+    def cache_ttl(self) -> int:
+        """获取缓存过期时间（秒）."""
+        return self._cache_ttl
+
+    @property
+    def plan_archive_dir(self) -> Path:
+        """获取计划归档目录."""
+        return self._plan_archive_dir
 
     def validate(self) -> list[str]:
         """验证配置的有效性.

@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **P0**: 修复 Pydantic 模型中硬编码的 `output_dir` 默认值
+- **P0**: 修复内部函数 `package_agent_skill()` 硬编码默认值
+- **P0**: 修复路径分隔符硬编码（`packagers.py`）
+- **P0**: 修复计划归档目录硬编码
+- **P1**: 修复测试中硬编码的临时路径
+- **P1**: 修复缓存配置硬编码
+- **P1**: 修复日志路径示例硬编码
+- **P0**: 更新文档中的硬编码路径示例
+
+### Added
+
+- 新增 `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` 环境变量
+- 新增 `SKILL_CREATOR_CACHE_SIZE` 环境变量
+- 新增 `SKILL_CREATOR_CACHE_TTL` 环境变量
+- 新增 `SKILL_CREATOR_PLAN_ARCHIVE_DIR` 环境变量
+- 新增路径处理辅助模块 `path_helpers.py`
+- 新增配置集成测试
+
+### Changed
+
+- **BREAKING**: Pydantic 模型 `output_dir` 参数改为可选，默认使用环境变量配置
+- **BREAKING**: 默认输出目录从 `.` 改为 `~/agent-skills`
+- **BREAKING**: 当未设置 `SKILL_CREATOR_OUTPUT_DIR` 时，使用 `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` 或 `~/agent-skills`
+- 改进配置类，支持更多可配置项
+- 统一配置机制，所有代码路径都通过配置类获取默认值
+
+### Migration Notes
+
+如果您的代码直接使用 Pydantic 模型或内部函数，需要更新：
+
+```python
+# 旧代码
+input_data = InitSkillInput.model_validate({
+    "name": "my-skill",
+    "output_dir": ".",  # 必须显式提供
+})
+
+# 新代码
+input_data = InitSkillInput.model_validate({
+    "name": "my-skill",
+    # output_dir 可以省略，自动使用环境变量
+})
+```
+
+或者设置环境变量：
+
+```bash
+export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
+export SKILL_CREATOR_DEFAULT_OUTPUT_DIR=~/agent-skills
+```
+
 ## [0.3.3] - 2026-01-26
 
 ### Added

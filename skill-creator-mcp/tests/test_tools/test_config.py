@@ -1,6 +1,7 @@
 """测试配置模块."""
 
 import os
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -38,28 +39,44 @@ def test_config_default_values():
     assert config.log_level == "INFO"
     assert config.log_format == "default"
     assert config.log_file is None
-    assert config.output_dir == Path(".")
+    # 默认输出目录现在是 ~/agent-skills
+    assert "agent-skills" in str(config.output_dir) or config.output_dir == Path("~/agent-skills").expanduser()
     assert config.max_retries == 3
     assert config.timeout_seconds == 30
+    # 新增的默认值
+    assert config.cache_size == 128
+    assert config.cache_ttl == 3600
+    assert "plans" in str(config.plan_archive_dir) or "archive" in str(config.plan_archive_dir)
 
 
 def test_config_from_env():
     """测试从环境变量读取配置."""
-    os.environ["SKILL_CREATOR_LOG_LEVEL"] = "DEBUG"
-    os.environ["SKILL_CREATOR_LOG_FORMAT"] = "simple"
-    os.environ["SKILL_CREATOR_LOG_FILE"] = "/tmp/test.log"
-    os.environ["SKILL_CREATOR_OUTPUT_DIR"] = "/tmp/output"
-    os.environ["SKILL_CREATOR_MAX_RETRIES"] = "5"
-    os.environ["SKILL_CREATOR_TIMEOUT_SECONDS"] = "60"
+    # 使用临时文件替代硬编码的 /tmp/test.log
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".log") as temp_log:
+        temp_log_path = temp_log.name
 
-    config = Config()
+    try:
+        os.environ["SKILL_CREATOR_LOG_LEVEL"] = "DEBUG"
+        os.environ["SKILL_CREATOR_LOG_FORMAT"] = "simple"
+        os.environ["SKILL_CREATOR_LOG_FILE"] = temp_log_path
+        os.environ["SKILL_CREATOR_OUTPUT_DIR"] = "/tmp/output"
+        os.environ["SKILL_CREATOR_MAX_RETRIES"] = "5"
+        os.environ["SKILL_CREATOR_TIMEOUT_SECONDS"] = "60"
 
-    assert config.log_level == "DEBUG"
-    assert config.log_format == "simple"
-    assert config.log_file == "/tmp/test.log"
-    assert config.output_dir == Path("/tmp/output")
-    assert config.max_retries == 5
-    assert config.timeout_seconds == 60
+        config = Config()
+
+        assert config.log_level == "DEBUG"
+        assert config.log_format == "simple"
+        assert config.log_file == temp_log_path
+        assert config.output_dir == Path("/tmp/output")
+        assert config.max_retries == 5
+        assert config.timeout_seconds == 60
+    finally:
+        # 清理临时文件
+        try:
+            os.unlink(temp_log_path)
+        except OSError:
+            pass
 
 
 def test_config_invalid_log_level():
