@@ -489,8 +489,8 @@ class TestServerHealthCheckToolsExceptionHandling:
     async def test_health_check_tool_exception_handling(self):
         """测试health_check_tool的异常处理."""
         from unittest.mock import patch
+
         from skill_creator_mcp.server import health_check_tool
-        from skill_creator_mcp.tools.health_check import health_check
 
         # 创建mock context
         class MockContext:
@@ -511,8 +511,8 @@ class TestServerHealthCheckToolsExceptionHandling:
     async def test_quick_status_tool_exception_handling(self):
         """测试quick_status_tool的异常处理."""
         from unittest.mock import patch
+
         from skill_creator_mcp.server import quick_status_tool
-        from skill_creator_mcp.tools.health_check import get_quick_status
 
         class MockContext:
             pass
@@ -532,8 +532,8 @@ class TestServerHealthCheckToolsExceptionHandling:
     async def test_is_healthy_tool_exception_handling(self):
         """测试is_healthy_tool的异常处理."""
         from unittest.mock import patch
+
         from skill_creator_mcp.server import is_healthy_tool
-        from skill_creator_mcp.tools.health_check import is_healthy
 
         class MockContext:
             pass
@@ -556,9 +556,9 @@ class TestServerBatchToolsExceptionHandling:
     @pytest.mark.asyncio
     async def test_batch_validate_skills_tool_exception_handling(self):
         """测试batch_validate_skills_tool的异常处理."""
-        from unittest.mock import patch, AsyncMock
+        from unittest.mock import patch
+
         from skill_creator_mcp.server import batch_validate_skills_tool
-        from skill_creator_mcp.tools.batch_operations import batch_validate_skills
 
         class MockContext:
             pass
@@ -584,8 +584,8 @@ class TestServerBatchToolsExceptionHandling:
     async def test_batch_analyze_skills_tool_exception_handling(self):
         """测试batch_analyze_skills_tool的异常处理."""
         from unittest.mock import patch
+
         from skill_creator_mcp.server import batch_analyze_skills_tool
-        from skill_creator_mcp.tools.batch_operations import batch_analyze_skills
 
         class MockContext:
             pass
@@ -616,6 +616,7 @@ class TestServerPackageToolExceptionHandling:
     async def test_package_agent_skill_internal_error_handling(self, temp_dir):
         """测试package_agent_skill的内部异常处理."""
         from unittest.mock import patch
+
         from skill_creator_mcp.server import package_agent_skill
 
         class MockContext:

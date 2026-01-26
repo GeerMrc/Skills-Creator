@@ -1,8 +1,9 @@
 """测试 init_skill 工具."""
 
 import os
-import pytest
 from pathlib import Path
+
+import pytest
 
 from skill_creator_mcp.utils.file_ops import (
     create_directory_structure,
@@ -231,8 +232,9 @@ def test_output_dir_expands_tilde():
 
 def test_output_dir_validates_read_only_directory(temp_dir):
     """测试只读目录报错."""
-    from skill_creator_mcp.models.skill_config import InitSkillInput
     import stat
+
+    from skill_creator_mcp.models.skill_config import InitSkillInput
 
     readonly_dir = temp_dir / "readonly"
     readonly_dir.mkdir()
@@ -272,8 +274,8 @@ def test_output_dir_converts_relative_to_absolute(temp_dir):
 @pytest.mark.asyncio
 async def test_init_skill_respects_env_var(monkeypatch, temp_dir):
     """测试工具读取环境变量."""
-    from skill_creator_mcp.models.skill_config import InitSkillInput
     from skill_creator_mcp.config import reload_config
+    from skill_creator_mcp.models.skill_config import InitSkillInput
 
     env_dir = temp_dir / "env-output"
     monkeypatch.setenv("SKILL_CREATOR_OUTPUT_DIR", str(env_dir))

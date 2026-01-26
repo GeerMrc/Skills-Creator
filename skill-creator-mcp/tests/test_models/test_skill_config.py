@@ -1,7 +1,8 @@
 """测试数据模型."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 from pydantic import ValidationError
 
 from skill_creator_mcp.models.skill_config import (
