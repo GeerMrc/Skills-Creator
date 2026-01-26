@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+**审计发现修复**:
+- 同步 CLAUDE.md 版本号到 v0.3.2
+- 合并计划文档为 `guidelines.md`，优化文档管理
+- 补充 server.py 异常处理测试用例（10个）
+- 更新 `dev-standards.md` 中的文档引用
+
 **打包规范修复**:
 - 修复 Agent-Skill 打包规范问题
   - 更新 `packagers.py` 排除模式列表，添加完整的项目级文件排除
@@ -46,6 +52,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `test_package_agent_skill_file_count` - 验证文件数量合理
 - `test_package_agent_skill_package_size` - 验证包大小合理
 - `test_package_agent_skill_invalid_skill_md` - 验证缺少 SKILL.md 时报错
+
+**新增测试用例** (审计修复):
+- `test_health_check_tool_exception_handling` - 健康检查工具异常处理
+- `test_quick_status_tool_exception_handling` - 快速状态工具异常处理
+- `test_is_healthy_tool_exception_handling` - 健康检查工具异常处理
+- `test_batch_validate_skills_tool_exception_handling` - 批量验证工具异常处理
+- `test_batch_analyze_skills_tool_exception_handling` - 批量分析工具异常处理
+- `test_package_agent_skill_internal_error_handling` - 打包工具内部异常处理
 
 **新增文档**:
 - `CLAUDE.md` 新增第七章 "Agent-Skill 打包规范"
