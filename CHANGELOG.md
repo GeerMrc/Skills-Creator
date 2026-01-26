@@ -38,6 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 更新 `README.md` 配置说明，添加版本要求和替代方案
 - 更新 `docs/README.md` 添加配置指南链接
 
+**配置文档逻辑修正**:
+- 修正配置文档假设所有用户都在源码目录开发的缺陷
+- 根据安装方式（PyPI/pip vs 源码）提供不同配置方案
+- 全局安装用户：简单配置（python -m skill_creator_mcp）
+- 源码开发用户：复杂配置（uv --directory 或 cwd）
+- 添加快速决策树帮助用户选择正确配置
+
 **架构合规性修复** (46处违规引用):
 - 删除 MCP Server 反向引用 Agent-Skill (8处)
 - 清理 Agent-Skill SKILL.md 中的 Claude Code 配置章节 (行96-158)
