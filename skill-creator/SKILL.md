@@ -92,3 +92,67 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（16 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
 
 详见：[混合架构 ADR](../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md) | [需求收集示例](examples/requirement-collection-basic.md)
+
+## Claude Code 配置
+
+### 配置方式
+
+**方式1: 项目级配置**（推荐团队使用）
+
+```bash
+cd /path/to/Skills-Creator
+claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
+```
+
+生成的 `.mcp.json` 文件（可提交到版本控制）：
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "python",
+      "args": ["-m", "skill_creator_mcp"]
+    }
+  }
+}
+```
+
+**方式2: 用户级配置**（推荐个人使用）
+
+```bash
+claude mcp add skill-creator stdio python -m skill_creator_mcp --scope user
+```
+
+配置存储在 `~/.claude/settings.json`（跨项目共享）
+
+**方式3: 本地配置**（临时测试）
+
+```bash
+cd /path/to/Skills-Creator
+claude mcp add skill-creator stdio python -m skill_creator_mcp --scope local
+```
+
+配置存储在 `.claude/settings.json`（仅项目本地）
+
+### 配置范围对比
+
+| 范围 | 存储位置 | 可提交VC | 共享范围 | 适用场景 |
+|------|---------|---------|---------|---------|
+| `project` | `.mcp.json` | ✅ | 团队 | 团队协作开发 |
+| `user` | `~/.claude/settings.json` | ❌ | 个人 | 跨项目使用 |
+| `local` | `.claude/settings.json` | ❌ | 个人 | 临时测试 |
+
+### 验证配置
+
+```bash
+# 列出所有 MCP 服务器
+claude mcp list
+
+# 应该看到 skill-creator 在列表中
+```
+
+### 详细配置文档
+
+> 📘 完整配置指南请参考：
+> - [MCP Server Claude Code 配置指南](skill-creator-mcp/docs/claude-code-config.md)
+> - [MCP Server 配置参数参考](skill-creator-mcp/docs/configuration.md)
+> - [MCP Server IDE 集成配置](skill-creator-mcp/docs/ide-config.md)

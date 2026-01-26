@@ -7,6 +7,22 @@
 
 Agent-Skills 开发与质量保证 MCP Server。
 
+## 📖 文档导航
+
+### 快速导航
+
+- **[文档索引](docs/README.md)** - 📚 完整的文档导航和快速开始指南
+- **[配置参数参考](docs/configuration.md)** - ⚙️ 所有环境变量的完整参考
+
+### 安装与配置
+
+- **[安装指南](docs/installation.md)** - 安装步骤和配置指南
+- **[IDE 配置示例](docs/ide-config.md)** - Claude Desktop/Cursor/Continue.dev 等配置
+- **[Claude Code 配置指南](docs/claude-code-config.md)** - Claude Code CLI 完整配置
+- **[SSE 配置指南](docs/sse-guide.md)** - SSE 远程模式详细配置
+
+---
+
 ## 开发状态
 
 > 🚧 **项目正在开发中**
@@ -17,12 +33,33 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 ## 特性
 
+### 核心开发工具（6个）
+
 - ✅ **collect_requirements** - AI 驱动的需求澄清工具（支持会话恢复）
 - ✅ **init_skill** - 初始化新的 Agent-Skill 项目（支持 4 种模板）
 - ✅ **validate_skill** - 验证技能结构和内容规范
 - ✅ **analyze_skill** - 分析代码质量和复杂度
 - ✅ **refactor_skill** - 重构建议生成（P0/P1/P2 优先级）
 - ✅ **package_skill** - 打包发布工具（zip/tar.gz/tar.bz2）
+
+### 批量操作（2个）
+
+- ✅ **batch_validate_skills_tool** - 批量验证多个 Agent-Skill
+- ✅ **batch_analyze_skills_tool** - 批量分析多个 Agent-Skill
+
+### 健康检查（3个）
+
+- ✅ **health_check_tool** - 完整健康检查
+- ✅ **quick_status_tool** - 快速状态摘要
+- ✅ **is_healthy_tool** - 快速健康检查
+
+### Phase 0 验证工具（5个）
+
+- ✅ **check_client_capabilities** - 检测 MCP 客户端能力支持情况
+- ✅ **test_llm_sampling** - 测试 LLM Sampling 能力
+- ✅ **test_user_elicitation** - 测试用户征询能力
+- ✅ **test_conversation_loop** - 测试对话循环和状态管理能力
+- ✅ **test_requirement_completeness** - 测试需求完整性判断能力
 
 ### 技能模板
 
@@ -34,6 +71,44 @@ Agent-Skills 开发与质量保证 MCP Server。
 | `analyzer-based` | 分析器模板 | 代码分析 |
 
 *注：✅ 已实现 | 🚧 开发中*
+
+---
+
+## 🚀 5分钟快速开始
+
+### 1. 安装
+
+```bash
+# 进入 MCP Server 目录
+cd skill-creator-mcp
+
+# 使用 uv 安装依赖（推荐）
+uv sync --dev
+```
+
+### 2. 配置 Claude Code
+
+```bash
+# 进入项目根目录
+cd /path/to/Skills-Creator
+
+# 添加 MCP 服务器
+claude mcp add skill-creator stdio python -m skill_creator_mcp
+```
+
+### 3. 验证
+
+在 Claude Code 中输入：
+```
+使用 skill-creator MCP 工具初始化一个名为 "my-skill" 的技能
+```
+
+### 4. 下一步
+
+- 📖 阅读 [文档索引](docs/README.md) 了解完整功能
+- 🔧 查看 [配置参数参考](docs/configuration.md) 自定义配置
+
+---
 
 ## 安装
 

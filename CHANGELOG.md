@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**MCP Server 文档完善** (7个核心配置文档):
+- `skill-creator-mcp/docs/installation.md` - 安装与配置指南（完整安装步骤）
+- `skill-creator-mcp/docs/configuration.md` - 配置参数参考（所有环境变量）
+- `skill-creator-mcp/docs/ide-config.md` - IDE集成配置（4种IDE）
+- `skill-creator-mcp/docs/claude-code-config.md` - Claude Code详细配置
+- `skill-creator-mcp/docs/sse-guide.md` - SSE远程模式配置
+- `skill-creator-mcp/docs/README.md` - 文档索引中心
+- `skill-creator-mcp/docs/troubleshooting.md` - 故障排除指南
+
+**Agent-Skill 文档完善**:
+- `skill-creator/docs/claude-code-configuration.md` - Agent-Skill配置指南
+- `skill-creator/SKILL.md` - 新增Claude Code配置说明章节
+
 **扩展MCP集成**:
 - `SKILL.md` 新增 GitHub 和 Thinking MCP 服务器声明
 - `examples/github-requirement-tracking.md` - GitHub需求跟踪集成示例（266行）
@@ -17,12 +30,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `examples/thinking-export.md` - 思考会话导出示例（463行）
 - `references/mcp-integration.md` 新增"扩展MCP集成"章节（169行）
 
+### Changed
+
+**MCP Server README**:
+- 更正工具数量：6个 → 16个（完整工具列表）
+- 添加文档导航前置章节
+- 添加5分钟快速开始指南
+- 更新特性列表（核心6个+批量2个+健康检查3个+验证5个）
+
+**文档索引**:
+- `skill-creator/references/README.md` - 新增"配置指南"章节
+- `skill-creator/examples/README.md` - 新增配置相关条目
+
 **集成场景**:
 - 场景1: 需求澄清 → GitHub Issue自动跟踪
 - 场景2: 技能初始化 → Git工作流自动化（分支、PR创建）
 - 场景3: 验证分析 → 思考记录+问题跟踪
-
-### Changed
 
 **功能增强**:
 - 需求跟踪：从手动笔记到GitHub Issue自动创建

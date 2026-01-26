@@ -68,7 +68,10 @@
 | 分析代码质量 | [analyze_skill 示例](mcp-analyze-examples.md) |
 | 获取重构建议 | [refactor_skill 示例](mcp-refactor-examples.md) |
 | 打包发布技能 | [package_skill 示例](mcp-package-examples.md) |
+| 批量操作多个技能 | [批量操作示例](mcp-batch-operations.md) |
+| 系统健康检查 | [健康检查示例](mcp-health-check.md) |
 | 看综合工作流 | [MCP 协作](mcp-skill-collaboration.md) |
+| 配置 Claude Code | [Claude Code 配置指南](../docs/claude-code-configuration.md) |
 
 ---
 
