@@ -271,11 +271,27 @@ vim .env
 | `SKILL_CREATOR_LOG_LEVEL` | INFO | 日志级别（DEBUG/INFO/WARNING/ERROR） |
 | `SKILL_CREATOR_LOG_FORMAT` | text | 日志格式（text/json） |
 | `SKILL_CREATOR_LOG_FILE` | - | 日志文件路径（可选） |
-| `SKILL_CREATOR_OUTPUT_DIR` | . | 默认输出目录（支持环境变量） |
+| `SKILL_CREATOR_OUTPUT_DIR` | ~/skills | 默认输出目录 |
 | `SKILL_CREATOR_MAX_RETRIES` | 3 | 最大重试次数 |
 | `SKILL_CREATOR_TIMEOUT_SECONDS` | 30 | 超时时间（秒） |
 
-**配置优先级**：工具参数 > 环境变量 `SKILL_CREATOR_OUTPUT_DIR` > 默认值 `.`
+**配置优先级**：工具参数 > 环境变量 `SKILL_CREATOR_OUTPUT_DIR` > 默认值 `~/skills`
+
+> ✅ **目录自动管理**：
+>
+> - 默认使用 `~/skills`（自动创建）
+> - 支持自定义路径（如 `~/.claude/skills`）
+> - 所有路径自动检测和创建目录
+> - 自动验证目录可写性
+>
+> **推荐配置**：
+> ```bash
+> # 使用默认 ~/skills
+> # （无需配置，自动创建）
+>
+> # 或自定义目录
+> export SKILL_CREATOR_OUTPUT_DIR=~/.claude/skills
+> ```
 
 ## 使用
 

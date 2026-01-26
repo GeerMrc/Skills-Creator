@@ -5,17 +5,12 @@ Pydantic 模型与配置的集成、以及跨平台兼容性。
 """
 
 import os
-import tempfile
 from pathlib import Path
-
-import pytest
 
 from skill_creator_mcp.config import Config, get_config, reload_config
 from skill_creator_mcp.models.skill_config import InitSkillInput
 from skill_creator_mcp.utils.cache import MemoryCache
-from skill_creator_mcp.utils.packagers import package_agent_skill
 from skill_creator_mcp.utils.path_helpers import (
-    get_output_dir,
     normalize_path,
     split_path_parts,
 )
@@ -135,7 +130,9 @@ class TestConfigIntegration:
         # 验证默认值
         assert config.cache_size == 128
         assert config.cache_ttl == 3600
-        assert "agent-skills" in str(config.default_output_dir).lower()
+        # 默认输出目录是 ~/skills
+        assert "skills" in str(config.default_output_dir).lower()
+        assert str(Path.home()) in str(config.default_output_dir)
 
     def test_plan_archive_dir_configurable(self, tmp_path):
         """测试计划归档目录可配置."""

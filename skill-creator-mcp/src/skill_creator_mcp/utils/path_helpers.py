@@ -15,7 +15,64 @@ def normalize_path(path: str | Path) -> Path:
     Returns:
         规范化后的绝对路径
     """
-    return Path(path).expanduser().resolve()
+    return Path(path).expanduser().resolve(strict=False)
+
+
+def ensure_output_dir(output_dir: str | Path) -> Path:
+    """确保输出目录存在，不存在则自动创建.
+
+    Args:
+        output_dir: 输出目录路径（支持相对路径、绝对路径、~路径）
+
+    Returns:
+        已验证/创建的绝对路径
+
+    Raises:
+        ValueError: 目录创建失败或无权限
+
+    Examples:
+        >>> # 默认 ~/skills
+        >>> ensure_output_dir("~/skills")
+        Path("/home/user/skills")
+
+        >>> # 自定义目录
+        >>> ensure_output_dir("~/.claude/skills")
+        Path("/home/user/.claude/skills")
+    """
+    import os
+
+    # 转换为 Path 对象
+    dir_path = Path(output_dir)
+
+    # 1. 展开 ~ 为用户主目录
+    expanded_dir = dir_path.expanduser()
+
+    # 2. 解析为绝对路径
+    absolute_dir = expanded_dir.resolve(strict=False)
+
+    # 3. 检查目录是否存在
+    if not absolute_dir.exists():
+        # 4. 不存在则自动创建（包括父目录）
+        try:
+            absolute_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            raise ValueError(
+                f"无法创建输出目录 {absolute_dir}: {e}"
+            ) from e
+
+    # 5. 验证是否为目录
+    if not absolute_dir.is_dir():
+        raise ValueError(
+            f"输出路径不是目录: {absolute_dir}"
+        )
+
+    # 6. 验证可写性
+    if not os.access(absolute_dir, os.W_OK):
+        raise ValueError(
+            f"输出目录不可写: {absolute_dir}"
+        )
+
+    return absolute_dir
 
 
 def get_default_output_dir() -> Path:
@@ -23,15 +80,17 @@ def get_default_output_dir() -> Path:
 
     优先级:
     1. SKILL_CREATOR_DEFAULT_OUTPUT_DIR 环境变量
-    2. ~/agent-skills
+    2. ~/skills (自动创建)
+
+    注意：目录不存在时自动创建
 
     Returns:
-        默认输出目录路径
+        默认输出目录路径（已确保存在）
     """
     import os
 
-    default_output = os.getenv("SKILL_CREATOR_DEFAULT_OUTPUT_DIR", "~/agent-skills")
-    return Path(default_output).expanduser().resolve()
+    default_output = os.getenv("SKILL_CREATOR_DEFAULT_OUTPUT_DIR", "~/skills")
+    return ensure_output_dir(default_output)
 
 
 def get_output_dir(fallback: bool = True) -> Path:
@@ -50,7 +109,7 @@ def get_output_dir(fallback: bool = True) -> Path:
 
     output_dir_value = os.getenv("SKILL_CREATOR_OUTPUT_DIR")
     if output_dir_value:
-        return Path(output_dir_value).expanduser().resolve()
+        return Path(output_dir_value).expanduser().resolve(strict=False)
     if fallback:
         return get_default_output_dir()
     raise ValueError("必须设置 SKILL_CREATOR_OUTPUT_DIR 环境变量")

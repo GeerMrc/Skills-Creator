@@ -91,79 +91,20 @@ class InitSkillInput(BaseModel):
         """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
         # 如果 output_dir 为 None，说明字段验证器尚未处理，跳过验证
         # （会在后续验证中通过 apply_default_output_dir 处理）
-        if self.output_dir is None:
+        if self.output_dir is None or self.output_dir == "":
             return self
 
-        # 处理 output_dir
-        original = self.output_dir
-        path = Path(original).expanduser().resolve()
+        # 使用新的 ensure_output_dir 函数统一处理目录管理
+        from ..utils.path_helpers import ensure_output_dir
 
-        # 自动创建不存在的目录
-        if not path.exists():
-            try:
-                path.mkdir(parents=True, exist_ok=True)
-            except OSError as e:
-                raise ValueError(
-                    f"无法创建输出目录 '{original}': {e}. "
-                    f"请确保父目录存在且有写入权限。"
-                )
+        try:
+            validated_path = ensure_output_dir(self.output_dir)
+            self.output_dir = str(validated_path)
+        except ValueError as e:
+            raise ValueError(f"输出目录验证失败: {e}") from e
 
-        # 验证是目录
-        if not path.is_dir():
-            raise ValueError(f"输出路径 '{original}' 不是目录")
-
-        # 验证可写
-        if not os.access(path, os.W_OK):
-            raise ValueError(f"输出目录 '{original}' 不可写")
-
-        # 更新 output_dir 为绝对路径
-        self.output_dir = str(path)
         return self
 
-    @field_validator("output_dir", mode="before")
-    @classmethod
-    def validate_output_dir(cls, v: str) -> str:
-        """验证输出目录路径.
-
-        验证逻辑：
-        - 展开 ~ 和转换为绝对路径
-        - 自动创建不存在的目录
-        - 验证路径是目录而非文件
-        - 验证路径可写
-
-        Args:
-            v: 输出目录路径
-
-        Returns:
-            验证通过的绝对路径
-
-        Raises:
-            ValueError: 路径验证失败时抛出
-        """
-        original = v
-
-        # 展开 ~ 和转换为绝对路径
-        path = Path(v).expanduser().resolve()
-
-        # 自动创建不存在的目录
-        if not path.exists():
-            try:
-                path.mkdir(parents=True, exist_ok=True)
-            except OSError as e:
-                raise ValueError(
-                    f"无法创建输出目录 '{original}': {e}. "
-                    f"请确保父目录存在且有写入权限。"
-                )
-
-        # 验证是目录
-        if not path.is_dir():
-            raise ValueError(f"输出路径 '{original}' 不是目录")
-
-        # 验证可写
-        if not os.access(path, os.W_OK):
-            raise ValueError(f"输出目录 '{original}' 不可写")
-
-        return str(path)
 
 
 class InitResult(BaseModel):
@@ -534,76 +475,16 @@ class PackageSkillInput(BaseModel):
         if self.output_dir is None:
             return self
 
-        # 处理 output_dir
-        original = self.output_dir
-        path = Path(original).expanduser().resolve()
+        # 使用新的 ensure_output_dir 函数统一处理目录管理
+        from ..utils.path_helpers import ensure_output_dir
 
-        # 自动创建不存在的目录
-        if not path.exists():
-            try:
-                path.mkdir(parents=True, exist_ok=True)
-            except OSError as e:
-                raise ValueError(
-                    f"无法创建输出目录 '{original}': {e}. "
-                    f"请确保父目录存在且有写入权限。"
-                )
+        try:
+            validated_path = ensure_output_dir(self.output_dir)
+            self.output_dir = str(validated_path)
+        except ValueError as e:
+            raise ValueError(f"输出目录验证失败: {e}") from e
 
-        # 验证是目录
-        if not path.is_dir():
-            raise ValueError(f"输出路径 '{original}' 不是目录")
-
-        # 验证可写
-        if not os.access(path, os.W_OK):
-            raise ValueError(f"输出目录 '{original}' 不可写")
-
-        # 更新 output_dir 为绝对路径
-        self.output_dir = str(path)
         return self
-
-    @field_validator("output_dir", mode="before")
-    @classmethod
-    def validate_output_dir(cls, v: str) -> str:
-        """验证输出目录路径.
-
-        验证逻辑：
-        - 展开 ~ 和转换为绝对路径
-        - 自动创建不存在的目录
-        - 验证路径是目录而非文件
-        - 验证路径可写
-
-        Args:
-            v: 输出目录路径
-
-        Returns:
-            验证通过的绝对路径
-
-        Raises:
-            ValueError: 路径验证失败时抛出
-        """
-        original = v
-
-        # 展开 ~ 和转换为绝对路径
-        path = Path(v).expanduser().resolve()
-
-        # 自动创建不存在的目录
-        if not path.exists():
-            try:
-                path.mkdir(parents=True, exist_ok=True)
-            except OSError as e:
-                raise ValueError(
-                    f"无法创建输出目录 '{original}': {e}. "
-                    f"请确保父目录存在且有写入权限。"
-                )
-
-        # 验证是目录
-        if not path.is_dir():
-            raise ValueError(f"输出路径 '{original}' 不是目录")
-
-        # 验证可写
-        if not os.access(path, os.W_OK):
-            raise ValueError(f"输出目录 '{original}' 不可写")
-
-        return str(path)
 
 
 class PackageAgentSkillInput(BaseModel):
@@ -663,76 +544,16 @@ class PackageAgentSkillInput(BaseModel):
         if self.output_dir is None:
             return self
 
-        # 处理 output_dir
-        original = self.output_dir
-        path = Path(original).expanduser().resolve()
+        # 使用新的 ensure_output_dir 函数统一处理目录管理
+        from ..utils.path_helpers import ensure_output_dir
 
-        # 自动创建不存在的目录
-        if not path.exists():
-            try:
-                path.mkdir(parents=True, exist_ok=True)
-            except OSError as e:
-                raise ValueError(
-                    f"无法创建输出目录 '{original}': {e}. "
-                    f"请确保父目录存在且有写入权限。"
-                )
+        try:
+            validated_path = ensure_output_dir(self.output_dir)
+            self.output_dir = str(validated_path)
+        except ValueError as e:
+            raise ValueError(f"输出目录验证失败: {e}") from e
 
-        # 验证是目录
-        if not path.is_dir():
-            raise ValueError(f"输出路径 '{original}' 不是目录")
-
-        # 验证可写
-        if not os.access(path, os.W_OK):
-            raise ValueError(f"输出目录 '{original}' 不可写")
-
-        # 更新 output_dir 为绝对路径
-        self.output_dir = str(path)
         return self
-
-    @field_validator("output_dir", mode="before")
-    @classmethod
-    def validate_output_dir(cls, v: str) -> str:
-        """验证输出目录路径.
-
-        验证逻辑：
-        - 展开 ~ 和转换为绝对路径
-        - 自动创建不存在的目录
-        - 验证路径是目录而非文件
-        - 验证路径可写
-
-        Args:
-            v: 输出目录路径
-
-        Returns:
-            验证通过的绝对路径
-
-        Raises:
-            ValueError: 路径验证失败时抛出
-        """
-        original = v
-
-        # 展开 ~ 和转换为绝对路径
-        path = Path(v).expanduser().resolve()
-
-        # 自动创建不存在的目录
-        if not path.exists():
-            try:
-                path.mkdir(parents=True, exist_ok=True)
-            except OSError as e:
-                raise ValueError(
-                    f"无法创建输出目录 '{original}': {e}. "
-                    f"请确保父目录存在且有写入权限。"
-                )
-
-        # 验证是目录
-        if not path.is_dir():
-            raise ValueError(f"输出路径 '{original}' 不是目录")
-
-        # 验证可写
-        if not os.access(path, os.W_OK):
-            raise ValueError(f"输出目录 '{original}' 不可写")
-
-        return str(path)
 
 
 class PackageResult(BaseModel):

@@ -19,7 +19,8 @@
 
 | 环境变量 | 默认值 | 有效值 | 描述 |
 |---------|--------|--------|------|
-| `SKILL_CREATOR_OUTPUT_DIR` | . | 目录路径 | 默认输出目录 |
+| `SKILL_CREATOR_OUTPUT_DIR` | ~/skills | 目录路径 | 默认输出目录（自动创建） |
+| `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` | ~/skills | 目录路径 | 默认输出目录（已废弃，仅用于向后兼容） |
 
 ### 操作配置
 
@@ -130,18 +131,54 @@ SKILL_CREATOR_LOG_FILE=
 
 ### 输出目录 (SKILL_CREATOR_OUTPUT_DIR)
 
-指定技能创建的默认输出目录：
+指定技能创建的默认输出目录，支持自动目录管理。
 
 ```bash
-# 当前目录（默认）
-SKILL_CREATOR_OUTPUT_DIR=.
-
-# 指定目录
+# 默认值（自动创建）
 SKILL_CREATOR_OUTPUT_DIR=~/skills
+
+# 自定义路径
+SKILL_CREATOR_OUTPUT_DIR=~/.claude/skills
 
 # 绝对路径
 SKILL_CREATOR_OUTPUT_DIR=/opt/skills-output
 ```
+
+### 目录自动管理功能
+
+**v0.3.3+ 新增功能**：
+
+1. **自动创建目录**：目录不存在时自动创建（包括父目录）
+2. **自动验证**：验证路径存在且为目录
+3. **权限检查**：验证目录可写性
+4. **路径展开**：自动展开 `~` 为用户主目录
+
+**优先级**：
+```
+工具参数 > SKILL_CREATOR_OUTPUT_DIR > 默认值 (~/skills)
+```
+
+**推荐配置**：
+
+1. **使用默认值**（推荐）：
+   ```bash
+   # 无需配置，自动使用 ~/skills
+   # 首次使用时自动创建
+   ```
+
+2. **自定义路径**：
+   ```bash
+   export SKILL_CREATOR_OUTPUT_DIR=~/.claude/skills
+   ```
+
+3. **Claude Code 配置**：
+   ```json
+   {
+     "env": {
+       "SKILL_CREATOR_OUTPUT_DIR": "~/.claude/skills"
+     }
+   }
+   ```
 
 ---
 

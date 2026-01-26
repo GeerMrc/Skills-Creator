@@ -20,6 +20,18 @@ from skill_creator_mcp.utils.validators import (
 )
 
 
+@pytest.fixture(autouse=True)
+def clear_env():
+    """每个测试前清除环境变量."""
+    original_env = os.environ.copy()
+    for key in list(os.environ.keys()):
+        if key.startswith("SKILL_CREATOR_"):
+            del os.environ[key]
+    yield
+    os.environ.clear()
+    os.environ.update(original_env)
+
+
 @pytest.mark.asyncio
 async def test_init_skill_success(temp_dir):
     """测试成功初始化技能."""
@@ -257,18 +269,24 @@ def test_output_dir_converts_relative_to_absolute(temp_dir):
     """测试相对路径转换为绝对路径."""
     from skill_creator_mcp.models.skill_config import InitSkillInput
 
-    # 在临时目录中创建相对路径
-    os.chdir(temp_dir)
+    # 保存原始工作目录
+    original_cwd = Path.cwd()
+    try:
+        # 在临时目录中创建相对路径
+        os.chdir(temp_dir)
 
-    input_data = InitSkillInput.model_validate({
-        "name": "test-skill",
-        "output_dir": "./relative/path",
-    })
+        input_data = InitSkillInput.model_validate({
+            "name": "test-skill",
+            "output_dir": "./relative/path",
+        })
 
-    # 应该是绝对路径
-    assert Path(input_data.output_dir).is_absolute()
-    # 应该包含 temp_dir
-    assert str(temp_dir) in input_data.output_dir
+        # 应该是绝对路径
+        assert Path(input_data.output_dir).is_absolute()
+        # 应该包含 temp_dir
+        assert str(temp_dir) in input_data.output_dir
+    finally:
+        # 恢复原始工作目录
+        os.chdir(original_cwd)
 
 
 @pytest.mark.asyncio
@@ -278,6 +296,7 @@ async def test_init_skill_respects_env_var(monkeypatch, temp_dir):
     from skill_creator_mcp.models.skill_config import InitSkillInput
 
     env_dir = temp_dir / "env-output"
+    env_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setenv("SKILL_CREATOR_OUTPUT_DIR", str(env_dir))
 
     # 重新加载配置以获取新的环境变量

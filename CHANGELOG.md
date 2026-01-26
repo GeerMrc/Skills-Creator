@@ -9,55 +9,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **P0**: 修复 Pydantic 模型中硬编码的 `output_dir` 默认值
-- **P0**: 修复内部函数 `package_agent_skill()` 硬编码默认值
-- **P0**: 修复路径分隔符硬编码（`packagers.py`）
-- **P0**: 修复计划归档目录硬编码
-- **P1**: 修复测试中硬编码的临时路径
-- **P1**: 修复缓存配置硬编码
-- **P1**: 修复日志路径示例硬编码
-- **P0**: 更新文档中的硬编码路径示例
+- **P0**: 实现目录自动管理功能
+  - 默认值改为 `~/skills`（自动创建）
+  - 新增 `ensure_output_dir()` 函数统一处理目录管理
+  - 自动创建不存在的目录（包括父目录）
+  - 自动验证目录存在性和可写性
+  - 支持 `~` 路径展开
 
 ### Added
 
-- 新增 `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` 环境变量
-- 新增 `SKILL_CREATOR_CACHE_SIZE` 环境变量
-- 新增 `SKILL_CREATOR_CACHE_TTL` 环境变量
-- 新增 `SKILL_CREATOR_PLAN_ARCHIVE_DIR` 环境变量
-- 新增路径处理辅助模块 `path_helpers.py`
-- 新增配置集成测试
+- 新增 `ensure_output_dir()` 目录管理函数 (`path_helpers.py`)
+  - 自动创建不存在的目录
+  - 验证路径存在且为目录
+  - 验证目录可写性
+  - 展开 `~` 为用户主目录
+- 新增 11 个测试用例验证目录管理功能
+  - `test_config.py`: 4 个新测试
+  - `test_path_helpers.py`: 7 个新测试（新建文件）
+- 新增 `get_default_output_dir()` 函数获取默认输出目录
 
 ### Changed
 
-- **BREAKING**: Pydantic 模型 `output_dir` 参数改为可选，默认使用环境变量配置
-- **BREAKING**: 默认输出目录从 `.` 改为 `~/agent-skills`
-- **BREAKING**: 当未设置 `SKILL_CREATOR_OUTPUT_DIR` 时，使用 `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` 或 `~/agent-skills`
-- 改进配置类，支持更多可配置项
-- 统一配置机制，所有代码路径都通过配置类获取默认值
+- 默认输出目录从 `.` 改为 `~/skills`
+- `InitSkillInput`, `PackageSkillInput`, `PackageAgentSkillInput` 使用 `ensure_output_dir()`
+- `get_output_dir()` 新增 `fallback` 参数
+- 更新文档反映新的目录自动管理功能
 
 ### Migration Notes
 
-如果您的代码直接使用 Pydantic 模型或内部函数，需要更新：
+**从 v0.3.x 升级到 v0.4.0**：
 
-```python
-# 旧代码
-input_data = InitSkillInput.model_validate({
-    "name": "my-skill",
-    "output_dir": ".",  # 必须显式提供
-})
+默认输出目录已从 `.` 改为 `~/skills`，目录会在首次使用时自动创建。
 
-# 新代码
-input_data = InitSkillInput.model_validate({
-    "name": "my-skill",
-    # output_dir 可以省略，自动使用环境变量
-})
-```
-
-或者设置环境变量：
+如果您想继续使用旧的行为：
 
 ```bash
-export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
-export SKILL_CREATOR_DEFAULT_OUTPUT_DIR=~/agent-skills
+# 在 .env 中设置
+SKILL_CREATOR_OUTPUT_DIR=.
+```
+
+推荐配置：
+
+```bash
+# 使用新的默认值（推荐）
+# 无需配置，自动使用 ~/skills
+
+# 或自定义路径
+SKILL_CREATOR_OUTPUT_DIR=~/.claude/skills
 ```
 
 ## [0.3.3] - 2026-01-26

@@ -39,8 +39,9 @@ def test_config_default_values():
     assert config.log_level == "INFO"
     assert config.log_format == "default"
     assert config.log_file is None
-    # 默认输出目录现在是 ~/agent-skills
-    assert "agent-skills" in str(config.output_dir) or config.output_dir == Path("~/agent-skills").expanduser()
+    # 默认输出目录是 ~/skills
+    assert "skills" in str(config.output_dir).lower()
+    assert str(Path.home()) in str(config.output_dir)
     assert config.max_retries == 3
     assert config.timeout_seconds == 30
     # 新增的默认值
@@ -218,3 +219,71 @@ def test_log_format_type():
     """测试 LogFormat 类型注解."""
     format_type: LogFormat = "detailed"
     assert format_type in ["default", "simple", "detailed"]
+
+
+# ==================== 默认值 ~/skills 测试 ====================
+
+
+def test_default_output_dir_is_home_skills():
+    """测试默认输出目录为 ~/skills."""
+    config = Config()
+    # 验证默认路径包含用户主目录和 skills
+    assert "skills" in str(config.default_output_dir).lower()
+    assert str(Path.home()) in str(config.default_output_dir)
+
+
+def test_default_output_dir_auto_created():
+    """测试默认目录自动创建."""
+    import tempfile
+    import shutil
+
+    # 使用临时目录模拟
+    with tempfile.TemporaryDirectory() as tmpdir:
+        test_path = Path(tmpdir) / "test_skills"
+        assert not test_path.exists()
+
+        # 调用 ensure_output_dir
+        from skill_creator_mcp.utils.path_helpers import ensure_output_dir
+        result = ensure_output_dir(test_path)
+
+        # 验证目录已创建
+        assert result.exists()
+        assert result.is_dir()
+
+
+def test_custom_output_dir_from_env():
+    """测试从环境变量读取自定义目录."""
+    custom_dir = "~/.claude/skills"
+    os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"] = custom_dir
+
+    try:
+        reload_config()
+        config = Config()
+        # 验证路径包含 .claude/skills
+        assert ".claude" in str(config.default_output_dir)
+        assert "skills" in str(config.default_output_dir).lower()
+    finally:
+        del os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"]
+        reload_config()
+
+
+def test_output_dir_not_writable_raises_error():
+    """测试不可写目录报错."""
+    import tempfile
+    import stat
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        readonly_dir = Path(tmpdir) / "readonly"
+        readonly_dir.mkdir()
+
+        try:
+            # 设置只读权限
+            readonly_dir.chmod(stat.S_IRUSR | stat.S_IXUSR)
+
+            from skill_creator_mcp.utils.path_helpers import ensure_output_dir
+            with pytest.raises(ValueError, match="不可写"):
+                ensure_output_dir(readonly_dir)
+        finally:
+            # 恢复权限以便清理
+            readonly_dir.chmod(stat.S_IRWXU)
+
