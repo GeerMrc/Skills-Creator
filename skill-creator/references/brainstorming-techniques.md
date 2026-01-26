@@ -224,16 +224,6 @@ Q: 根据您的描述，这个技能需要处理哪类数据格式？
 
 ---
 
-## 技术实现
-
-### 代码位置
-
-- **工具实现**: `skill-creator-mcp/src/skill_creator_mcp/server.py`
-- **辅助函数**: `_generate_brainstorm_question()` (第 1146-1222 行)
-- **会话管理**: 使用 FastMCP Session State API
-
----
-
 ## 常见问题
 
 ### Q1: Brainstorm 模式会一直持续吗？

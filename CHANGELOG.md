@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - 2026-01-26
 
+### Fixed
+
+**架构合规性修复** (46处违规引用):
+- 删除 MCP Server 反向引用 Agent-Skill (8处)
+- 清理 Agent-Skill SKILL.md 中的 Claude Code 配置章节 (行96-158)
+- 修复断开的引用 `claude-code-configuration.md` (5处)
+- 清理技术实现细节泄露到用户文档 (3处)
+- 确保单向依赖原则：Agent-Skill → MCP (MCP 不引用 Agent-Skill)
+
+**影响文件**:
+- `skill-creator-mcp/README.md`
+- `skill-creator-mcp/docs/README.md`
+- `skill-creator-mcp/docs/installation.md`
+- `skill-creator-mcp/docs/claude-code-config.md`
+- `skill-creator-mcp/docs/ide-config.md`
+- `skill-creator/SKILL.md`
+- `skill-creator/references/README.md`
+- `skill-creator/examples/README.md`
+- `skill-creator/references/brainstorming-techniques.md`
+- `skill-creator/references/requirement-collection-api-core.md`
+- `skill-creator/examples/requirement-collection-brainstorm.md`
+
 ### Added
 
 **MCP Server 文档完善** (7个核心配置文档):

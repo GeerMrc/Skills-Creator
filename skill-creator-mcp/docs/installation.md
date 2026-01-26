@@ -312,7 +312,6 @@ pip install --user -e ".[dev]"
 
 ## 下一步
 
-- 📖 阅读 [用户指南](../skill-creator/SKILL.md) 了解如何使用
 - ⚙️ 查看 [配置参数参考](./configuration.md) 了解所有配置选项
 - 🔌 参考 [IDE 集成配置](./ide-config.md) 在你的 IDE 中配置
 - 🌐 阅读 [SSE 配置指南](./sse-guide.md) 了解远程部署
@@ -325,4 +324,3 @@ pip install --user -e ".[dev]"
 - [IDE 集成配置](./ide-config.md) - 各种 IDE 的配置示例
 - [Claude Code 配置指南](./claude-code-config.md) - Claude Code 详细配置
 - [SSE 配置指南](./sse-guide.md) - SSE 远程模式详细配置
-- [用户指南](../skill-creator/SKILL.md) - 使用指南和最佳实践

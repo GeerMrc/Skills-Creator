@@ -63,7 +63,7 @@ claude mcp list
 
 | 文档 | 描述 | 适合人群 |
 |------|------|---------|
-| [Agent-Skill 入口](../skill-creator/SKILL.md) | Agent-Skill 使用指南 | 所有用户 |
+| [MCP 工具列表](./api/) | 所有 MCP 工具的完整文档 | 所有用户 |
 
 ### 技术文档
 
@@ -80,7 +80,7 @@ claude mcp list
 **推荐路径**：
 1. [安装指南](./installation.md) - 选择安装方式
 2. [Claude Code 配置指南](./claude-code-config.md) - 快速配置
-3. [Agent-Skill 入口](../skill-creator/SKILL.md) - 学习使用
+3. [MCP 工具列表](./api/) - 学习使用
 
 ### 我想了解所有配置选项
 
@@ -162,8 +162,7 @@ claude mcp list
 ## 🔗 相关链接
 
 - [主项目 README](../README.md)
-- [Agent-Skill 入口](../skill-creator/SKILL.md)
-- [项目架构审计报告](../ARCHITECTURE_AUDIT_REPORT_v2.md)
+- [项目架构审计报告](../../ARCHITECTURE_AUDIT_REPORT_v2.md)
 - [FastMCP 文档](https://jlowin.github.io/fastmcp/)
 
 ---

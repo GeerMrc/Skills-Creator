@@ -151,7 +151,6 @@ await collect_requirements(
 
 - **指南文档**: `references/brainstorming-techniques.md`
 - **基础示例**: `examples/requirement-collection-basic.md`
-- **工具实现**: `skill-creator-mcp/src/skill_creator_mcp/server.py`
 
 ---
 

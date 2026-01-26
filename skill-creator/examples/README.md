@@ -71,7 +71,7 @@
 | 批量操作多个技能 | [批量操作示例](mcp-batch-operations.md) |
 | 系统健康检查 | [健康检查示例](mcp-health-check.md) |
 | 看综合工作流 | [MCP 协作](mcp-skill-collaboration.md) |
-| 配置 Claude Code | [Claude Code 配置指南](../docs/claude-code-configuration.md) |
+| 配置 Claude Code | [MCP Server Claude Code 配置](../../skill-creator-mcp/docs/claude-code-config.md) |
 
 ---
 

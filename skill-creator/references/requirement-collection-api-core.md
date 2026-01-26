@@ -20,10 +20,8 @@
 
 ## 工具签名
 
-```python
-@mcp.tool()
-async def collect_requirements(
-    ctx: Context,
+```
+collect_requirements(
     action: str = "start",
     mode: str = "basic",
     session_id: str | None = None,

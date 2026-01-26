@@ -412,4 +412,3 @@ uv sync --dev
 - [配置参数参考](./configuration.md) - 完整的环境变量配置
 - [IDE 集成配置](./ide-config.md) - 其他 IDE 配置示例
 - [安装指南](./installation.md) - 安装和验证
-- [Agent-Skill 入口](../skill-creator/SKILL.md) - Agent-Skill 使用指南

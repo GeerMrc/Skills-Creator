@@ -335,4 +335,3 @@ MIT License
 
 - [FastMCP GitHub](https://github.com/jlowin/fastmcp)
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
-- [需求澄清指南](../skill-creator/references/requirement-collection.md)

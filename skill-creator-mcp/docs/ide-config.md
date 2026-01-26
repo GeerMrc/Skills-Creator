@@ -338,4 +338,4 @@ pip install --user -e .
 - [配置参数参考](./configuration.md) - 完整的环境变量配置
 - [Claude Code 配置完整指南](./claude-code-config.md) - Claude Code 详细配置
 - [安装指南](./installation.md) - 安装和验证
-- [Agent-Skill 配置指南](../skill-creator/docs/claude-code-configuration.md) - Agent-Skill 使用指南
+- [SSE 配置指南](./sse-guide.md) - SSE 远程模式详细配置
