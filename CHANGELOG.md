@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-01-26
+
+### Changed
+
+**文档优化**:
+- `CLAUDE.md` 升级到 v1.3
+- 文档结构优化：10章精简为6章
+- 内容精简约63%（1515行→562行）
+- 表格化检查清单，提升可读性
+- 合并重复内容（Git规范、禁止行为、文档管理、架构命令）
+- 增强快速参考章节，新增命令速查表
+- 删除重复的TODO管理规范章节
+
+**计划归档**:
+- 归档 `clever-meandering-wolf.md` 到 `.claude/plans/archive/`
+- 九步法流程已在 CLAUDE.md v1.2 实施完成
+
 ## [0.3.0] - 2026-01-26
 
 ### Added
