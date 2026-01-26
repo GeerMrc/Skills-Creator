@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-01-26
+
+### Added
+
+**扩展MCP集成**:
+- `SKILL.md` 新增 GitHub 和 Thinking MCP 服务器声明
+- `examples/github-requirement-tracking.md` - GitHub需求跟踪集成示例（266行）
+- `examples/github-automation.md` - Git工作流自动化示例（459行）
+- `examples/thinking-analysis.md` - 思考记录集成示例（467行）
+- `examples/thinking-export.md` - 思考会话导出示例（463行）
+- `references/mcp-integration.md` 新增"扩展MCP集成"章节（169行）
+
+**集成场景**:
+- 场景1: 需求澄清 → GitHub Issue自动跟踪
+- 场景2: 技能初始化 → Git工作流自动化（分支、PR创建）
+- 场景3: 验证分析 → 思考记录+问题跟踪
+
+### Changed
+
+**功能增强**:
+- 需求跟踪：从手动笔记到GitHub Issue自动创建
+- Git操作：从10-15分钟手动操作到1分钟自动化
+- 问题跟踪：从手动记录到验证失败自动Issue
+- 决策追溯：从无到完整思考文档记录
+
 ## [0.3.1] - 2026-01-26
 
 ### Changed

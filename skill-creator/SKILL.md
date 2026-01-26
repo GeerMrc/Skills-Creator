@@ -24,7 +24,7 @@ description: |
   - 健康检查
   - 系统监控
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-mcp_servers: ["skill-creator"]
+mcp_servers: ["skill-creator", "GitHub", "Thinking"]
 ---
 
 # Skill-Creator - Agent-Skills 开发工具

@@ -273,10 +273,172 @@ best_practices = await session.read_resource("skill://best-practices")
 cached_practices = best_practices.contents[0].text
 ```
 
+## 扩展 MCP 集成
+
+Skill-Creator 支持与其他 MCP 服务器集成，扩展能力边界。
+
+### GitHub MCP 集成
+
+GitHub MCP 提供 GitHub 操作能力，与 Skill-Creator 集成后可实现：
+
+**功能增强**：
+- 需求自动跟踪（Issue 创建）
+- Git 工作流自动化（分支、PR 创建）
+- 问题跟踪（验证失败自动 Issue）
+
+**配置**：
+
+在 SKILL.md 的 frontmatter 中声明：
+```yaml
+---
+mcp_servers: ["skill-creator", "GitHub"]
+---
+```
+
+**使用场景**：
+
+1. **需求跟踪**：需求收集后自动创建 Issue
+```python
+result = collect_requirements(action="complete", mode="complete")
+if result["is_complete"]:
+    issue = await create_issue(
+        owner="your-org",
+        repo="your-repo",
+        title=f"[Skill] {result['answers']['skill_name']}",
+        body=format_requirements(result),
+        labels=["skill-requirement"]
+    )
+```
+
+2. **Git 自动化**：技能初始化后自动创建分支
+```python
+result = init_skill(name="pdf-processor", template="tool-based")
+branch = await create_branch(
+    owner="your-org",
+    repo="your-repo",
+    branch=f"feature/add-{result['skill_name']}",
+    from_branch="develop"
+)
+```
+
+3. **PR 自动创建**：开发完成后自动创建 PR
+```python
+pr = await create_pull_request(
+    owner="your-org",
+    repo="your-repo",
+    title=f"[Skill] Add {skill_path}",
+    head=f"feature/add-{skill_path}",
+    base="develop",
+    body=format_pr_description(validation, analysis)
+)
+```
+
+> **详见**：[GitHub 需求跟踪示例](../examples/github-requirement-tracking.md) | [Git 自动化示例](../examples/github-automation.md)
+
+### Thinking MCP 集成
+
+Thinking MCP 提供思考记录能力，与 Skill-Creator 集成后可实现：
+
+**功能增强**：
+- 代码分析思考过程记录
+- 决策逻辑追溯
+- 思考会话导出（Markdown/HTML/JSON）
+
+**配置**：
+
+在 SKILL.md 的 frontmatter 中声明：
+```yaml
+---
+mcp_servers: ["skill-creator", "GitHub", "Thinking"]
+---
+```
+
+**使用场景**：
+
+1. **分析思考记录**：记录代码分析思路
+```python
+analysis = await analyze_skill(skill_path="pdf-processor")
+
+# 创建思考会话
+session = await create_session(
+    name=f"分析-{skill_path}",
+    description="代码质量分析"
+)
+
+# 记录思考步骤
+await sequential_thinking(
+    thought=f"质量评分: {analysis['quality']['overall_score']}/100",
+    session_id=session["id"],
+    thoughtNumber=1,
+    totalThoughts=5,
+    nextThoughtNeeded=True
+)
+# ... 更多思考步骤
+```
+
+2. **思考会话导出**：导出为文档
+```python
+# 导出为 Markdown
+await export_session(
+    session_id=session["id"],
+    format_type="markdown",
+    output_path=f"{skill_path}/docs/analysis-thinking.md"
+)
+
+# 导出为 HTML
+await export_session(
+    session_id=session["id"],
+    format_type="html",
+    output_path=f"{skill_path}/docs/analysis-thinking.html"
+)
+```
+
+> **详见**：[Thinking 分析示例](../examples/thinking-analysis.md) | [Thinking 导出示例](../examples/thinking-export.md)
+
+### 集成工作流
+
+**完整流程**（结合所有 MCP）：
+
+```
+1. collect_requirements         # 收集需求
+   → create_issue (GitHub)       # 创建需求跟踪 Issue
+
+2. init_skill                    # 初始化技能
+   → create_branch (GitHub)      # 自动创建 feature 分支
+
+3. 开发技能内容
+
+4. validate_skill                # 验证技能
+   → create_issue (GitHub)       # 失败则自动创建 Issue
+
+5. analyze_skill                 # 分析技能
+   → sequential_thinking (Thinking)  # 记录分析思考
+   → export_session (Thinking)   # 导出思考文档
+
+6. create_pull_request (GitHub)  # 创建 PR
+```
+
+### 集成收益
+
+| 维度 | 无集成 | 有集成 |
+|------|--------|--------|
+| 需求跟踪 | 手动笔记 | GitHub Issue |
+| Git 操作 | 10-15 分钟 | 1 分钟 |
+| 问题跟踪 | 手动记录 | 自动 Issue |
+| 决策追溯 | 无 | 完整思考文档 |
+| 团队协作 | 口头/文档 | GitHub 原生 |
+
 ## 相关文档
 
+### 核心文档
 - **[MCP 使用示例](../examples/mcp-usage-examples.md)** - 完整代码示例
 - **[最佳实践 - 核心](best-practices-core.md)** - 开发规范
 - **[最佳实践 - 高级](best-practices-advanced.md)** - Token 优化和高级技巧
 - **[验证规范](validation.md)** - 验证规则
 - **[验证实施指南](validation-guide.md)** - 等级划分和 CI/CD 集成
+
+### 集成示例
+- **[GitHub 需求跟踪](../examples/github-requirement-tracking.md)** - 需求 Issue 自动创建
+- **[Git 自动化](../examples/github-automation.md)** - 分支和 PR 自动化
+- **[Thinking 分析](../examples/thinking-analysis.md)** - 思考过程记录
+- **[Thinking 导出](../examples/thinking-export.md)** - 思考会话导出
