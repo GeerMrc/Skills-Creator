@@ -39,6 +39,20 @@
 |------|------|------|
 | **[MCP 协作](mcp-skill-collaboration.md)** | Agent-Skill 与 MCP 协同工作流 | ~300 |
 
+### GitHub MCP 集成示例
+
+| 示例 | 说明 | 行数 |
+|------|------|------|
+| **[需求追踪](github-requirement-tracking.md)** | 使用 GitHub MCP 追踪和管理 Issues | ~260 |
+| **[自动化工作流](github-automation.md)** | GitHub PR/Issue 自动化操作 | ~450 |
+
+### Thinking MCP 集成示例
+
+| 示例 | 说明 | 行数 |
+|------|------|------|
+| **[深度分析](thinking-analysis.md)** | 使用 Thinking MCP 进行顺序思考分析 | ~460 |
+| **[导出会话](thinking-export.md)** | Thinking 会话导出和可视化 | ~460 |
+
 ---
 
 ## 快速查找
