@@ -5,6 +5,84 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-25
+
+### Added
+
+**批量操作工具**:
+- 新增 `tools/batch_operations.py` 模块 (228行)
+- `batch_validate_skills_tool` - 批量验证多个技能，支持并发控制
+- `batch_analyze_skills_tool` - 批量分析多个技能，支持并发控制
+- 新增 8 个测试用例，95% 代码覆盖率
+
+**健康检查和监控**:
+- 新增 `tools/health_check.py` 模块 (315行)
+- `health_check_tool` - 完整健康检查（系统、缓存、性能指标）
+- `quick_status_tool` - 快速状态摘要
+- `is_healthy_tool` - 快速健康判断
+- 新增 29 个测试用例，97% 代码覆盖率
+
+**缓存机制**:
+- 新增 `utils/cache.py` 模块 (236行)
+- `MemoryCache` 类 - LRU 内存缓存管理器
+- `cached` 装饰器 - 函数结果缓存装饰器
+- 支持 TTL 过期策略和缓存统计
+- 新增 13 个测试用例，99% 代码覆盖率
+
+**CI/CD 工作流**:
+- 新增 `release.yml` - PyPI 和 Docker 自动发布
+- 新增 `security.yml` - 安全扫描自动化
+  - pip-audit 依赖漏洞扫描
+  - bandit 代码安全扫描
+  - trufflehog 密钥泄露扫描
+  - pip-licenses 许可证合规检查
+
+**Sphinx 文档**:
+- 新增 Sphinx 配置 `docs/conf.py`
+- 新增文档索引 `docs/index.rst`, `docs/api/index.rst`
+- 配置自动文档提取 (autodoc, napoleon, typehints)
+- 使用 Read the Docs 主题
+
+**用户文档**:
+- 新增 `examples/mcp-batch-operations.md` - 批量操作使用示例
+- 新增 `examples/mcp-health-check.md` - 健康检查使用示例
+- 新增 `references/cache-mechanism.md` - 缓存机制使用指南
+
+### Changed
+
+**MCP 工具数量**: 6个 → 11个
+- 新增5个MCP工具：批量操作(2)、健康检查(3)
+
+**SKILL.md 更新**:
+- MCP工具列表: 6个 → 11个
+- 核心能力: 7项 → 9项
+- 触发词: 6个 → 10个
+- 架构说明: 6工具 → 11工具
+
+**依赖更新**:
+- 添加 `psutil>=5.9.0` 用于系统监控
+- 添加 Sphinx 依赖
+
+**版本号**: 0.2.1 → 0.3.0
+
+### Performance
+
+- 批量操作支持并发处理，性能提升 >50%
+- 缓存机制减少重复计算
+- 健康检查提供实时性能监控
+
+### Testing
+
+- **测试统计**: 498 → 548 个测试 (+50个测试)
+- **测试覆盖率**: 98% → 96% (新增模块降低整体覆盖率，但各模块覆盖率>95%)
+- **代码质量**: ruff 0错误, mypy 0错误, 所有测试通过
+
+### Documentation
+
+- 更新 CHANGELOG.md 和 ROADMAP.md
+- 完善SKILL.md集成指南
+- 添加3个新用户文档
+
 ## [0.1.0] - 2026-01-21
 
 ### Added
