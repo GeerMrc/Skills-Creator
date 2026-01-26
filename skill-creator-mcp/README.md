@@ -76,58 +76,89 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 ## 🚀 5分钟快速开始
 
-### 1. 安装
+### 方式A：全局安装（推荐，简单）
+
+**1. 安装**
 
 ```bash
-# 进入 MCP Server 目录
-cd skill-creator-mcp
-
-# 使用 uv 安装依赖（推荐）
-uv sync --dev
+# 使用 pip 或 uv pip 全局安装
+pip install skill-creator-mcp
+# 或
+uv pip install skill-creator-mcp
 ```
 
-### 2. 配置 Claude Code
+**2. 配置 Claude Code**
 
-```bash
-# 进入项目根目录
-cd /path/to/Skills-Creator
+编辑 `~/.config/Claude/claude_desktop_config.json`：
 
-# 添加 MCP 服务器
-claude mcp add skill-creator stdio python -m skill_creator_mcp
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "python",
+      "args": ["-m", "skill_creator_mcp"]
+    }
+  }
+}
 ```
 
-### 3. 验证
+**3. 验证**
 
 在 Claude Code 中输入：
 ```
 使用 skill-creator MCP 工具初始化一个名为 "my-skill" 的技能
 ```
 
-### 4. 下一步
-
-- 📖 阅读 [文档索引](docs/README.md) 了解完整功能
-- 🔧 查看 [配置参数参考](docs/configuration.md) 自定义配置
-
 ---
 
-## 安装
+### 方式B：源码开发（仅限贡献者）
 
-### 使用 uv（推荐）
+**1. 克隆并安装**
 
 ```bash
 # 克隆仓库
-git clone <repository-url>
-cd skill-creator-mcp
+git clone https://github.com/GeerMrc/Skills-Creator.git
+cd Skills-Creator/skill-creator-mcp
 
 # 安装依赖
 uv sync --dev
 ```
 
-### 使用 pip
+**2. 配置 Claude Code**
 
-```bash
-pip install -e ".[dev]"
+编辑 `~/.config/Claude/claude_desktop_config.json`：
+
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/Skills-Creator/skill-creator-mcp",
+        "run",
+        "python",
+        "-m",
+        "skill_creator_mcp"
+      ]
+    }
+  }
+}
 ```
+
+**3. 验证**
+
+同方式A
+
+---
+
+### 下一步
+
+- 📖 阅读 [文档索引](docs/README.md) 了解完整功能
+- 🔧 查看 [配置参数参考](docs/configuration.md) 自定义配置
+- 📘 查看 [MCP 配置说明](docs/mcp-config-guide.md) 了解详细配置选项
+
+---
 
 ## 配置
 
