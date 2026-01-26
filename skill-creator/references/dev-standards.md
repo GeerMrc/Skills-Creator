@@ -3,7 +3,7 @@
 > **版本**: v1.0
 > **更新日期**: 2026-01-26
 > **适用范围**: Skills-Creator 项目开发
-> **配套文档**: `.claude/plans/checklists.md`
+> **配套文档**: `.claude/plans/guidelines.md`
 
 ---
 
@@ -546,7 +546,7 @@ develop分支:
 | 文件 | 路径 |
 |------|------|
 | 开发指南 | `CLAUDE.md` |
-| 检查清单 | `.claude/plans/checklists.md` |
+| 检查清单 | `.claude/plans/guidelines.md` |
 | 执行指南 | `skill-creator/references/dev-standards.md` |
 | 变更日志 | `CHANGELOG.md` |
 
