@@ -7,7 +7,7 @@ from pathlib import Path
 
 from skill_creator_mcp.utils.path_helpers import (
     ensure_output_dir,
-    get_default_output_dir,
+    get_output_dir,
     normalize_path,
 )
 
@@ -77,54 +77,35 @@ def test_ensure_output_dir_raises_on_not_writable():
             readonly_dir.chmod(stat.S_IRWXU)
 
 
-def test_get_default_output_dir_uses_env_var():
-    """测试 get_default_output_dir 读取环境变量."""
+def test_get_output_dir_with_env_var():
+    """测试 get_output_dir 读取 SKILL_CREATOR_OUTPUT_DIR."""
     import os
 
-    # 设置环境变量
-    original_value = os.environ.get("SKILL_CREATOR_DEFAULT_OUTPUT_DIR")
-    os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"] = "/tmp/test_skills"
+    original_value = os.environ.get("SKILL_CREATOR_OUTPUT_DIR")
+    os.environ["SKILL_CREATOR_OUTPUT_DIR"] = "/tmp/test_skills"
 
     try:
-        result = get_default_output_dir()
-        # 验证路径包含 test_skills
+        result = get_output_dir()
         assert "test_skills" in str(result)
     finally:
-        # 恢复原始值
         if original_value is None:
-            del os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"]
+            del os.environ["SKILL_CREATOR_OUTPUT_DIR"]
         else:
-            os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"] = original_value
+            os.environ["SKILL_CREATOR_OUTPUT_DIR"] = original_value
 
 
-def test_get_default_output_dir_creates_home_skills():
-    """测试 get_default_output_dir 创建 ~/skills."""
+def test_get_output_dir_fallback_to_home_skills():
+    """测试 get_output_dir 回退到 ~/skills."""
     import os
-    import shutil
 
-    # 清除环境变量，使用默认值
-    original_value = os.environ.get("SKILL_CREATOR_DEFAULT_OUTPUT_DIR")
-    if "SKILL_CREATOR_DEFAULT_OUTPUT_DIR" in os.environ:
-        del os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"]
-
-    test_skills_dir = Path.home() / "test_skills_for_unit_test"
+    original_value = os.environ.get("SKILL_CREATOR_OUTPUT_DIR")
+    if "SKILL_CREATOR_OUTPUT_DIR" in os.environ:
+        del os.environ["SKILL_CREATOR_OUTPUT_DIR"]
 
     try:
-        # 确保测试目录开始时不存在
-        if test_skills_dir.exists():
-            shutil.rmtree(test_skills_dir)
-
-        result = get_default_output_dir()
-
-        # 验证路径包含 skills
+        result = get_output_dir(fallback=True)
         assert "skills" in str(result).lower()
-        # 验证目录已创建
-        assert result.exists()
-        assert result.is_dir()
+        assert str(Path.home()) in str(result)
     finally:
-        # 清理测试目录
-        if test_skills_dir.exists():
-            shutil.rmtree(test_skills_dir)
-        # 恢复环境变量
         if original_value is not None:
-            os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"] = original_value
+            os.environ["SKILL_CREATOR_OUTPUT_DIR"] = original_value

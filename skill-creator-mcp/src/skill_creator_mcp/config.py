@@ -9,13 +9,8 @@
     SKILL_CREATOR_OUTPUT_DIR: 输出目录
         - 由 init_skill, package_skill, package_agent_skill 使用
         - 优先级：工具参数 > 环境变量 > 默认值
-        - 默认值：SKILL_CREATOR_DEFAULT_OUTPUT_DIR 或 ~/skills
-        - 推荐：设置为绝对路径如 ~/.claude/skills
-        - 注意：推荐使用 SKILL_CREATOR_DEFAULT_OUTPUT_DIR，但 SKILL_CREATOR_OUTPUT_DIR 仍然支持（向后兼容）
-    SKILL_CREATOR_DEFAULT_OUTPUT_DIR: 默认输出目录（当工具参数未设置时）
         - 默认值：~/skills（自动创建）
-        - 推荐值：~/.claude/skills 或其他绝对路径
-        - 注意：目录不存在时自动创建
+        - 推荐：设置为绝对路径如 ~/.claude/skills
     SKILL_CREATOR_CACHE_SIZE: 缓存最大条目数
         - 默认值：128
         - 推荐值：根据内存调整（64-512）
@@ -53,22 +48,13 @@ class Config:
         self._log_file: str | None = os.getenv("SKILL_CREATOR_LOG_FILE")
 
         # 工作目录配置
-        # 新逻辑：优先使用工具参数，否则使用 SKILL_CREATOR_DEFAULT_OUTPUT_DIR 或 ~/skills
+        # 优先级：工具参数 > SKILL_CREATOR_OUTPUT_DIR > ~/skills
         # 注意：
         # 1. ~/skills 会被自动创建（如果不存在）
         # 2. 推荐使用绝对路径避免混淆
         # 3. 相对路径将基于 MCP Server 启动目录解析
-        default_output = os.getenv(
-            "SKILL_CREATOR_DEFAULT_OUTPUT_DIR",
-            "~/skills"  # 修改默认值为 ~/skills
-        )
-        # 保留向后兼容：如果用户设置了 SKILL_CREATOR_OUTPUT_DIR，仍然生效
-        # 但文档中不再推荐使用
-        output_dir_value = os.getenv("SKILL_CREATOR_OUTPUT_DIR", default_output)
+        output_dir_value = os.getenv("SKILL_CREATOR_OUTPUT_DIR", "~/skills")
         self._output_dir: Path = Path(output_dir_value).expanduser().resolve(strict=False)
-
-        # 新增：默认输出目录
-        self._default_output_dir: Path = Path(default_output).expanduser().resolve(strict=False)
 
         # 操作配置
         self._max_retries: int = int(os.getenv("SKILL_CREATOR_MAX_RETRIES", "3"))
@@ -112,11 +98,6 @@ class Config:
     def timeout_seconds(self) -> int:
         """获取操作超时时间（秒）."""
         return self._timeout_seconds
-
-    @property
-    def default_output_dir(self) -> Path:
-        """获取默认输出目录."""
-        return self._default_output_dir
 
     @property
     def cache_size(self) -> int:

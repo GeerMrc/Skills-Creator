@@ -17,7 +17,6 @@ from .file_ops import (
 )
 from .packagers import package_skill
 from .path_helpers import (
-    get_default_output_dir,
     get_output_dir,
     join_paths,
     normalize_path,
@@ -62,7 +61,6 @@ __all__ = [
     "estimate_refactor_effort",
     "package_skill",
     "normalize_path",
-    "get_default_output_dir",
     "get_output_dir",
     "join_paths",
     "split_path_parts",

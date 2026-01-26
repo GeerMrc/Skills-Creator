@@ -36,26 +36,6 @@ class TestConfigIntegration:
             del os.environ["SKILL_CREATOR_OUTPUT_DIR"]
             reload_config()
 
-    def test_default_output_dir_fallback(self, tmp_path):
-        """测试默认输出目录回退."""
-        # 不设置 SKILL_CREATOR_OUTPUT_DIR
-        os.environ.pop("SKILL_CREATOR_OUTPUT_DIR", None)
-
-        # 设置 SKILL_CREATOR_DEFAULT_OUTPUT_DIR
-        default_dir = tmp_path / "default-output"
-        default_dir.mkdir()
-
-        os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"] = str(default_dir)
-        try:
-            reload_config()
-            config = get_config()
-
-            # 验证回退到默认输出目录
-            assert str(default_dir) in str(config.output_dir)
-        finally:
-            os.environ.pop("SKILL_CREATOR_DEFAULT_OUTPUT_DIR", None)
-            reload_config()
-
     def test_pydantic_model_respects_config(self, tmp_path):
         """测试 Pydantic 模型正确读取配置."""
         env_dir = tmp_path / "pydantic-test"
@@ -121,8 +101,7 @@ class TestConfigIntegration:
         """测试新增的配置属性."""
         config = Config()
 
-        # 验证新增的属性
-        assert hasattr(config, "default_output_dir")
+        # 验证新增的属性（不包含已删除的 default_output_dir）
         assert hasattr(config, "cache_size")
         assert hasattr(config, "cache_ttl")
         assert hasattr(config, "plan_archive_dir")
@@ -130,9 +109,9 @@ class TestConfigIntegration:
         # 验证默认值
         assert config.cache_size == 128
         assert config.cache_ttl == 3600
-        # 默认输出目录是 ~/skills
-        assert "skills" in str(config.default_output_dir).lower()
-        assert str(Path.home()) in str(config.default_output_dir)
+        # 默认输出目录是 ~/skills（使用 output_dir 属性）
+        assert "skills" in str(config.output_dir).lower()
+        assert str(Path.home()) in str(config.output_dir)
 
     def test_plan_archive_dir_configurable(self, tmp_path):
         """测试计划归档目录可配置."""

@@ -224,14 +224,6 @@ def test_log_format_type():
 # ==================== 默认值 ~/skills 测试 ====================
 
 
-def test_default_output_dir_is_home_skills():
-    """测试默认输出目录为 ~/skills."""
-    config = Config()
-    # 验证默认路径包含用户主目录和 skills
-    assert "skills" in str(config.default_output_dir).lower()
-    assert str(Path.home()) in str(config.default_output_dir)
-
-
 def test_default_output_dir_auto_created():
     """测试默认目录自动创建."""
     import tempfile
@@ -253,17 +245,19 @@ def test_default_output_dir_auto_created():
 
 def test_custom_output_dir_from_env():
     """测试从环境变量读取自定义目录."""
+    import os
+
     custom_dir = "~/.claude/skills"
-    os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"] = custom_dir
+    os.environ["SKILL_CREATOR_OUTPUT_DIR"] = custom_dir
 
     try:
         reload_config()
         config = Config()
         # 验证路径包含 .claude/skills
-        assert ".claude" in str(config.default_output_dir)
-        assert "skills" in str(config.default_output_dir).lower()
+        assert ".claude" in str(config.output_dir)
+        assert "skills" in str(config.output_dir).lower()
     finally:
-        del os.environ["SKILL_CREATOR_DEFAULT_OUTPUT_DIR"]
+        del os.environ["SKILL_CREATOR_OUTPUT_DIR"]
         reload_config()
 
 

@@ -20,7 +20,6 @@
 | 环境变量 | 默认值 | 有效值 | 描述 |
 |---------|--------|--------|------|
 | `SKILL_CREATOR_OUTPUT_DIR` | ~/skills | 目录路径 | 默认输出目录（自动创建） |
-| `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` | ~/skills | 目录路径 | 默认输出目录（已废弃，仅用于向后兼容） |
 
 ### 操作配置
 

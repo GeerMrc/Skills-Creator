@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- 删除 `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` 环境变量
+  - 统一使用 `SKILL_CREATOR_OUTPUT_DIR`（默认：`~/skills`）
+  - 删除 `get_default_output_dir()` 函数
+  - 删除 `Config.default_output_dir` 属性
+  - 删除所有向后兼容逻辑
+
+### Changed
+
+- 统一环境变量配置规范
+  - 只保留 `SKILL_CREATOR_OUTPUT_DIR` 作为输出目录配置
+  - 优先级：工具参数 > `SKILL_CREATOR_OUTPUT_DIR` > `~/skills`
+  - 简化 `get_output_dir()` 函数实现
+- 更新测试用例移除 `DEFAULT_OUTPUT_DIR` 引用
+  - `test_path_helpers.py`: 删除 2 个旧测试，新增 2 个测试
+  - `test_config.py`: 删除 1 个旧测试
+  - `test_config_integration.py`: 删除 1 个旧测试，修改 1 个测试
+
 ### Fixed
 
 - **P0**: 实现目录自动管理功能
