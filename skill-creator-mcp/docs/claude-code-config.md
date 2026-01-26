@@ -10,10 +10,52 @@
 
 Claude Code 是 Anthropic 官方的 VSCode 扩展，支持通过 MCP 协议集成 Skill Creator。
 
-**快速开始**：
+---
+
+## 安装方式
+
+### ⚠️ 根据使用场景选择安装方式
+
+**方式A：全局安装（推荐，简单）**
+
+适用场景：仅使用 MCP Server 工具
+
 ```bash
-cd /path/to/Skills-Creator
+# 使用 pip 或 uv pip 全局安装
+pip install skill-creator-mcp
+# 或
+uv pip install skill-creator-mcp
+```
+
+**方式B：源码开发（仅限贡献者）**
+
+适用场景：从源码开发或贡献代码
+
+```bash
+# 克隆仓库
+git clone https://github.com/GeerMrc/Skills-Creator.git
+cd Skills-Creator/skill-creator-mcp
+
+# 安装依赖
+uv sync --dev
+```
+
+---
+
+## 快速开始
+
+### 全局安装用户
+
+```bash
+# 添加 MCP 服务器
 claude mcp add skill-creator stdio python -m skill_creator_mcp
+```
+
+### 源码开发用户
+
+```bash
+# 添加 MCP 服务器（使用 uv）
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp
 ```
 
 ---
@@ -24,12 +66,23 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp
 
 使用 `claude mcp` 命令快速配置：
 
+**全局安装用户**：
 ```bash
 # 基础配置
 claude mcp add skill-creator stdio python -m skill_creator_mcp
 
 # 带环境变量
 claude mcp add skill-creator stdio python -m skill_creator_mcp \
+  --env SKILL_CREATOR_LOG_LEVEL=DEBUG
+```
+
+**源码开发用户**：
+```bash
+# 基础配置（使用 uv）
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp
+
+# 带环境变量
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp \
   --env SKILL_CREATOR_LOG_LEVEL=DEBUG
 ```
 
@@ -43,12 +96,35 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp \
 | **user** | `~/.claude/settings.json` |
 | **local** | `.claude/settings.json`（项目目录） |
 
+**全局安装配置**：
 ```json
 {
   "mcpServers": {
     "skill-creator": {
       "command": "python",
       "args": ["-m", "skill_creator_mcp"],
+      "env": {
+        "SKILL_CREATOR_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+**源码开发配置**：
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/Skills-Creator/skill-creator-mcp",
+        "run",
+        "python",
+        "-m",
+        "skill_creator_mcp"
+      ],
       "env": {
         "SKILL_CREATOR_LOG_LEVEL": "INFO"
       }
@@ -125,7 +201,7 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp \
 
 ### 项目级配置（推荐团队使用）
 
-**配置命令**：
+**全局安装用户**：
 ```bash
 cd /path/to/Skills-Creator
 claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
@@ -143,6 +219,12 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
 }
 ```
 
+**源码开发用户**：
+```bash
+cd /path/to/Skills-Creator
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp --scope project
+```
+
 **优点**：
 - ✅ 配置可提交到版本控制
 - ✅ 团队成员共享配置
@@ -150,7 +232,7 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
 
 ### 用户级配置（推荐个人使用）
 
-**配置命令**：
+**全局安装用户**：
 ```bash
 claude mcp add skill-creator stdio python -m skill_creator_mcp --scope user
 ```
@@ -167,6 +249,12 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope user
 }
 ```
 
+**源码开发用户**：
+```bash
+cd /path/to/Skills-Creator
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp --scope user
+```
+
 **优点**：
 - ✅ 跨项目使用
 - ✅ 个人配置统一管理
@@ -174,10 +262,16 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope user
 
 ### 本地配置（临时测试）
 
-**配置命令**：
+**全局安装用户**：
 ```bash
 cd /path/to/Skills-Creator
 claude mcp add skill-creator stdio python -m skill_creator_mcp --scope local
+```
+
+**源码开发用户**：
+```bash
+cd /path/to/Skills-Creator/skill-creator-mcp
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp --scope local
 ```
 
 **生成的文件**：`.claude/settings.json`
@@ -203,9 +297,18 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope local
 
 ### 场景1：项目级配置（团队协作）
 
+**全局安装用户**：
 ```bash
 cd /path/to/Skills-Creator
 claude mcp add skill-creator stdio python -m skill_creator_mcp \
+  --scope project \
+  --env SKILL_CREATOR_LOG_LEVEL=INFO
+```
+
+**源码开发用户**：
+```bash
+cd /path/to/Skills-Creator
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp \
   --scope project \
   --env SKILL_CREATOR_LOG_LEVEL=INFO
 ```
@@ -218,6 +321,7 @@ git commit -m "docs: 添加 Skill Creator MCP 配置"
 
 ### 场景2：用户级配置（跨项目使用）
 
+**全局安装用户**：
 ```bash
 claude mcp add skill-creator stdio python -m skill_creator_mcp \
   --scope user \
@@ -225,8 +329,26 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp \
   --env SKILL_CREATOR_OUTPUT_DIR=~/skills-output
 ```
 
+**源码开发用户**：
+```bash
+cd /path/to/Skills-Creator
+claude mcp add skill-creator stdio uv run python -m skill_creator_mcp \
+  --scope user \
+  --env SKILL_CREATOR_LOG_LEVEL=DEBUG \
+  --env SKILL_CREATOR_OUTPUT_DIR=~/skills-output
+```
+
 ### 场景3：本地开发（调试模式）
 
+**全局安装用户**：
+```bash
+cd /path/to/Skills-Creator
+claude mcp add skill-creator stdio python -m skill_creator_mcp \
+  --scope local \
+  --env SKILL_CREATOR_LOG_LEVEL=DEBUG
+```
+
+**源码开发用户**：
 ```bash
 cd /path/to/Skills-Creator/skill-creator-mcp
 claude mcp add skill-creator stdio uv run python -m skill_creator_mcp \
@@ -344,8 +466,9 @@ uv sync --dev
 
 ## 配置文件示例
 
-### 完整的 .mcp.json 示例
+### 全局安装配置示例
 
+**完整的 .mcp.json 示例**：
 ```json
 {
   "mcpServers": {
@@ -362,8 +485,9 @@ uv sync --dev
 }
 ```
 
-### 使用 uv 的配置示例
+### 源码开发配置示例
 
+**使用 uv 的 .mcp.json 示例**：
 ```json
 {
   "mcpServers": {
@@ -371,14 +495,16 @@ uv sync --dev
       "command": "uv",
       "args": [
         "--directory",
-        "/path/to/Skills-Creator/skill-creator-mcp",
+        "/absolute/path/to/Skills-Creator/skill-creator-mcp",
         "run",
         "python",
         "-m",
         "skill_creator_mcp"
       ],
       "env": {
-        "SKILL_CREATOR_LOG_LEVEL": "DEBUG"
+        "SKILL_CREATOR_LOG_LEVEL": "INFO",
+        "SKILL_CREATOR_OUTPUT_DIR": "./skills-output",
+        "SKILL_CREATOR_MAX_RETRIES": "3"
       }
     }
   }

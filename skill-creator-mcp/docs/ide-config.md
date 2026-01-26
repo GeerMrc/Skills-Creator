@@ -33,6 +33,30 @@ Skill Creator MCP 支持通过 MCP (Model Context Protocol) 协议与各种 IDE 
 | **Windows** | `%APPDATA%/Claude/claude_desktop_config.json` |
 | **Linux** | `~/.config/Claude/claude_desktop_config.json` |
 
+### ⚠️ 根据安装方式选择配置
+
+**全局安装（推荐）**：
+
+```bash
+pip install skill-creator-mcp
+```
+
+**配置**：
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "python",
+      "args": ["-m", "skill_creator_mcp"]
+    }
+  }
+}
+```
+
+---
+
+**源码开发**：
+
 ### 基础 STDIO 配置
 
 **使用 uv（推荐）**：
@@ -147,8 +171,15 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
 | **Windows** | `%APPDATA%/Cursor/User/globalStorage/mcp_servers_config.json` |
 | **Linux** | `~/.config/Cursor/User/globalStorage/mcp_servers_config.json` |
 
-### STDIO 模式配置
+### ⚠️ 根据安装方式选择配置
 
+**全局安装（推荐）**：
+
+```bash
+pip install skill-creator-mcp
+```
+
+**配置**：
 ```json
 {
   "mcpServers": {
@@ -163,8 +194,11 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
 }
 ```
 
-### 使用 uv 配置
+---
 
+**源码开发**：
+
+**使用 uv**：
 ```json
 {
   "mcpServers": {
@@ -177,7 +211,10 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
         "python",
         "-m",
         "skill_creator_mcp"
-      ]
+      ],
+      "env": {
+        "SKILL_CREATOR_LOG_LEVEL": "INFO"
+      }
     }
   }
 }
@@ -191,14 +228,47 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp --scope project
 
 `~/.continue/config.json`
 
-### STDIO 模式配置
+### ⚠️ 根据安装方式选择配置
 
+**全局安装（推荐）**：
+
+```bash
+pip install skill-creator-mcp
+```
+
+**配置**：
 ```json
 {
   "mcpServers": {
     "skill-creator": {
       "command": "python",
       "args": ["-m", "skill_creator_mcp"],
+      "env": {
+        "SKILL_CREATOR_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+---
+
+**源码开发**：
+
+**使用 uv**：
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/Skills-Creator/skill-creator-mcp",
+        "run",
+        "python",
+        "-m",
+        "skill_creator_mcp"
+      ],
       "env": {
         "SKILL_CREATOR_LOG_LEVEL": "INFO"
       }

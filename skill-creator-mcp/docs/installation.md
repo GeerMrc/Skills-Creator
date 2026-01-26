@@ -176,7 +176,33 @@ python -m skill_creator_mcp
 
 ## IDE 集成配置
 
-### Claude Desktop
+### ⚠️ 根据安装方式选择配置
+
+**全局安装（推荐）**：
+
+```bash
+pip install skill-creator-mcp
+```
+
+**配置文件**：`~/.config/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "skill-creator": {
+      "command": "python",
+      "args": ["-m", "skill_creator_mcp"],
+      "env": {
+        "SKILL_CREATOR_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+---
+
+**源码开发**：
 
 配置示例：
 
