@@ -29,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 添加 `*.whl`、`*.tar.gz` 规则，忽略构建产物
   - 确保构建产物和 release 包不被 git 跟踪
 
+**文档完善**:
+- 新增 `docs/mcp-config-guide.md` MCP 配置完整指南
+  - 验证 `uv --directory` 参数有效性（uv >= 0.5.0）
+  - 提供 4 种配置方案（uv/venv/全局/simplified）
+  - 跨平台路径处理最佳实践
+  - 常见问题排查指南
+- 更新 `README.md` 配置说明，添加版本要求和替代方案
+- 更新 `docs/README.md` 添加配置指南链接
+
 **架构合规性修复** (46处违规引用):
 - 删除 MCP Server 反向引用 Agent-Skill (8处)
 - 清理 Agent-Skill SKILL.md 中的 Claude Code 配置章节 (行96-158)
