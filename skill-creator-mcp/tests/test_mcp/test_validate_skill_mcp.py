@@ -314,7 +314,7 @@ async def test_validate_skill_mcp_internal_error(temp_dir):
     ctx.log = MagicMock()
 
     # 模拟 Path 构造函数抛出异常
-    with patch("skill_creator_mcp.server.Path", side_effect=RuntimeError("Simulated error")):
+    with patch("skill_creator_mcp.tools.skill_tools.Path", side_effect=RuntimeError("Simulated error")):
         result = await validate_skill_tool.fn(
             ctx,
             skill_path="/some/path",

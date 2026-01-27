@@ -5,7 +5,7 @@
 
 import pytest
 
-from skill_creator_mcp.server import (
+from skill_creator_mcp.tools.skill_tools import (
     _create_example_examples,
     _create_example_scripts,
     _create_reference_files,

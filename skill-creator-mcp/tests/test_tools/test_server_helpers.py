@@ -152,14 +152,14 @@ class TestGetRequirementModeSteps:
 
     def test_brainstorm_mode_returns_empty_list(self):
         """测试 brainstorm 模式返回空列表（覆盖 line 1265）."""
-        from skill_creator_mcp.server import _get_requirement_mode_steps
+        from skill_creator_mcp.utils.requirement_collection import _get_requirement_mode_steps
 
         result = _get_requirement_mode_steps("brainstorm")
         assert result == []
 
     def test_progressive_mode_returns_empty_list(self):
         """测试 progressive 模式返回空列表."""
-        from skill_creator_mcp.server import _get_requirement_mode_steps
+        from skill_creator_mcp.utils.requirement_collection import _get_requirement_mode_steps
 
         result = _get_requirement_mode_steps("progressive")
         assert result == []
@@ -190,7 +190,7 @@ class TestProcessRequirementUserAnswer:
     async def test_dynamic_mode_saves_answer_and_continues(self):
         """测试动态模式保存答案并继续（覆盖 lines 1562-1599）."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _process_requirement_user_answer
+        from skill_creator_mcp.utils.requirement_collection import _process_requirement_user_answer
 
         mock_ctx = MagicMock()
         mock_ctx.set_state = AsyncMock()
@@ -223,7 +223,7 @@ class TestProcessRequirementUserAnswer:
     async def test_dynamic_mode_complete_action(self):
         """测试动态模式完成操作."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _process_requirement_user_answer
+        from skill_creator_mcp.utils.requirement_collection import _process_requirement_user_answer
 
         mock_ctx = MagicMock()
         mock_ctx.set_state = AsyncMock()
@@ -256,7 +256,7 @@ class TestProcessRequirementUserAnswer:
     async def test_static_mode_no_current_step_error(self):
         """测试静态模式没有当前步骤时返回错误（覆盖 line 1615）."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _process_requirement_user_answer
+        from skill_creator_mcp.utils.requirement_collection import _process_requirement_user_answer
 
         mock_ctx = MagicMock()
 
@@ -287,7 +287,7 @@ class TestProcessRequirementUserAnswer:
     async def test_brainstorm_mode_saves_conversation_history(self):
         """测试 brainstorm 模式保存对话历史."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _process_requirement_user_answer
+        from skill_creator_mcp.utils.requirement_collection import _process_requirement_user_answer
 
         mock_ctx = MagicMock()
         mock_ctx.set_state = AsyncMock()
@@ -325,7 +325,9 @@ class TestHandleRequirementPreviousAction:
     async def test_dynamic_mode_previous_returns_status(self):
         """测试动态模式上一步操作返回状态（覆盖 line 1333）."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _handle_requirement_previous_action
+        from skill_creator_mcp.utils.requirement_collection import (
+            _handle_requirement_previous_action,
+        )
 
         mock_ctx = MagicMock()
         mock_ctx.set_state = AsyncMock()
@@ -354,7 +356,9 @@ class TestHandleRequirementPreviousAction:
     async def test_static_mode_previous_at_first_step_error(self):
         """测试静态模式在第一步时无法返回（覆盖 line 1375）."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _handle_requirement_previous_action
+        from skill_creator_mcp.utils.requirement_collection import (
+            _handle_requirement_previous_action,
+        )
 
         mock_ctx = MagicMock()
 
@@ -381,7 +385,9 @@ class TestHandleRequirementPreviousAction:
     async def test_dynamic_mode_previous_at_step_zero_error(self):
         """测试动态模式在第零步时无法返回."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _handle_requirement_previous_action
+        from skill_creator_mcp.utils.requirement_collection import (
+            _handle_requirement_previous_action,
+        )
 
         mock_ctx = MagicMock()
 
@@ -413,7 +419,8 @@ class TestCollectRequirementsErrorHandling:
 
     async def test_exception_handling_in_collect_requirements(self):
         """测试 collect_requirements 异常处理（覆盖 lines 947-948）."""
-        from skill_creator_mcp.server import collect_requirements
+        from skill_creator_mcp.server import mcp
+        from skill_creator_mcp.tools.requirement_tools import collect_requirements
 
         mock_ctx = MagicMock()
         mock_ctx.session_id = "test_session"
@@ -421,9 +428,11 @@ class TestCollectRequirementsErrorHandling:
         mock_ctx.set_state = AsyncMock()
 
         # Mock _validate_and_init_requirement_session to raise an exception
-        with patch('skill_creator_mcp.server._validate_and_init_requirement_session', side_effect=Exception("Internal error")):
+        # Note: need to patch where the function is imported inside collect_requirements
+        with patch('skill_creator_mcp.utils.requirement_collection._validate_and_init_requirement_session', side_effect=Exception("Internal error")):
             result = await collect_requirements(
                 ctx=mock_ctx,
+                mcp=mcp,
                 action="next",
                 mode="basic",
                 session_id="test_session",
@@ -442,7 +451,7 @@ class TestGetRequirementNextQuestion:
     async def test_default_error_return(self):
         """测试默认错误返回（覆盖 line 1524）."""
         from skill_creator_mcp.models.skill_config import SessionState
-        from skill_creator_mcp.server import _get_requirement_next_question
+        from skill_creator_mcp.utils.requirement_collection import _get_requirement_next_question
 
         mock_ctx = MagicMock()
         mock_ctx.set_state = AsyncMock()
@@ -475,7 +484,7 @@ class TestCollectWithElicitErrorCases:
     async def test_unknown_dynamic_mode_returns_error(self):
         """测试未知动态模式返回错误（覆盖 line 1021）."""
         from skill_creator_mcp.models.skill_config import RequirementCollectionInput, SessionState
-        from skill_creator_mcp.server import _collect_with_elicit
+        from skill_creator_mcp.utils.requirement_collection import _collect_with_elicit
 
         mock_ctx = MagicMock()
         mock_ctx.get_state = AsyncMock(return_value=None)

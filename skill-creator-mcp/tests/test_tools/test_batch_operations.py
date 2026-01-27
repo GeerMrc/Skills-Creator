@@ -51,7 +51,9 @@ class TestBatchValidation:
     @pytest.mark.asyncio
     async def test_batch_validate_with_errors(self):
         """测试批量验证包含错误."""
-        async def mock_validate_error(skill_path, **kwargs):
+        from unittest.mock import patch
+
+        async def mock_validate_error(ctx, skill_path, **kwargs):
             if "error" in skill_path:
                 raise ValueError("Invalid skill")
             return {
@@ -60,11 +62,8 @@ class TestBatchValidation:
                 "skill_path": skill_path,
             }
 
-        import skill_creator_mcp.server
-        original = skill_creator_mcp.server.validate_skill
-        skill_creator_mcp.server.validate_skill = mock_validate_error
-
-        try:
+        # Patch validate_skill where it's imported inside batch_operations
+        with patch("skill_creator_mcp.tools.skill_tools.validate_skill", mock_validate_error):
             result = await batch_validate_skills(
                 skill_paths=["/skill1", "/error", "/skill2"],
                 concurrent_limit=2,
@@ -73,8 +72,6 @@ class TestBatchValidation:
             assert result.summary["total"] == 3
             assert result.summary["successful"] == 2
             assert result.summary["failed"] == 1
-        finally:
-            skill_creator_mcp.server.validate_skill = original
 
     def test_batch_validate_sync(self):
         """测试同步版本的批量验证."""

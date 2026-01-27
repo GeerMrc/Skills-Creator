@@ -9,7 +9,7 @@
 
 import pytest
 
-from skill_creator_mcp.server import _generate_skill_md_content
+from skill_creator_mcp.tools.skill_tools import _generate_skill_md_content
 from skill_creator_mcp.utils.analyzers import (
     _analyze_quality,
 )

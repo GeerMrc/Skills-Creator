@@ -162,7 +162,7 @@ async def test_init_skill_mcp_tool_internal_error(temp_dir):
 
     # 模拟 write_file_async 抛出异常
     with patch(
-        "skill_creator_mcp.server.write_file_async", side_effect=RuntimeError("Simulated error")
+        "skill_creator_mcp.tools.skill_tools.write_file_async", side_effect=RuntimeError("Simulated error")
     ):
         result = await init_skill_tool.fn(
             ctx,

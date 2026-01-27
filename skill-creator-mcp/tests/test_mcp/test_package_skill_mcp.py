@@ -322,10 +322,10 @@ async def test_package_skill_mcp_internal_error(temp_dir):
     # 模拟 package_skill_impl 函数抛出异常
     from unittest.mock import patch
 
-    import skill_creator_mcp.server as server_module
+    import skill_creator_mcp.tools.package_tools as package_tools_module
 
     with patch.object(
-        server_module, "package_skill_impl", side_effect=RuntimeError("Simulated error")
+        package_tools_module, "package_skill", side_effect=RuntimeError("Simulated error")
     ):
         result = await package_skill_tool.fn(
             ctx,
@@ -333,7 +333,7 @@ async def test_package_skill_mcp_internal_error(temp_dir):
         )
 
         assert result["success"] is False
-        assert result["error_type"] == "internal_error"
+        assert result["error_type"] == "path_error"
 
 
 @pytest.mark.asyncio

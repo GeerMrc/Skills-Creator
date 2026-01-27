@@ -565,7 +565,7 @@ class TestServerBatchToolsExceptionHandling:
 
         # Mock batch_validate_skills抛出异常
         with patch(
-            "skill_creator_mcp.server.batch_validate_skills",
+            "skill_creator_mcp.tools.batch_operations.batch_validate_skills",
             side_effect=RuntimeError("Simulated batch validation error"),
         ):
             result = await batch_validate_skills_tool(
@@ -592,7 +592,7 @@ class TestServerBatchToolsExceptionHandling:
 
         # Mock batch_analyze_skills抛出异常
         with patch(
-            "skill_creator_mcp.server.batch_analyze_skills",
+            "skill_creator_mcp.tools.batch_operations.batch_analyze_skills",
             side_effect=RuntimeError("Simulated batch analysis error"),
         ):
             result = await batch_analyze_skills_tool(
@@ -623,8 +623,9 @@ class TestServerPackageToolExceptionHandling:
             pass
 
         # Mock package_agent_skill_impl抛出一般异常
+        # Note: need to mock where package_agent_skill_impl is used inside package_tools
         with patch(
-            "skill_creator_mcp.server.package_agent_skill_impl",
+            "skill_creator_mcp.utils.packagers.package_agent_skill",
             side_effect=RuntimeError("Simulated packaging error"),
         ):
             result = await package_agent_skill(

@@ -70,10 +70,16 @@ async def batch_validate_skills(
         async with semaphore:
             try:
                 logger.info(f"Validating: {path}")
-                # 调用验证函数
-                from skill_creator_mcp.server import validate_skill
+                # 调用验证函数（从 skill_tools 导入）
+                from skill_creator_mcp.tools.skill_tools import validate_skill
 
-                result = await validate_skill(  # type: ignore[operator]
+                # 创建 mock Context（batch 操作不需要真实的 MCP Context）
+                from unittest.mock import MagicMock
+                mock_ctx = MagicMock()
+                mock_ctx.log = MagicMock()
+
+                result = await validate_skill(
+                    ctx=mock_ctx,
                     skill_path=path,
                     check_structure=check_structure,
                     check_content=check_content,
@@ -137,10 +143,16 @@ async def batch_analyze_skills(
         async with semaphore:
             try:
                 logger.info(f"Analyzing: {path}")
-                # 调用分析函数
-                from skill_creator_mcp.server import analyze_skill
+                # 调用分析函数（从 skill_tools 导入）
+                from skill_creator_mcp.tools.skill_tools import analyze_skill
 
-                result = await analyze_skill(  # type: ignore[operator]
+                # 创建 mock Context（batch 操作不需要真实的 MCP Context）
+                from unittest.mock import MagicMock
+                mock_ctx = MagicMock()
+                mock_ctx.log = MagicMock()
+
+                result = await analyze_skill(
+                    ctx=mock_ctx,
                     skill_path=path,
                     analyze_structure=analyze_structure,
                     analyze_complexity=analyze_complexity,
