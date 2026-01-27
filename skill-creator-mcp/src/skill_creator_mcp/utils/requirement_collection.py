@@ -6,9 +6,436 @@
 
 import json
 import re
+from datetime import datetime
+from datetime import timezone as tz
 from typing import Any
 
 from fastmcp import Context
+
+
+class SessionStateManager:
+    """会话状态管理器.
+
+    集中管理会话状态的加载、保存和更新操作。
+    """
+
+    def __init__(self, ctx: Context, session_id: str, state_prefix: str = "requirement_"):
+        """初始化会话状态管理器.
+
+        Args:
+            ctx: MCP 上下文
+            session_id: 会话ID
+            state_prefix: 状态键前缀，默认为 "requirement_"
+        """
+        self.ctx = ctx
+        self.session_id = session_id
+        self.state_prefix = state_prefix
+        self._state: Any | None = None
+        self._state_key = f"{state_prefix}{session_id}"
+
+    async def load(self) -> Any:
+        """加载会话状态.
+
+        Returns:
+            会话状态对象，如果不存在则返回 None
+        """
+        if self._state is None:
+            state_data = await self.ctx.get_state(self._state_key)
+            if state_data:
+                from ..models.skill_config import SessionState
+
+                self._state = SessionState.model_validate(state_data)
+        return self._state
+
+    async def save(self) -> None:
+        """保存会话状态."""
+        if self._state:
+            await self.ctx.set_state(  # type: ignore[func-returns-value]
+                self._state_key, self._state.model_dump()
+            )
+
+    async def create(
+        self,
+        mode: str,
+        total_steps: int,
+        current_step_index: int = 0,
+    ) -> Any:
+        """创建新的会话状态.
+
+        Args:
+            mode: 收集模式
+            total_steps: 总步骤数
+            current_step_index: 当前步骤索引
+
+        Returns:
+            新创建的会话状态对象
+        """
+        from ..models.skill_config import SessionState
+
+        self._state = SessionState(
+            current_step_index=current_step_index,
+            answers={},
+            started_at=datetime.now(tz.utc).isoformat(),
+            completed=False,
+            mode=mode,  # type: ignore[arg-type]
+            total_steps=total_steps,
+        )
+        await self.save()
+        return self._state
+
+    async def get_or_create(
+        self,
+        mode: str,
+        total_steps: int,
+        current_step_index: int = 0,
+    ) -> Any:
+        """获取或创建会话状态.
+
+        Args:
+            mode: 收集模式
+            total_steps: 总步骤数
+            current_step_index: 当前步骤索引
+
+        Returns:
+            会话状态对象
+        """
+        state = await self.load()
+        if state is None:
+            state = await self.create(mode, total_steps, current_step_index)
+        return state
+
+    async def update(self, **updates: Any) -> None:
+        """更新会话状态字段.
+
+        Args:
+            **updates: 要更新的字段和值
+        """
+        state = await self.load()
+        if state:
+            for key, value in updates.items():
+                if hasattr(state, key):
+                    setattr(state, key, value)
+            await self.save()
+
+    @property
+    def state(self) -> Any | None:
+        """获取当前会话状态（不触发加载）."""
+        return self._state
+
+    @property
+    def key(self) -> str:
+        """获取状态键."""
+        return self._state_key
+
+
+async def _initialize_session(
+    ctx: Context,
+    session_state: Any,
+    current_session_id: str,
+) -> None:
+    """初始化会话状态.
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态对象
+        current_session_id: 会话ID
+    """
+    if session_state.current_step_index == 0 and not session_state.answers:
+        await ctx.set_state(  # type: ignore[func-returns-value]
+            f"requirement_{current_session_id}", session_state.model_dump()
+        )
+
+
+async def _get_question_data(
+    ctx: Context,
+    session_state: Any,
+    is_dynamic_mode: bool,
+    all_steps: list[dict[str, Any]] | None,
+    input_data: Any,
+) -> dict[str, Any]:
+    """获取当前问题数据.
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态对象
+        is_dynamic_mode: 是否为动态模式
+        all_steps: 预定义步骤列表
+        input_data: 输入数据对象
+
+    Returns:
+        包含问题数据的字典: {
+            "question_text": str,
+            "prompt_text": str,
+            "validation": ValidationRule | None,
+            "answer_key": str,
+            "step_title": str,
+            "should_break": bool,
+            "error": str | None
+        }
+    """
+    from ..models.skill_config import RequirementStep, ValidationRule
+
+    if is_dynamic_mode:
+        # 动态模式：使用 LLM 生成问题
+        if input_data.mode == "brainstorm":
+            history: list[dict[str, str]] = session_state.conversation_history
+            question_result = await _generate_brainstorm_question(
+                ctx, session_state.answers, history
+            )
+            question_text = question_result.get("question", "")
+            return {
+                "question_text": question_text,
+                "prompt_text": question_text,
+                "validation": None,
+                "answer_key": f"answer_{session_state.current_step_index}",
+                "step_title": f"Brainstorm 问题 {session_state.current_step_index + 1}",
+                "should_break": False,
+                "error": None,
+            }
+
+        elif input_data.mode == "progressive":
+            question_result = await _generate_progressive_question(
+                ctx, session_state.answers
+            )
+            question_text = question_result.get("next_question", "")
+            return {
+                "question_text": question_text,
+                "prompt_text": question_text,
+                "validation": None,
+                "answer_key": question_result.get(
+                    "question_key", f"answer_{session_state.current_step_index}"
+                ),
+                "step_title": f"Progressive 问题 {session_state.current_step_index + 1}",
+                "should_break": False,
+                "error": None,
+            }
+
+        else:
+            return {
+                "question_text": "",
+                "prompt_text": "",
+                "validation": None,
+                "answer_key": "",
+                "step_title": "",
+                "should_break": True,
+                "error": f"未知的动态模式: {input_data.mode}",
+            }
+
+    else:
+        # 静态模式：使用预定义步骤
+        if all_steps is None or session_state.current_step_index >= len(all_steps):
+            # 所有步骤已完成
+            return {
+                "question_text": "",
+                "prompt_text": "",
+                "validation": None,
+                "answer_key": "",
+                "step_title": "",
+                "should_break": True,
+                "error": None,
+            }
+
+        current_step_data = all_steps[session_state.current_step_index]
+        validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
+        step = RequirementStep(
+            key=str(current_step_data["key"]),
+            title=str(current_step_data["title"]),
+            prompt=str(current_step_data["prompt"]),
+            validation=ValidationRule(**validation_data),
+        )
+
+        return {
+            "question_text": step.prompt,
+            "prompt_text": step.prompt,
+            "validation": step.validation,
+            "answer_key": step.key,
+            "step_title": step.title,
+            "should_break": False,
+            "error": None,
+        }
+
+
+async def _elicit_with_retry(
+    ctx: Context,
+    prompt_text: str,
+    step_title: str,
+    validation: Any | None,
+    is_dynamic_mode: bool,
+    max_retries: int = 3,
+) -> dict[str, Any]:
+    """带重试的 elicit 调用.
+
+    Args:
+        ctx: MCP 上下文
+        prompt_text: 提示文本
+        step_title: 步骤标题
+        validation: 验证规则
+        is_dynamic_mode: 是否为动态模式
+        max_retries: 最大重试次数
+
+    Returns:
+        包含结果的字典: {
+            "success": bool,
+            "answer": str | None,
+            "error": str | None,
+            "action": str | None
+        }
+    """
+    user_answer = None
+    retry_count = 0
+    validation_error = None
+
+    while retry_count <= max_retries:
+        # 构建提示文本
+        if validation_error and not is_dynamic_mode:
+            elicit_prompt = (
+                f"{prompt_text}\n\n⚠️ 输入验证失败: {validation_error}\n请重新输入："
+            )
+        else:
+            elicit_prompt = f"{step_title}\n\n{prompt_text}"
+
+        # 调用 elicit
+        try:
+            result = await ctx.elicit(elicit_prompt)  # type: ignore[call-arg]
+
+            # 检查用户是否接受了输入请求
+            if hasattr(result, "accepted") and not result.accepted:  # type: ignore[union-attr]
+                return {
+                    "success": False,
+                    "answer": None,
+                    "error": "用户取消了输入",
+                    "action": "cancelled",
+                }
+
+            # 获取用户输入
+            user_answer = (
+                str(getattr(result, "data", "")) if hasattr(result, "data") else ""
+            )
+
+        except Exception as e:
+            return {
+                "success": False,
+                "answer": None,
+                "error": f"elicit 调用失败: {e}",
+                "action": None,
+            }
+
+        # 验证输入（仅非动态模式）
+        if not is_dynamic_mode and validation:
+            validation_result = _validate_requirement_answer(user_answer, validation)
+            if not validation_result["valid"]:
+                validation_error = validation_result["error"]
+                retry_count += 1
+                continue
+
+        # 验证通过或动态模式，退出重试循环
+        break
+
+    # 检查是否超过最大重试次数
+    if retry_count > max_retries:
+        return {
+            "success": False,
+            "answer": None,
+            "error": f"输入验证失败超过 {max_retries} 次",
+            "action": None,
+        }
+
+    return {
+        "success": True,
+        "answer": user_answer,
+        "error": None,
+        "action": None,
+    }
+
+
+async def _save_answer_and_advance(
+    ctx: Context,
+    session_state: Any,
+    current_session_id: str,
+    answer_key: str,
+    user_answer: str,
+    is_dynamic_mode: bool,
+    input_data: Any,
+    all_steps: list[dict[str, Any]] | None,
+) -> bool:
+    """保存答案并前进到下一步.
+
+    Args:
+        ctx: MCP 上下文
+        session_state: 会话状态对象
+        current_session_id: 会话ID
+        answer_key: 答案键
+        user_answer: 用户答案
+        is_dynamic_mode: 是否为动态模式
+        input_data: 输入数据对象
+        all_steps: 预定义步骤列表
+
+    Returns:
+        是否应该继续收集
+    """
+    # 保存答案
+    session_state.answers[answer_key] = user_answer  # type: ignore[index]
+
+    # 更新对话历史（用于 brainstorm 模式）
+    if is_dynamic_mode and input_data.mode == "brainstorm":
+        session_state.conversation_history.append({"role": "user", "content": str(user_answer)})
+
+    # 移动到下一步
+    session_state.current_step_index += 1
+
+    # 保存会话状态
+    await ctx.set_state(  # type: ignore[func-returns-value]
+        f"requirement_{current_session_id}", session_state.model_dump()
+    )
+
+    # 检查是否完成
+    if is_dynamic_mode:
+        # 动态模式：检查是否达到足够的轮次
+        if session_state.current_step_index >= 5:  # 默认收集 5 轮
+            session_state.completed = True
+    else:
+        # 静态模式：检查是否完成所有步骤
+        if session_state.current_step_index >= len(all_steps):  # type: ignore[arg-type]
+            session_state.completed = True
+
+    return not session_state.completed
+
+
+def _build_completion_result(
+    session_state: Any,
+    current_session_id: str,
+    is_dynamic_mode: bool,
+) -> dict[str, Any]:
+    """构建完成结果.
+
+    Args:
+        session_state: 会话状态对象
+        current_session_id: 会话ID
+        is_dynamic_mode: 是否为动态模式
+
+    Returns:
+        完成结果字典
+    """
+    progress = (
+        100.0
+        if session_state.completed
+        else (session_state.current_step_index / session_state.total_steps) * 100
+    )
+
+    return {
+        "success": True,
+        "session_id": current_session_id,
+        "action": "complete",
+        "mode": session_state.mode,
+        "step_index": session_state.current_step_index,
+        "total_steps": session_state.total_steps,
+        "progress": progress,
+        "answers": session_state.answers,
+        "conversation_history": session_state.conversation_history,
+        "completed": session_state.completed,
+        "message": "需求收集完成（使用 elicit 模式）",
+        "is_dynamic_mode": is_dynamic_mode,
+    }
 
 
 async def _collect_with_elicit(
@@ -40,191 +467,82 @@ async def _collect_with_elicit(
     Returns:
         包含收集结果的字典
     """
-    from ..models.skill_config import RequirementStep, ValidationRule
-
     try:
-        # 重置会话状态（如果是重新开始）
-        if session_state.current_step_index == 0 and not session_state.answers:
-            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
+        # 初始化会话
+        await _initialize_session(ctx, session_state, current_session_id)
 
         # 主收集循环
         while not session_state.completed:
-            # 1. 获取当前问题
-            if is_dynamic_mode:
-                # 动态模式：使用 LLM 生成问题
-                if input_data.mode == "brainstorm":
-                    history: list[dict[str, str]] = session_state.conversation_history
-                    question_result = await _generate_brainstorm_question(
-                        ctx, session_state.answers, history
-                    )
-                    question_text = question_result.get("question", "")
-                    prompt_text = question_text
-                    validation = None  # 动态模式不使用固定验证规则
-                    answer_key = f"answer_{session_state.current_step_index}"
-                    step_title = f"Brainstorm 问题 {session_state.current_step_index + 1}"
+            # 获取当前问题数据
+            question_data = await _get_question_data(
+                ctx, session_state, is_dynamic_mode, all_steps, input_data
+            )
 
-                elif input_data.mode == "progressive":
-                    question_result = await _generate_progressive_question(
-                        ctx, session_state.answers
-                    )
-                    question_text = question_result.get("next_question", "")
-                    prompt_text = question_text
-                    validation = None
-                    answer_key = question_result.get(
-                        "question_key", f"answer_{session_state.current_step_index}"
-                    )
-                    step_title = f"Progressive 问题 {session_state.current_step_index + 1}"
-
-                else:
+            # 检查是否需要中断
+            if question_data["should_break"]:
+                if question_data["error"]:
                     return {
                         "success": False,
-                        "error": f"未知的动态模式: {input_data.mode}",
-                    }
-
-            else:
-                # 静态模式：使用预定义步骤
-                if all_steps is None or session_state.current_step_index >= len(all_steps):
-                    # 所有步骤已完成
-                    session_state.completed = True
-                    await ctx.set_state(
-                        f"requirement_{current_session_id}", session_state.model_dump()
-                    )  # type: ignore[func-returns-value]
-                    break
-
-                current_step_data = all_steps[session_state.current_step_index]
-                validation_data: dict[str, Any] = dict(current_step_data["validation"])  # type: ignore[arg-type]
-                step = RequirementStep(
-                    key=str(current_step_data["key"]),
-                    title=str(current_step_data["title"]),
-                    prompt=str(current_step_data["prompt"]),
-                    validation=ValidationRule(**validation_data),
-                )
-
-                prompt_text = step.prompt
-                validation = step.validation
-                answer_key = step.key
-                step_title = step.title
-
-            # 2. 调用 elicit 获取用户输入（带验证重试）
-            user_answer = None
-            retry_count = 0
-            validation_error = None
-
-            while retry_count <= max_retries:
-                # 构建提示文本
-                if validation_error and not is_dynamic_mode:
-                    elicit_prompt = (
-                        f"{prompt_text}\n\n⚠️ 输入验证失败: {validation_error}\n请重新输入："
-                    )
-                else:
-                    elicit_prompt = f"{step_title}\n\n{prompt_text}"
-
-                # 调用 elicit
-                try:
-                    result = await ctx.elicit(elicit_prompt)  # type: ignore[call-arg]
-
-                    # 检查用户是否接受了输入请求
-                    # FastMCP 返回 AcceptedElicitation | DeclinedElicitation | CancelledElicitation
-                    if hasattr(result, "accepted") and not result.accepted:  # type: ignore[union-attr]
-                        # 用户取消输入
-                        await ctx.set_state(
-                            f"requirement_{current_session_id}", session_state.model_dump()
-                        )  # type: ignore[func-returns-value]
-                        return {
-                            "success": False,
-                            "action": "cancelled",
-                            "message": "用户取消了输入",
-                            "session_id": current_session_id,
-                            "step_index": session_state.current_step_index,
-                            "answers": session_state.answers,
-                            "conversation_history": session_state.conversation_history,
-                            "progress": (
-                                session_state.current_step_index / session_state.total_steps
-                            )
-                            * 100,
-                        }
-
-                    # 获取用户输入
-                    user_answer = (
-                        str(getattr(result, "data", "")) if hasattr(result, "data") else ""
-                    )
-
-                except Exception as e:
-                    # elicit 调用失败，返回错误
-                    await ctx.set_state(
-                        f"requirement_{current_session_id}", session_state.model_dump()
-                    )  # type: ignore[func-returns-value]
-                    return {
-                        "success": False,
-                        "error": f"elicit 调用失败: {e}",
+                        "error": question_data["error"],
                         "session_id": current_session_id,
-                        "message": f"获取用户输入时出错: {e}",
                     }
-
-                # 3. 验证输入（仅非动态模式）
-                if not is_dynamic_mode and validation:
-                    validation_result = _validate_requirement_answer(user_answer, validation)
-                    if not validation_result["valid"]:
-                        validation_error = validation_result["error"]
-                        retry_count += 1
-                        continue
-
-                # 验证通过或动态模式，退出重试循环
+                # 所有步骤完成，退出循环
                 break
 
-            # 检查是否超过最大重试次数
-            if retry_count > max_retries:
+            # 调用 elicit 获取用户输入（带验证重试）
+            elicit_result = await _elicit_with_retry(
+                ctx,
+                question_data["prompt_text"],
+                question_data["step_title"],
+                question_data["validation"],
+                is_dynamic_mode,
+                max_retries,
+            )
+
+            # 处理 elicit 结果
+            if not elicit_result["success"]:
+                if elicit_result["action"] == "cancelled":
+                    await ctx.set_state(  # type: ignore[func-returns-value]
+                        f"requirement_{current_session_id}", session_state.model_dump()
+                    )
+                    return {
+                        "success": False,
+                        "action": "cancelled",
+                        "message": elicit_result["error"],
+                        "session_id": current_session_id,
+                        "step_index": session_state.current_step_index,
+                        "answers": session_state.answers,
+                        "conversation_history": session_state.conversation_history,
+                        "progress": (
+                            session_state.current_step_index / session_state.total_steps
+                        )
+                        * 100,
+                    }
+                # 其他错误
                 return {
                     "success": False,
-                    "error": "验证失败次数过多",
-                    "message": f"输入验证失败超过 {max_retries} 次，请稍后重试",
+                    "error": elicit_result["error"],
                     "session_id": current_session_id,
+                    "message": elicit_result["error"],
                 }
 
-            # 4. 保存答案
-            session_state.answers[answer_key] = user_answer  # type: ignore[index]
+            # 保存答案并前进到下一步
+            should_continue = await _save_answer_and_advance(
+                ctx,
+                session_state,
+                current_session_id,
+                question_data["answer_key"],
+                elicit_result["answer"],
+                is_dynamic_mode,
+                input_data,
+                all_steps,
+            )
 
-            # 更新对话历史（用于 brainstorm 模式）
-            if is_dynamic_mode and input_data.mode == "brainstorm":
-                session_state.conversation_history.append({"role": "user", "content": str(user_answer)})
+            if not should_continue:
+                break
 
-            # 5. 移动到下一步
-            session_state.current_step_index += 1
-
-            # 6. 保存会话状态
-            await ctx.set_state(f"requirement_{current_session_id}", session_state.model_dump())  # type: ignore[func-returns-value]
-
-            # 7. 检查是否完成
-            if is_dynamic_mode:
-                # 动态模式：检查是否达到足够的轮次（这里使用简单计数，实际可以更智能）
-                if session_state.current_step_index >= 5:  # 默认收集 5 轮
-                    session_state.completed = True
-            else:
-                # 静态模式：检查是否完成所有步骤
-                if session_state.current_step_index >= len(all_steps):  # type: ignore[arg-type]
-                    session_state.completed = True
-
-        # 8. 返回完成结果
-        progress = (
-            100.0
-            if session_state.completed
-            else (session_state.current_step_index / session_state.total_steps) * 100
-        )
-
-        return {
-            "success": True,
-            "session_id": current_session_id,
-            "action": "complete",
-            "mode": session_state.mode,
-            "step_index": session_state.current_step_index,
-            "total_steps": session_state.total_steps,
-            "progress": progress,
-            "answers": session_state.answers,
-            "conversation_history": session_state.conversation_history,
-            "completed": session_state.completed,
-            "message": "需求收集完成（使用 elicit 模式）",
-            "is_dynamic_mode": is_dynamic_mode,
-        }
+        # 返回完成结果
+        return _build_completion_result(session_state, current_session_id, is_dynamic_mode)
 
     except Exception as e:
         return {
@@ -258,10 +576,7 @@ async def _validate_and_init_requirement_session(
     from datetime import datetime
     from datetime import timezone as tz
 
-    from ..models.skill_config import (
-        RequirementCollectionInput,
-        SessionState,
-    )
+    from ..models.skill_config import RequirementCollectionInput
 
     # 1. 验证输入参数
     input_data = RequirementCollectionInput.model_validate(
@@ -292,19 +607,13 @@ async def _validate_and_init_requirement_session(
         input_data.session_id or ctx.session_id or f"req_{datetime.now(tz.utc).isoformat()}"
     )
 
-    # 5. 获取或创建会话状态
-    state_data = await ctx.get_state(f"requirement_{current_session_id}")
-    if state_data:
-        session_state = SessionState.model_validate(state_data)
-    else:
-        session_state = SessionState(
-            current_step_index=0,
-            answers={},
-            started_at=datetime.now(tz.utc).isoformat(),
-            completed=False,
-            mode=input_data.mode,  # type: ignore[arg-type]
-            total_steps=total_steps,
-        )
+    # 5. 使用 SessionStateManager 获取或创建会话状态
+    state_manager = SessionStateManager(ctx, current_session_id)
+    session_state = await state_manager.get_or_create(
+        mode=input_data.mode,
+        total_steps=total_steps,
+        current_step_index=0,
+    )
 
     return input_data, is_dynamic_mode, total_steps, current_session_id, session_state
 

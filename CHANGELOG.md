@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **P0**: 需求收集工具重构 (requirement_collection.py)
+  - 简化 `_collect_with_elicit` 函数：224行 → 114行（-49%）
+  - 降低嵌套层次：4层 → 2层
+  - 提取5个子函数：`_initialize_session`, `_get_question_data`, `_elicit_with_retry`, `_save_answer_and_advance`, `_build_completion_result`
+  - 新增 `SessionStateManager` 类集中管理会话状态
+  - 更新 `_validate_and_init_requirement_session` 使用状态管理器
+
+### Added
+
+- **P0**: 需求收集架构设计文档
+  - `skill-creator/references/requirement-collection-architecture.md` - 详解架构权衡
+- **P1**: 工作流编排示例文档
+  - `skill-creator/examples/workflow-orchestration.md` - MCP vs Agent-Skill职责分工
+- **P1**: 更新需求澄清文档
+  - `requirement-collection.md` 添加架构权衡说明章节
+
 ### Fixed
 
 - **P1**: 修复README.md徽章数据不一致

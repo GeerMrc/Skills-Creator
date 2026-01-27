@@ -35,6 +35,7 @@ async def test_validate_and_init_requirement_session_basic_mode():
 
     mock_ctx = MagicMock()
     mock_ctx.get_state = AsyncMock(return_value=None)
+    mock_ctx.set_state = AsyncMock()  # 添加 set_state mock
     mock_ctx.session_id = "test-session-123"
 
     result = await _validate_and_init_requirement_session(
@@ -65,6 +66,7 @@ async def test_validate_and_init_requirement_session_complete_mode():
 
     mock_ctx = MagicMock()
     mock_ctx.get_state = AsyncMock(return_value=None)
+    mock_ctx.set_state = AsyncMock()  # 添加 set_state mock
 
     result = await _validate_and_init_requirement_session(
         ctx=mock_ctx,
@@ -89,6 +91,7 @@ async def test_validate_and_init_requirement_session_brainstorm_mode():
 
     mock_ctx = MagicMock()
     mock_ctx.get_state = AsyncMock(return_value=None)
+    mock_ctx.set_state = AsyncMock()  # 添加 set_state mock
 
     result = await _validate_and_init_requirement_session(
         ctx=mock_ctx,
