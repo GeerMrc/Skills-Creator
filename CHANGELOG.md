@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **P0**: 修复Git状态问题
+  - 归档 `streamed-hopping-lecun.md` 和 `wise-tinkering-crab.md` 计划文档
+  - 将 `coverage.json` 加入 `.gitignore`，从Git跟踪中移除
+- **P1**: 修复Ruff代码检查问题
+  - 删除 `skill_config.py` 中未使用的 `os` 导入
+  - 删除 `test_config.py` 中未使用的 `shutil` 导入
+
+### Changed
+
+- **P1**: 文档结构优化
+  - 拆分 `dev-standards.md` (565行→382行)
+    - 新增 `dev-standards-workflow.md` (340行) - 九步法详细说明
+    - 新增 `dev-standards-git.md` (273行) - Git规范详细说明
+    - 新增 `dev-standards-documentation.md` (194行) - 文档管理规范
+  - 精简 `packaging.md` (397行→245行)
+    - 移出详细示例到 `examples/packaging-basic.md` (194行)
+    - 移出高级示例到 `examples/packaging-advanced.md` (339行)
+  - 在 `SKILL.md` 添加打包相关引用
+
+### Added
+
+- **P1**: 安装 `bandit` 安全扫描工具 (v1.9.3)
+- 新增打包示例文档
+  - `examples/packaging-basic.md` - 快速开始和常见用例
+  - `examples/packaging-advanced.md` - 批量打包、CI/CD集成
+
 ### Removed
 
 - 删除 `SKILL_CREATOR_DEFAULT_OUTPUT_DIR` 环境变量

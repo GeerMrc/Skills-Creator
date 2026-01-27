@@ -227,7 +227,6 @@ def test_log_format_type():
 def test_default_output_dir_auto_created():
     """测试默认目录自动创建."""
     import tempfile
-    import shutil
 
     # 使用临时目录模拟
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -263,8 +262,8 @@ def test_custom_output_dir_from_env():
 
 def test_output_dir_not_writable_raises_error():
     """测试不可写目录报错."""
-    import tempfile
     import stat
+    import tempfile
 
     with tempfile.TemporaryDirectory() as tmpdir:
         readonly_dir = Path(tmpdir) / "readonly"

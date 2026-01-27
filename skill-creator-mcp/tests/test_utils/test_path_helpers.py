@@ -1,9 +1,9 @@
 """路径处理辅助函数测试."""
 
 import tempfile
+from pathlib import Path
 
 import pytest
-from pathlib import Path
 
 from skill_creator_mcp.utils.path_helpers import (
     ensure_output_dir,

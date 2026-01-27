@@ -2490,6 +2490,11 @@ sse = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "bandit" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "aiofiles", specifier = ">=23.0.0" },
@@ -2514,6 +2519,9 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'sse'", specifier = ">=0.24.0" },
 ]
 provides-extras = ["dev", "sse"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "bandit", specifier = ">=1.9.3" }]
 
 [[package]]
 name = "snowballstemmer"

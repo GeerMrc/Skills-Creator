@@ -1,6 +1,5 @@
 """技能配置数据模型."""
 
-import os
 import re
 from pathlib import Path
 from typing import Any, Literal

@@ -45,8 +45,9 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 **分析质量**: "分析 /path/to/skill"
 **批量操作**: "批量验证 /path/to/skill1 /path/to/skill2"
 **健康检查**: "健康检查"
+**打包分发**: "打包 /path/to/skill" 或 "标准打包 /path/to/skill"
 
-> 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md)
+> 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md) | [打包规范](references/packaging.md)
 
 ### 环境配置（推荐）
 
