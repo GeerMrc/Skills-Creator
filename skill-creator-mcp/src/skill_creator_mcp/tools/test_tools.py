@@ -6,9 +6,10 @@
 from typing import Any
 
 from fastmcp import Context
+from fastmcp import FastMCP
 
 
-async def check_client_capabilities(ctx: Context, mcp) -> dict[str, Any]:
+async def check_client_capabilities(ctx: Context, mcp: FastMCP) -> dict[str, Any]:
     """检测 MCP 客户端的能力支持情况.
 
     检测客户端是否支持高级 MCP 功能，如 sampling 和 elicitation。
@@ -25,7 +26,7 @@ async def check_client_capabilities(ctx: Context, mcp) -> dict[str, Any]:
     return await get_client_capabilities(ctx)
 
 
-async def test_llm_sampling(ctx: Context, mcp, prompt: str) -> dict[str, Any]:
+async def test_llm_sampling(ctx: Context, mcp: FastMCP, prompt: str) -> dict[str, Any]:
     """测试 LLM Sampling 能力.
 
     验证 MCP Server 可以通过 ctx.sample() 调用客户端 LLM。
@@ -44,7 +45,7 @@ async def test_llm_sampling(ctx: Context, mcp, prompt: str) -> dict[str, Any]:
 
 
 async def test_user_elicitation(
-    ctx: Context, mcp, prompt: str = "请提供技能名称（小写字母、数字、连字符）"
+    ctx: Context, mcp: FastMCP, prompt: str = "请提供技能名称（小写字母、数字、连字符）"
 ) -> dict[str, Any]:
     """测试用户征询 (User Elicitation) 能力.
 
@@ -63,7 +64,7 @@ async def test_user_elicitation(
     return await testing.test_user_elicitation(ctx, prompt)
 
 
-async def test_conversation_loop(ctx: Context, mcp, user_input: str) -> dict[str, Any]:
+async def test_conversation_loop(ctx: Context, mcp: FastMCP, user_input: str) -> dict[str, Any]:
     """测试对话循环和状态管理能力.
 
     验证可以在对话循环中使用 session state 保存历史，
@@ -82,7 +83,7 @@ async def test_conversation_loop(ctx: Context, mcp, user_input: str) -> dict[str
     return await testing.test_conversation_loop(ctx, user_input)
 
 
-async def test_requirement_completeness(ctx: Context, mcp, requirement: str) -> dict[str, Any]:
+async def test_requirement_completeness(ctx: Context, mcp: FastMCP, requirement: str) -> dict[str, Any]:
     """测试需求完整性判断能力.
 
     验证 LLM 能够判断需求是否完整，并识别缺失的关键信息。

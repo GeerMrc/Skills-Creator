@@ -6,11 +6,12 @@
 from typing import Any
 
 from fastmcp import Context
+from fastmcp import FastMCP
 
 
 async def batch_validate_skills_tool(
     ctx: Context,
-    mcp,
+    mcp: FastMCP,
     skill_paths: list[str],
     check_structure: bool = True,
     check_content: bool = True,
@@ -55,7 +56,7 @@ async def batch_validate_skills_tool(
 
 async def batch_analyze_skills_tool(
     ctx: Context,
-    mcp,
+    mcp: FastMCP,
     skill_paths: list[str],
     analyze_structure: bool = True,
     analyze_complexity: bool = True,

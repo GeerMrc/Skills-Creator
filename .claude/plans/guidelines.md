@@ -376,7 +376,84 @@ git commit -m "chore(plans): 归档已完成的计划"
 
 ---
 
-## 五、常见问题检查
+## 五、TODO工具使用规范
+
+### 工具概述
+
+Claude Code 提供 `TaskCreate` 和 `TaskUpdate` 工具用于TODO任务管理。
+
+### 步骤2: 创建任务清单
+
+**使用 TaskCreate 工具**：
+
+```python
+TaskCreate(
+    subject="简洁的任务描述",  # 必需，用祈使句
+    description="详细描述任务内容和验收标准",  # 必需
+    activeForm="进行中的任务名称",  # 必需，用于显示
+    metadata={  # 可选，额外信息
+        "priority": "P0",
+        "stage": "一",
+        "id": "20260127-01"
+    }
+)
+```
+
+**命名规范**：
+- `subject`: 祈使句，"修复xxx"、"实现xxx"
+- `activeForm`: 进行时，"修复xxx中"、"实现xxx中"
+- `metadata.id`: `YYYYMMDD-序号`
+
+**任务数量限制**：
+- ✅ 推荐：3-10个任务
+- ❌ 避免：超过10个任务（拆分为多个小计划）
+
+### 任务状态管理
+
+**状态流转**：
+```
+pending → in_progress → completed
+  ↑                           ↓
+  └──── 未完成/不规范 ────────┘
+```
+
+**使用 TaskUpdate 更新状态**：
+
+```python
+# 开始任务
+TaskUpdate(taskId="1", status="in_progress")
+
+# 完成任务
+TaskUpdate(taskId="1", status="completed")
+```
+
+**实时更新原则**：
+- 每完成一步立即更新状态
+- 遇到阻塞及时记录
+- 定期回顾进度
+- 发现问题及时回退状态
+
+### 查看任务列表
+
+**使用 TaskList 工具**：
+```python
+TaskList()
+# 返回所有任务及其状态
+```
+
+### 最佳实践
+
+| 实践 | 说明 | 示例 |
+|------|------|------|
+| 限制任务数 | 每个计划3-10个任务 | 6个P0任务 + 4个P1任务 |
+| 稳定ID | 使用 `YYYYMMDD-序号` | `20260127-01` |
+| 实时更新 | 每完成一步立即更新 | 完成代码 → 更新为 completed |
+| 优先级标注 | metadata中标注P0-P3 | `metadata={"priority": "P0"}` |
+| 依赖管理 | 使用 addBlockedBy | `addBlockedBy=["1"]` |
+
+---
+
+## 六、常见问题检查
 
 ### 问题1: 测试失败
 

@@ -6,11 +6,12 @@
 from typing import Any
 
 from fastmcp import Context
+from fastmcp import FastMCP
 
 
 async def collect_requirements(
     ctx: Context,
-    mcp,
+    mcp: FastMCP,
     action: str = "start",
     mode: str = "basic",
     session_id: str | None = None,

@@ -6,11 +6,12 @@
 from typing import Any
 
 from fastmcp import Context
+from fastmcp import FastMCP
 
 
 async def package_skill(
     ctx: Context,
-    mcp,
+    mcp: FastMCP,
     skill_path: str,
     output_dir: str | None = None,
     format: str = "zip",
@@ -107,7 +108,7 @@ async def package_skill(
 
 async def package_agent_skill(
     ctx: Context,
-    mcp,
+    mcp: FastMCP,
     skill_path: str,
     output_dir: str | None = None,
     version: str | None = None,
