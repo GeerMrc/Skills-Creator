@@ -2,8 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-583%20passed-success](#)
-[![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen](#)
+[![Tests](https://img.shields.io/badge/tests-608%20passed-success](#)
+[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen](#)
 
 Agent-Skills 开发与质量保证 MCP Server。
 
@@ -258,7 +258,7 @@ uv pip install skill-creator-mcp
 
 ```bash
 # 复制模板
-cp .env.example .env
+cp .env.template .env
 
 # 编辑配置
 vim .env
@@ -268,12 +268,13 @@ vim .env
 
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
-| `SKILL_CREATOR_LOG_LEVEL` | INFO | 日志级别（DEBUG/INFO/WARNING/ERROR） |
-| `SKILL_CREATOR_LOG_FORMAT` | text | 日志格式（text/json） |
-| `SKILL_CREATOR_LOG_FILE` | - | 日志文件路径（可选） |
+| `MCP_SERVER_LOG_LEVEL` | INFO | 日志级别（DEBUG/INFO/WARNING/ERROR） |
+| `MCP_SERVER_LOG_FORMAT` | %(asctime)s... | 日志格式字符串 |
+| `CACHE_ENABLED` | true | 是否启用缓存 |
+| `CACHE_TTL` | 300 | 缓存过期时间（秒） |
+| `CACHE_MAX_SIZE` | 100 | 缓存最大条目数 |
 | `SKILL_CREATOR_OUTPUT_DIR` | ~/skills | 默认输出目录 |
-| `SKILL_CREATOR_MAX_RETRIES` | 3 | 最大重试次数 |
-| `SKILL_CREATOR_TIMEOUT_SECONDS` | 30 | 超时时间（秒） |
+| `BATCH_CONCURRENT_LIMIT` | 5 | 批量操作并发限制 |
 
 **配置优先级**：工具参数 > 环境变量 `SKILL_CREATOR_OUTPUT_DIR` > 默认值 `~/skills`
 

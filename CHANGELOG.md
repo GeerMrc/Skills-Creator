@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **P1**: 修复README.md徽章数据不一致
+  - Tests徽章：583 → 608 passed
+  - Coverage徽章：96% → 95%
 - **P0**: 修复Git状态问题
   - 归档 `streamed-hopping-lecun.md` 和 `wise-tinkering-crab.md` 计划文档
   - 将 `coverage.json` 加入 `.gitignore`，从Git跟踪中移除
@@ -30,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **P2**: 添加 `.env.template` 配置模板
+  - 包含所有环境变量配置项
+  - 更新README.md环境变量说明
 - **P1**: 安装 `bandit` 安全扫描工具 (v1.9.3)
 - 新增打包示例文档
   - `examples/packaging-basic.md` - 快速开始和常见用例
