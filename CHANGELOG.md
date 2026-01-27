@@ -9,8 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **P1**: 修复README.md测试数量显示错误（589→608）
+- **P1**: 修复README.md测试数量显示错误（589→619）
 - **P2**: 验证MIGRATION.md引用完整性
+
+### Improved - Phase 2.1
+
+- **P0**: 提升 session_manager.py 测试覆盖率（82%→100%）
+  - 新增5个测试用例覆盖未测试代码：
+    - `test_session_manager_update_method` - 测试 update() 方法
+    - `test_session_manager_state_property` - 测试 state 属性
+    - `test_session_manager_key_property` - 测试 key 属性
+    - `test_session_manager_load_existing_state` - 测试加载已有状态
+    - `test_session_manager_update_nonexistent_state` - 测试状态不存在时更新
+  - 所有44行代码100%覆盖
 
 ### Improved
 
@@ -37,8 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Test Summary
 
-- **总测试数量**: 608 → 614 (+6个测试)
-- **测试通过率**: 100% (614/614)
+- **总测试数量**: 608 → 619 (+11个测试)
+- **测试通过率**: 100% (619/619)
+- **覆盖率**: 96%
 - **Ruff检查**: 0错误
 - **MyPy检查**: 0错误
 

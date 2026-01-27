@@ -724,3 +724,120 @@ async def test_get_requirement_next_question_all_completed():
 
     assert result["success"] is True
     assert result["completed"] is True
+
+
+# ============================================================================
+# SessionStateManager 测试 (补充覆盖率)
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_session_manager_update_method():
+    """测试 SessionStateManager.update() 方法 - 覆盖行110-115."""
+    from skill_creator_mcp.utils.requirement_collection import SessionStateManager
+
+    mock_ctx = MagicMock()
+    mock_ctx.get_state = AsyncMock(return_value=None)
+    mock_ctx.set_state = AsyncMock()
+
+    manager = SessionStateManager(mock_ctx, "test-session")
+
+    # 创建初始状态
+    await manager.create(mode="basic", total_steps=5)
+
+    # 测试 update 方法
+    await manager.update(current_step_index=2, completed=False)
+
+    # 验证更新
+    updated_state = await manager.load()
+    assert updated_state.current_step_index == 2
+    assert updated_state.completed is False
+
+    # 测试更新多个字段
+    await manager.update(current_step_index=3, completed=True)
+
+    updated_state = await manager.load()
+    assert updated_state.current_step_index == 3
+    assert updated_state.completed is True
+
+
+@pytest.mark.asyncio
+async def test_session_manager_state_property():
+    """测试 SessionStateManager.state 属性 - 覆盖行120."""
+    from skill_creator_mcp.utils.requirement_collection import SessionStateManager
+
+    mock_ctx = MagicMock()
+    mock_ctx.get_state = AsyncMock(return_value=None)
+    mock_ctx.set_state = AsyncMock()
+
+    manager = SessionStateManager(mock_ctx, "test-session")
+
+    # 测试未加载时的 state 属性
+    assert manager.state is None
+
+    # 创建状态后
+    await manager.create(mode="basic", total_steps=5)
+    assert manager.state is not None
+    assert manager.state.mode == "basic"
+
+
+@pytest.mark.asyncio
+async def test_session_manager_key_property():
+    """测试 SessionStateManager.key 属性 - 覆盖行125."""
+    from skill_creator_mcp.utils.requirement_collection import SessionStateManager
+
+    mock_ctx = MagicMock()
+
+    # 测试默认前缀
+    manager1 = SessionStateManager(mock_ctx, "session-123")
+    assert manager1.key == "requirement_session-123"
+
+    # 测试自定义前缀
+    manager2 = SessionStateManager(mock_ctx, "session-456", state_prefix="custom_")
+    assert manager2.key == "custom_session-456"
+
+
+@pytest.mark.asyncio
+async def test_session_manager_load_existing_state():
+    """测试 SessionStateManager.load() 加载已有状态."""
+    from skill_creator_mcp.models.skill_config import SessionState
+    from skill_creator_mcp.utils.requirement_collection import SessionStateManager
+
+    existing_state = SessionState(
+        current_step_index=2,
+        answers={"skill_name": "test-skill"},
+        completed=False,
+        mode="basic",
+        total_steps=5,
+    ).model_dump()
+
+    mock_ctx = MagicMock()
+    mock_ctx.get_state = AsyncMock(return_value=existing_state)
+    mock_ctx.set_state = AsyncMock()
+
+    manager = SessionStateManager(mock_ctx, "existing-session")
+
+    # 加载已有状态
+    loaded_state = await manager.load()
+
+    assert loaded_state is not None
+    assert loaded_state.current_step_index == 2
+    assert loaded_state.answers["skill_name"] == "test-skill"
+
+
+@pytest.mark.asyncio
+async def test_session_manager_update_nonexistent_state():
+    """测试 update 方法在状态不存在时的行为."""
+    from skill_creator_mcp.utils.requirement_collection import SessionStateManager
+
+    mock_ctx = MagicMock()
+    mock_ctx.get_state = AsyncMock(return_value=None)
+    mock_ctx.set_state = AsyncMock()
+
+    manager = SessionStateManager(mock_ctx, "new-session")
+
+    # 状态不存在时调用 update，应该不报错但也不保存
+    await manager.update(current_step_index=1)
+
+    # set_state 不应该被调用（因为状态不存在）
+    assert mock_ctx.set_state.call_count == 0
