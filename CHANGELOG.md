@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **P1**: 拆分 requirement_collection 模块为子包结构 (Phase 1.3)
+  - 将1387行的单文件模块拆分为6个子模块
+  - 新增 `requirement_collection/` 子包，包含：
+    - `session_manager.py` - 会话状态管理 (~130行)
+    - `llm_services.py` - LLM分析服务 (~256行)
+    - `validation.py` - 答案验证和处理 (~159行)
+    - `questions.py` - 问题生成 (~102行)
+    - `actions.py` - 操作处理器 (~110行)
+    - `elicit_workflow.py` - Elicit工作流 (~425行)
+  - 通过 `__init__.py` 重导出保持100%向后兼容性
+  - 修复相对导入路径 (`..models` → `...models`)
+  - 删除原始 `requirement_collection.py` 文件
+
 - **P0**: 需求收集工具重构 (requirement_collection.py)
   - 简化 `_collect_with_elicit` 函数：224行 → 114行（-49%）
   - 降低嵌套层次：4层 → 2层
