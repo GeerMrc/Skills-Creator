@@ -2,7 +2,7 @@
 
 import re
 from pathlib import Path
-from typing import Any, Generic, Literal, TypeVar, cast
+from typing import Any, Literal, TypeVar, cast
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
