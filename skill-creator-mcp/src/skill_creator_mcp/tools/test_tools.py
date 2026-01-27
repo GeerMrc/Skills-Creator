@@ -5,8 +5,7 @@
 
 from typing import Any
 
-from fastmcp import Context
-from fastmcp import FastMCP
+from fastmcp import Context, FastMCP
 
 
 async def check_client_capabilities(ctx: Context, mcp: FastMCP) -> dict[str, Any]:

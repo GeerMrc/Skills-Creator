@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - P1 Code Quality Improvements (2026-01-27)
+
+- **P1-001**: 修复批量操作的Mock使用问题
+  - 创建`_BatchContextAdapter`轻量级Context适配器
+  - 移除生产代码中的`unittest.mock.MagicMock`
+  - 批量操作现在使用真实的Context接口
+
+- **P1-002**: 创建OutputDirMixin消除output_dir验证重复
+  - 在skill_config.py中创建`OutputDirMixin`类
+  - `InitSkillInput`、`PackageSkillInput`、`PackageAgentSkillInput`继承Mixin
+  - 减少约60行重复验证代码
+
+- **P1-003**: 创建通用验证辅助函数
+  - 在`tools/validation_helpers.py`中添加验证辅助函数
+  - 提供`validate_input`、`format_validation_error`等工具函数
+  - 作为未来新工具开发的最佳实践参考
+
+- **P2**: 修复Ruff导入排序警告（4个文件）
+  - 自动修复`I001 unsorted-imports`警告
+  - Ruff检查现在100%通过
+
 ### Fixed - Project Audit (2026-01-27)
 
 - **P0**: 修复MyPy类型注解问题（10个错误→0）

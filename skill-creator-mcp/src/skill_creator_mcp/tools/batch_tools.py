@@ -5,8 +5,7 @@
 
 from typing import Any
 
-from fastmcp import Context
-from fastmcp import FastMCP
+from fastmcp import Context, FastMCP
 
 
 async def batch_validate_skills_tool(

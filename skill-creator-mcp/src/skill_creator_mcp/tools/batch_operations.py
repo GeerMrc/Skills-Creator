@@ -13,6 +13,43 @@ from skill_creator_mcp.logging_config import get_logger
 logger = get_logger(__name__)
 
 
+# ==================== Context 适配器 ====================
+
+
+class _BatchContextAdapter:
+    """批量操作的轻量级 Context 适配器.
+
+    提供与 FastMCP.Context 兼容的接口，用于批量操作中传递给工具函数。
+    批量操作不需要真实的 MCP Context 功能（如日志、进度报告），因此使用
+    最小化适配器即可。
+    """
+
+    def __init__(self) -> None:
+        """初始化适配器."""
+
+    def log(self, level: str, message: str) -> None:
+        """记录日志（批量操作使用模块 logger）.
+
+        Args:
+            level: 日志级别
+            message: 日志消息
+        """
+        # 批量操作已有自己的日志记录，这里只是兼容接口
+        logger.debug(f"[Batch] [{level}] {message}")
+
+    def info(self, message: str) -> None:
+        """记录信息日志."""
+        logger.info(message)
+
+    def warning(self, message: str) -> None:
+        """记录警告日志."""
+        logger.warning(message)
+
+    def error(self, message: str) -> None:
+        """记录错误日志."""
+        logger.error(message)
+
+
 class BatchValidationInput(BaseModel):
     """批量验证输入."""
 
@@ -73,13 +110,11 @@ async def batch_validate_skills(
                 # 调用验证函数（从 skill_tools 导入）
                 from skill_creator_mcp.tools.skill_tools import validate_skill
 
-                # 创建 mock Context（batch 操作不需要真实的 MCP Context）
-                from unittest.mock import MagicMock
-                mock_ctx = MagicMock()
-                mock_ctx.log = MagicMock()
+                # 创建批量操作适配器（不需要真实的 MCP Context）
+                batch_ctx = _BatchContextAdapter()
 
                 result = await validate_skill(
-                    ctx=mock_ctx,
+                    ctx=batch_ctx,  # type: ignore[arg-type]
                     skill_path=path,
                     check_structure=check_structure,
                     check_content=check_content,
@@ -146,13 +181,11 @@ async def batch_analyze_skills(
                 # 调用分析函数（从 skill_tools 导入）
                 from skill_creator_mcp.tools.skill_tools import analyze_skill
 
-                # 创建 mock Context（batch 操作不需要真实的 MCP Context）
-                from unittest.mock import MagicMock
-                mock_ctx = MagicMock()
-                mock_ctx.log = MagicMock()
+                # 创建批量操作适配器（不需要真实的 MCP Context）
+                batch_ctx = _BatchContextAdapter()
 
                 result = await analyze_skill(
-                    ctx=mock_ctx,
+                    ctx=batch_ctx,  # type: ignore[arg-type]
                     skill_path=path,
                     analyze_structure=analyze_structure,
                     analyze_complexity=analyze_complexity,

@@ -2,15 +2,83 @@
 
 import re
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Generic, Literal, TypeVar, cast
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 # 模板类型字面量
 SkillTemplateType = Literal["minimal", "tool-based", "workflow-based", "analyzer-based"]
 
+# 类型变量用于泛型Mixin
+T = TypeVar("T", bound="OutputDirMixin")
 
-class InitSkillInput(BaseModel):
+
+# ==================== 共享验证 Mixin ====================
+
+
+class OutputDirMixin(BaseModel):
+    """输出目录验证共享 Mixin.
+
+    提供统一的 output_dir 字段验证逻辑，避免在多个模型中重复代码。
+
+    注意：子类必须定义 output_dir 字段并使用 field_validator 调用
+    _apply_default_output_dir 方法。
+    """
+
+    # 类型存根：子类需要定义此字段
+    output_dir: str
+
+    def _ensure_output_dir_validated(self) -> "OutputDirMixin":
+        """验证并确保 output_dir 字段有效.
+
+        在所有字段验证后调用，确保 output_dir 有值且路径有效。
+
+        Returns:
+            验证后的模型实例
+        """
+        # 获取output_dir值（使用getattr避免类型检查错误）
+        output_dir_value: str | None = getattr(self, "output_dir", None)
+
+        # 如果 output_dir 为 None 或空，应用默认值
+        if not output_dir_value:
+            from ..utils.path_helpers import get_output_dir
+            # 使用 object.__setattr__ 避免 validate_assignment 触发
+            default_dir = str(get_output_dir(fallback=True))
+            object.__setattr__(self, "output_dir", default_dir)
+            output_dir_value = default_dir
+
+        # 验证路径有效性
+        from ..utils.path_helpers import ensure_output_dir
+
+        try:
+            validated_path = ensure_output_dir(output_dir_value)
+            object.__setattr__(self, "output_dir", str(validated_path))
+        except ValueError as e:
+            raise ValueError(f"输出目录验证失败: {e}") from e
+
+        return self
+
+    @classmethod
+    def _apply_default_output_dir(cls, v: Any) -> str:
+        """应用默认输出目录（共享方法）.
+
+        如果 v 为 None 或未提供，从配置获取默认值。
+
+        Args:
+            v: 输入值
+
+        Returns:
+            验证后的输出目录路径
+        """
+        # Pydantic 可能传递 PydanticUndefined 或其他特殊值
+        if v is None or v == "" or not isinstance(v, (str, Path)):
+            from ..utils.path_helpers import get_output_dir
+            return str(get_output_dir(fallback=True))
+        # 确保 v 是字符串
+        return str(v) if isinstance(v, (str, Path)) else str(get_output_dir(fallback=True))
+
+
+class InitSkillInput(OutputDirMixin):
     """初始化技能输入参数模型."""
 
     name: str = Field(
@@ -38,25 +106,9 @@ class InitSkillInput(BaseModel):
 
     @field_validator("output_dir", mode="before")
     @classmethod
-    def apply_default_output_dir(cls, v: Any) -> str:
-        """应用默认输出目录.
-
-        如果 v 为 None 或未提供，从配置获取默认值。
-        """
-        # Pydantic 可能传递 PydanticUndefined 或其他特殊值
-        if v is None or v == "" or not isinstance(v, (str, Path)):
-            from ..utils.path_helpers import get_output_dir
-            return str(get_output_dir(fallback=True))
-        # 确保 v 是字符串
-        return str(v) if isinstance(v, (str, Path)) else str(get_output_dir(fallback=True))
-
-    @model_validator(mode="after")
-    def apply_default_output_dir_after(self) -> "InitSkillInput":
-        """在所有字段验证后，确保 output_dir 有值."""
-        if self.output_dir is None or self.output_dir == "":
-            from ..utils.path_helpers import get_output_dir
-            self.output_dir = str(get_output_dir(fallback=True))
-        return self
+    def _apply_output_dir_default(cls, v: Any) -> str:
+        """应用默认输出目录."""
+        return cls._apply_default_output_dir(v)
 
     @field_validator("name")
     @classmethod
@@ -88,21 +140,8 @@ class InitSkillInput(BaseModel):
     @model_validator(mode="after")
     def validate_output_dir_model(self) -> "InitSkillInput":
         """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
-        # 如果 output_dir 为 None，说明字段验证器尚未处理，跳过验证
-        # （会在后续验证中通过 apply_default_output_dir 处理）
-        if self.output_dir is None or self.output_dir == "":
-            return self
-
-        # 使用新的 ensure_output_dir 函数统一处理目录管理
-        from ..utils.path_helpers import ensure_output_dir
-
-        try:
-            validated_path = ensure_output_dir(self.output_dir)
-            self.output_dir = str(validated_path)
-        except ValueError as e:
-            raise ValueError(f"输出目录验证失败: {e}") from e
-
-        return self
+        # 调用 Mixin 的验证方法，使用 cast 确保返回类型正确
+        return cast("InitSkillInput", self._ensure_output_dir_validated())
 
 
 
@@ -421,7 +460,7 @@ class RefactorResult(BaseModel):
 # ==================== 打包相关模型 ====================
 
 
-class PackageSkillInput(BaseModel):
+class PackageSkillInput(OutputDirMixin):
     """打包技能输入参数模型."""
 
     skill_path: str = Field(
@@ -447,46 +486,18 @@ class PackageSkillInput(BaseModel):
 
     @field_validator("output_dir", mode="before")
     @classmethod
-    def apply_default_output_dir(cls, v: Any) -> str:
-        """应用默认输出目录.
-
-        如果 v 为 None 或未提供，从配置获取默认值。
-        """
-        # Pydantic 可能传递 PydanticUndefined 或其他特殊值
-        if v is None or v == "" or not isinstance(v, (str, Path)):
-            from ..utils.path_helpers import get_output_dir
-            return str(get_output_dir(fallback=True))
-        # 确保 v 是字符串
-        return str(v) if isinstance(v, (str, Path)) else str(get_output_dir(fallback=True))
-
-    @model_validator(mode="after")
-    def apply_default_output_dir_after(self) -> "PackageSkillInput":
-        """在所有字段验证后，确保 output_dir 有值."""
-        if self.output_dir is None or self.output_dir == "":
-            from ..utils.path_helpers import get_output_dir
-            self.output_dir = str(get_output_dir(fallback=True))
-        return self
+    def _apply_output_dir_default(cls, v: Any) -> str:
+        """应用默认输出目录."""
+        return cls._apply_default_output_dir(v)
 
     @model_validator(mode="after")
     def validate_output_dir_model(self) -> "PackageSkillInput":
         """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
-        # 如果 output_dir 为 None，说明字段验证器尚未处理，跳过验证
-        if self.output_dir is None:
-            return self
-
-        # 使用新的 ensure_output_dir 函数统一处理目录管理
-        from ..utils.path_helpers import ensure_output_dir
-
-        try:
-            validated_path = ensure_output_dir(self.output_dir)
-            self.output_dir = str(validated_path)
-        except ValueError as e:
-            raise ValueError(f"输出目录验证失败: {e}") from e
-
-        return self
+        # 调用 Mixin 的验证方法，使用 cast 确保返回类型正确
+        return cast("PackageSkillInput", self._ensure_output_dir_validated())
 
 
-class PackageAgentSkillInput(BaseModel):
+class PackageAgentSkillInput(OutputDirMixin):
     """打包 Agent-Skill 输入参数模型（标准分发格式）."""
 
     skill_path: str = Field(
@@ -516,43 +527,15 @@ class PackageAgentSkillInput(BaseModel):
 
     @field_validator("output_dir", mode="before")
     @classmethod
-    def apply_default_output_dir(cls, v: Any) -> str:
-        """应用默认输出目录.
-
-        如果 v 为 None 或未提供，从配置获取默认值。
-        """
-        # Pydantic 可能传递 PydanticUndefined 或其他特殊值
-        if v is None or v == "" or not isinstance(v, (str, Path)):
-            from ..utils.path_helpers import get_output_dir
-            return str(get_output_dir(fallback=True))
-        # 确保 v 是字符串
-        return str(v) if isinstance(v, (str, Path)) else str(get_output_dir(fallback=True))
-
-    @model_validator(mode="after")
-    def apply_default_output_dir_after(self) -> "PackageAgentSkillInput":
-        """在所有字段验证后，确保 output_dir 有值."""
-        if self.output_dir is None or self.output_dir == "":
-            from ..utils.path_helpers import get_output_dir
-            self.output_dir = str(get_output_dir(fallback=True))
-        return self
+    def _apply_output_dir_default(cls, v: Any) -> str:
+        """应用默认输出目录."""
+        return cls._apply_default_output_dir(v)
 
     @model_validator(mode="after")
     def validate_output_dir_model(self) -> "PackageAgentSkillInput":
         """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
-        # 如果 output_dir 为 None，说明字段验证器尚未处理，跳过验证
-        if self.output_dir is None:
-            return self
-
-        # 使用新的 ensure_output_dir 函数统一处理目录管理
-        from ..utils.path_helpers import ensure_output_dir
-
-        try:
-            validated_path = ensure_output_dir(self.output_dir)
-            self.output_dir = str(validated_path)
-        except ValueError as e:
-            raise ValueError(f"输出目录验证失败: {e}") from e
-
-        return self
+        # 调用 Mixin 的验证方法，使用 cast 确保返回类型正确
+        return cast("PackageAgentSkillInput", self._ensure_output_dir_validated())
 
 
 class PackageResult(BaseModel):
