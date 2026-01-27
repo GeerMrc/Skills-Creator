@@ -223,7 +223,8 @@ def cache_key(*args: Any, **kwargs: Any) -> str:
         key_parts.extend(str(arg) for arg in args)
     if kwargs:
         key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
-    return hashlib.md5(":".join(key_parts).encode()).hexdigest()
+    # MD5仅用于缓存键生成，非安全场景
+    return hashlib.md5(":".join(key_parts).encode(), usedforsecurity=False).hexdigest()
 
 
 def hash_content(content: str) -> str:

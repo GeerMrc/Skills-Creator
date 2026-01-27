@@ -2,6 +2,7 @@
 
 import ast
 import asyncio
+import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -19,6 +20,8 @@ if TYPE_CHECKING:
         QualityScore,
         StructureAnalysis,
     )
+
+logger = logging.getLogger(__name__)
 
 
 async def _analyze_structure(skill_dir: Path) -> "StructureAnalysis":
@@ -46,8 +49,8 @@ async def _analyze_structure(skill_dir: Path) -> "StructureAnalysis":
             # 使用 asyncio.to_thread 避免阻塞事件循环
             lines = await asyncio.to_thread(py_file.read_text, encoding="utf-8")
             total_lines += len(lines.splitlines())
-        except Exception:
-            pass
+        except (OSError, UnicodeDecodeError) as e:
+            logger.debug(f"无法读取文件 {py_file}: {e}")
 
         # 分类统计
         category = _categorize_file(py_file, skill_dir)
@@ -119,8 +122,8 @@ async def _analyze_complexity(skill_dir: Path) -> "ComplexityMetrics":
             complexity = _calculate_cyclomatic_complexity(tree)
             total_complexity += complexity
             file_count += 1
-        except Exception:
-            pass
+        except (SyntaxError, ValueError) as e:
+            logger.debug(f"无法解析文件 {py_file}: {e}")
 
     avg_complexity = total_complexity / file_count if file_count > 0 else 0
 
