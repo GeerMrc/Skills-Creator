@@ -104,9 +104,6 @@ disallow_untyped_defs = false
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = [
-    "--cov=skill_creator_mcp",
-    "--cov-report=html",
-    "--cov-report=term-missing",
     "-v",
 ]
 
@@ -116,6 +113,8 @@ omit = [
     "*/tests/*",
     "*/test_*.py",
 ]
+parallel = true
+concurrency = ["thread"]
 
 [tool.coverage.report]
 exclude_lines = [

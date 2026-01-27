@@ -8,7 +8,9 @@ import pytest
 from skill_creator_mcp.utils.path_helpers import (
     ensure_output_dir,
     get_output_dir,
+    join_paths,
     normalize_path,
+    split_path_parts,
 )
 
 
@@ -109,3 +111,54 @@ def test_get_output_dir_fallback_to_home_skills():
     finally:
         if original_value is not None:
             os.environ["SKILL_CREATOR_OUTPUT_DIR"] = original_value
+
+
+def test_ensure_output_dir_creation_failure():
+    """测试目录创建失败（权限不足）"""
+    from unittest.mock import patch
+
+    with patch("pathlib.Path.mkdir") as mock_mkdir:
+        # 模拟目录创建失败
+        mock_mkdir.side_effect = OSError("Permission denied")
+        with pytest.raises(ValueError, match="无法创建输出目录"):
+            ensure_output_dir("/invalid/path")
+
+
+def test_get_output_dir_no_fallback():
+    """测试环境变量未设置且fallback=False"""
+    import os
+
+    original_value = os.environ.get("SKILL_CREATOR_OUTPUT_DIR")
+    if "SKILL_CREATOR_OUTPUT_DIR" in os.environ:
+        del os.environ["SKILL_CREATOR_OUTPUT_DIR"]
+
+    try:
+        with pytest.raises(ValueError, match="必须设置 SKILL_CREATOR_OUTPUT_DIR"):
+            get_output_dir(fallback=False)
+    finally:
+        if original_value is not None:
+            os.environ["SKILL_CREATOR_OUTPUT_DIR"] = original_value
+
+
+def test_join_paths_multiple_parts():
+    """测试多路径拼接"""
+    result = join_paths("/a", "b", "c")
+    assert result == Path("/a/b/c")
+
+
+def test_join_paths_single_part():
+    """测试单个路径"""
+    result = join_paths("/a")
+    assert result == Path("/a")
+
+
+def test_split_path_parts():
+    """测试路径分割"""
+    result = split_path_parts("/a/b/c")
+    assert result == ("/", "a", "b", "c")
+
+
+def test_split_path_parts_relative():
+    """测试相对路径分割"""
+    result = split_path_parts("a/b/c")
+    assert result == ("a", "b", "c")
