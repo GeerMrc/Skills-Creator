@@ -4,9 +4,58 @@
 分析和重构 Agent-Skills。
 """
 
+from contextlib import asynccontextmanager
+from dataclasses import dataclass, field
 from typing import Any
 
 from fastmcp import Context, FastMCP
+
+
+@dataclass
+class AppContext:
+    """应用生命周期上下文.
+
+    用于在MCP Server生命周期中共享状态和资源。
+    """
+    cache: dict[str, Any] = field(default_factory=dict)
+    startup_time: float = 0.0
+    request_count: int = 0
+
+    def increment_request_count(self) -> int:
+        """增加请求计数."""
+        self.request_count += 1
+        return self.request_count
+
+
+@asynccontextmanager
+async def app_lifespan(server: FastMCP):
+    """应用生命周期管理钩子.
+
+    在MCP Server启动和关闭时执行初始化和清理操作。
+
+    Args:
+        server: FastMCP服务器实例
+
+    Yields:
+        AppContext: 应用上下文对象
+    """
+    import time
+    from .utils.cache import MemoryCache
+
+    # 启动时初始化
+    cache_instance = MemoryCache()
+    context = AppContext(
+        cache=cache_instance,
+        startup_time=time.time(),
+        request_count=0,
+    )
+
+    # 初始化资源
+    yield context
+
+    # 关闭时清理
+    # 注意：cache由生命周期管理，会自动清理
+    pass
 
 from .prompts import (
     get_create_skill_prompt,
@@ -138,7 +187,8 @@ mcp = FastMCP(
     - format (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
     - include_tests (bool): 是否包含测试文件（默认：False）
     - validate_before_package (bool): 打包前是否验证（默认：True）
-    """
+    """,
+    lifespan=app_lifespan,
 )
 
 # ==================== 注册工具模块 ====================
