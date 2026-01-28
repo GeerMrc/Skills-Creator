@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - 架构边界重构：拆分collect_requirements为原子工具
 - 工具数量从16个增加到23个
-- 测试数量从533个增加到594个
+- 测试数量从533个增加到601个
 - 测试覆盖率为96%
 
 ### Fixed
@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - GitHub MCP 集成测试
 - Thinking MCP 集成测试
-- 完整的集成测试套件（594个测试用例）
+- 完整的集成测试套件（601个测试用例）
 
 ### Changed
 - 更新工具数量声明从11个到23个
