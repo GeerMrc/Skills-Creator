@@ -20,7 +20,6 @@
 | **[完整模式](example-complete-mode.md)** | complete | 10 | ~320 |
 | **[渐进模式](example-progressive-mode.md)** | progressive | 动态 | ~350 |
 | **[Elicit 模式](example-elicit-mode.md)** | elicit | 自动 | ~350 |
-| **[示例导航](requirement-collection-basic.md)** | 模式对比 | - | ~75 |
 
 ### MCP 工具示例
 
@@ -71,7 +70,7 @@
 | 批量操作多个技能 | [批量操作示例](mcp-batch-operations.md) |
 | 系统健康检查 | [健康检查示例](mcp-health-check.md) |
 | 看综合工作流 | [MCP 协作](mcp-skill-collaboration.md) |
-| 配置 Claude Code | [MCP Server 配置指南](../references/mcp-server-setup.md) |
+| 配置 MCP Server | [MCP Server 文档](../../skill-creator-mcp/docs/) |
 
 ---
 

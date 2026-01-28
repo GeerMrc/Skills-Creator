@@ -49,18 +49,9 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 > 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md) | [打包规范](references/packaging.md)
 
-### 环境配置（推荐）
+### 配置选项
 
-设置 `SKILL_CREATOR_OUTPUT_DIR` 环境变量，统一管理技能输出位置：
-
-```bash
-# 添加到 ~/.bashrc 或 ~/.zshrc
-export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
-```
-
-这样所有通过 `init_skill`、`package_skill`、`package_agent_skill` 创建的技能都会输出到指定目录。
-
-> 详见：[MCP 集成指南 - 路径解析规则](references/mcp-integration.md#路径解析规则)
+可通过 `SKILL_CREATOR_OUTPUT_DIR` 环境变量统一管理技能输出位置。详见：[MCP 集成指南](references/mcp-integration.md)
 
 ## 工作流程
 
@@ -91,7 +82,7 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 - 根据收集到的需求提供可执行建议
 - 参考 `references/requirement-workflow.md` 获取完整工作流指南
 
-> 详见：[需求收集工作流指南](references/requirement-workflow.md) | [需求澄清指南](references/requirement-collection.md) | [回退机制说明](references/fallback-mechanism.md)
+> 详见：[需求收集工作流指南](references/requirement-workflow.md) | [需求澄清指南](references/requirement-collection.md) | [MCP Server 文档](../../skill-creator-mcp/docs/)
 
 ## MCP 组件
 
@@ -118,8 +109,6 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 **健康检查 (3)**: health_check_tool | quick_status_tool | is_healthy_tool
 
-**技术验证 (5)**: check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
-
 > 注：工具分类统计：7个需求收集原子工具 + 4个技能工具 + 2个打包工具 + 2个批量操作工具 + 3个健康检查工具 = 18个工具
 
 **资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
@@ -135,7 +124,7 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 ### 核心文档
 
-- **[回退机制说明](references/fallback-mechanism.md)** - 客户端限制与自动降级策略
+- **[客户端兼容性说明](../../skill-creator-mcp/docs/client-compatibility.md)** - 客户端限制与自动降级策略
 - **[需求澄清指南](references/requirement-collection.md)** - AI 对话式需求收集流程详解
 - **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
 - **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
@@ -156,8 +145,8 @@ Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（18 工具
 - Agent-Skill 编排完整收集流程（循环、验证、重试、提供建议）
 - 详见：[需求收集工作流指南](references/requirement-workflow.md)
 
-详见：[混合架构设计](references/architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
+详见：[ADR 001 混合架构设计](../../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
 
 ## 配置与安装
 
-> 📘 完整的配置和安装指南请参考 [MCP Server 配置指南](references/mcp-server-setup.md)
+> 📘 完整的配置和安装指南请参考 [MCP Server 快速开始](../../skill-creator-mcp/docs/quick-start.md)

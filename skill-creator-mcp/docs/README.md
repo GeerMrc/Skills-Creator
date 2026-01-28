@@ -53,12 +53,14 @@ claude mcp list
 
 | 文档 | 描述 | 适合人群 |
 |------|------|---------|
+| [快速开始](./quick-start.md) | MCP Server 快速配置指南 | 新用户 |
 | [安装指南](./installation.md) | 详细的安装和配置说明 | 新用户 |
 | [配置参数参考](./configuration.md) | 所有环境变量的完整参考 | 高级用户 |
 | [MCP 配置说明](./mcp-config-guide.md) | uv/venv/全局安装配置方案与最佳实践 | 所有用户 |
 | [IDE集成配置](./ide-config.md) | Claude Desktop/Cursor/Continue.dev 等配置 | IDE用户 |
 | [Claude Code 配置指南](./claude-code-config.md) | Claude Code CLI 完整配置 | Claude Code 用户 |
 | [SSE配置指南](./sse-guide.md) | SSE 模式远程部署指南 | 运维人员 |
+| [客户端兼容性说明](./client-compatibility.md) | 客户端限制与自动降级策略 | 所有用户 |
 
 ### 使用指南
 
@@ -111,16 +113,33 @@ claude mcp list
 
 ## 🔍 可用工具列表
 
-### 核心开发工具（6个）
+### 需求收集原子工具（7个）
 
 | 工具 | 描述 |
 |------|------|
-| `collect_requirements` | AI 驱动的需求澄清工具 |
+| `create_requirement_session` | 创建需求收集会话 |
+| `get_requirement_session` | 获取会话状态 |
+| `update_requirement_answer` | 更新答案 |
+| `get_static_question` | 获取静态问题 |
+| `generate_dynamic_question` | 生成动态问题 |
+| `validate_answer_format` | 验证答案格式 |
+| `check_requirement_completeness` | 检查需求完整性 |
+
+### 技能工具（4个）
+
+| 工具 | 描述 |
+|------|------|
 | `init_skill` | 初始化新的 Agent-Skill |
 | `validate_skill` | 验证技能结构和内容 |
 | `analyze_skill` | 分析代码质量和复杂度 |
 | `refactor_skill` | 生成重构建议 |
+
+### 打包工具（2个）
+
+| 工具 | 描述 |
+|------|------|
 | `package_skill` | 打包发布工具 |
+| `package_agent_skill` | 标准打包工具（推荐） |
 
 ### 批量操作（2个）
 
@@ -158,7 +177,7 @@ claude mcp list
 | 指标 | 数值 |
 |------|------|
 | 当前版本 | v0.3.3 |
-| MCP 工具数量 | 18 个（不含开发工具） |
+| MCP 工具数量 | 18 个核心工具（不含开发工具） |
 | 测试覆盖率 | 96% (601 个测试用例) |
 | 支持的模板 | 4 种（minimal/tool-based/workflow-based/analyzer-based） |
 
@@ -174,6 +193,7 @@ claude mcp list
 
 ## 📝 文档更新记录
 
+- **2026-01-28**: 添加快速开始指南和客户端兼容性说明，更新工具列表（需求收集拆分为7个原子工具）
 - **2026-01-26**: v0.3.3 版本文档更新，完善安装配置说明，添加 package_agent_skill 工具文档
 
 ---

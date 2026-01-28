@@ -87,7 +87,7 @@ result = await collect_requirements(
 | 状态管理 | Agent-Skill层 | MCP层 | ctx.set_state API |
 | LLM采样 | Agent-Skill层 | MCP层 | ctx.sample API |
 
-**详细说明**: 参见 [需求收集架构设计文档](requirement-collection-architecture.md)
+**详细说明**: 参见 [需求收集模式](requirement-collection-modes.md) 了解7个原子工具的设计理念
 
 #### 未来重构方向
 

@@ -12,7 +12,6 @@
 """
 
 import sys
-import re
 from datetime import datetime
 from pathlib import Path
 
@@ -176,7 +175,7 @@ def create_new_plan(template_path: str, new_plan_path: str, tasks: list, task_id
 
     # 添加追溯信息
     trace_info = "\n## 相关计划\n\n"
-    trace_info += f"### 前置计划\n"
+    trace_info += "### 前置计划\n"
     trace_info += f"- [{rel_orig_path}]({rel_orig_path})\n"
     trace_info += f"- 追溯ID: {trace_id}\n"
 
@@ -253,7 +252,7 @@ def main():
     # 生成追溯ID
     trace_id = generate_trace_id()
 
-    print(f"📋 计划迁移工具")
+    print("📋 计划迁移工具")
     print(f"原计划: {original_plan}")
     print(f"新计划: {new_plan}")
     print(f"迁移任务: {', '.join(task_ids)}")

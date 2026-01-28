@@ -61,7 +61,7 @@ from .tools.skill_tools import (
 )
 
 # Phase 0 验证工具已迁移到开发工具脚本
-# 保留在 .tools.test_tools 模块中供测试使用
+# 保留在 .tools.phase0_tools 模块中供开发工具使用
 # 但不注册为MCP工具
 
 
@@ -393,7 +393,7 @@ async def check_requirement_completeness_tool(
 # - test_conversation_loop
 # - test_requirement_completeness
 #
-# 这些工具的实现代码保留在 src/skill_creator_mcp/tools/test_tools.py
+# 这些工具的实现代码保留在 src/skill_creator_mcp/tools/phase0_tools.py
 # 相关测试保留在 tests/test_utils/test_testing.py
 # 开发者可以通过以下方式使用：
 #   python -m scripts.dev-tools <command> [args]

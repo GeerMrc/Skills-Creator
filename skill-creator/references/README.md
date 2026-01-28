@@ -12,11 +12,13 @@
 | **[最佳实践 - 核心](best-practices-core.md)** | 基础架构和规范 | ~170 |
 | **[最佳实践 - 高级](best-practices-advanced.md)** | 高级技巧和优化 | ~140 |
 
-### 配置指南
+### MCP 集成
 
-| 文档 | 说明 | 类型 |
+| 文档 | 说明 | 行数 |
 |------|------|------|
-| **[MCP Server 配置指南](mcp-server-setup.md)** | Claude Code 和 IDE 配置说明 | 完整指南 |
+| **[MCP 集成指南](mcp-integration.md)** | MCP 工具和资源使用说明 | ~200 |
+| **[GitHub 集成指南](mcp-github-integration.md)** | 与 GitHub MCP Server 集成示例 | ~150 |
+| **[Thinking MCP 集成指南](mcp-thinking-integration.md)** | 与 Thinking MCP Server 集成示例 | ~150 |
 
 ### 验证相关
 
@@ -35,7 +37,7 @@
 | **[API 参考索引](requirement-collection-api.md)** | API 文档索引 | ~60 |
 | **[API 核心参考](requirement-collection-api-core.md)** | 完整 API 技术文档 | ~200 |
 | **[API 使用示例](requirement-collection-api-examples.md)** | 实际使用场景 | ~150 |
-| **[回退机制](fallback-mechanism.md)** | 客户端兼容性说明 | ~50 |
+| **[Prompt 模板参考](prompt-templates.md)** | Prompt 模板使用说明 | ~200 |
 
 ### 故障排除
 
@@ -59,7 +61,7 @@
 |------|---------|
 | 如何使用 MCP 工具 | [MCP 集成指南](mcp-integration.md) |
 | Agent-Skill 开发规范 | [最佳实践 - 核心](best-practices-core.md) |
-| 如何配置 Claude Code 和 IDE | [MCP Server 配置指南](mcp-server-setup.md) |
+| 如何配置 MCP Server | [MCP Server 文档](../../skill-creator-mcp/docs/) |
 | 如何验证技能 | [验证指南](validation-guide.md) |
 | 需求澄清功能 | [需求澄清指南](requirement-collection.md) |
 | API 参数和返回值 | [API 核心参考](requirement-collection-api-core.md) |
@@ -92,3 +94,5 @@
 
 - **[SKILL.md](../SKILL.md)** - Agent-Skill 主入口
 - **[Examples](../examples/README.md)** - 使用示例索引
+- **[ADR 001: 混合架构设计](../../docs/adr/001-hybrid-architecture.md)** - 架构决策记录
+- **[MCP Server 文档](../../skill-creator-mcp/docs/)** - MCP Server 技术文档

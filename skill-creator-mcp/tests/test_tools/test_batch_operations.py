@@ -9,9 +9,7 @@ from skill_creator_mcp.tools.batch_operations import (
     BatchAnalysisInput,
     BatchValidationInput,
     batch_analyze_skills,
-    batch_analyze_skills_sync,
     batch_validate_skills,
-    batch_validate_skills_sync,
 )
 
 
@@ -73,31 +71,6 @@ class TestBatchValidation:
             assert result.summary["successful"] == 2
             assert result.summary["failed"] == 1
 
-    def test_batch_validate_sync(self):
-        """测试同步版本的批量验证."""
-        mock_validate = AsyncMock(
-            return_value={
-                "success": True,
-                "valid": True,
-                "skill_path": "/test/skill",
-            }
-        )
-
-        import skill_creator_mcp.server
-        original = skill_creator_mcp.server.validate_skill
-        skill_creator_mcp.server.validate_skill = mock_validate
-
-        try:
-            result = batch_validate_skills_sync(
-                skill_paths=["/skill1"],
-                check_structure=True,
-            )
-
-            assert result.summary["total"] == 1
-            assert result.summary["successful"] == 1
-        finally:
-            skill_creator_mcp.server.validate_skill = original
-
 
 class TestBatchAnalysis:
     """批量分析测试."""
@@ -125,31 +98,6 @@ class TestBatchAnalysis:
 
             assert result.summary["total"] == 2
             assert result.summary["successful"] == 2
-        finally:
-            skill_creator_mcp.server.analyze_skill = original
-
-    def test_batch_analyze_sync(self):
-        """测试同步版本的批量分析."""
-        mock_analyze = AsyncMock(
-            return_value={
-                "success": True,
-                "quality": {"overall_score": 75},
-                "skill_path": "/test/skill",
-            }
-        )
-
-        import skill_creator_mcp.server
-        original = skill_creator_mcp.server.analyze_skill
-        skill_creator_mcp.server.analyze_skill = mock_analyze
-
-        try:
-            result = batch_analyze_skills_sync(
-                skill_paths=["/skill1"],
-                analyze_structure=True,
-            )
-
-            assert result.summary["total"] == 1
-            assert result.summary["successful"] == 1
         finally:
             skill_creator_mcp.server.analyze_skill = original
 
