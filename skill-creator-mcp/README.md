@@ -33,9 +33,8 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 ## 特性
 
-### 核心开发工具（7个）
+### 核心开发工具（6个）
 
-- ✅ **collect_requirements** - AI 驱动的需求澄清工具（支持会话恢复）
 - ✅ **init_skill** - 初始化新的 Agent-Skill 项目（支持 4 种模板）
 - ✅ **validate_skill** - 验证技能结构和内容规范
 - ✅ **analyze_skill** - 分析代码质量和复杂度
@@ -43,16 +42,26 @@ Agent-Skills 开发与质量保证 MCP Server。
 - ✅ **package_skill** - 打包发布工具（zip/tar.gz/tar.bz2）
 - ✅ **package_agent_skill** - Agent-Skill 标准打包（推荐，支持版本号）
 
+### 需求收集原子工具（7个）
+
+- ✅ **create_requirement_session** - 创建需求收集会话
+- ✅ **get_requirement_session** - 获取会话状态
+- ✅ **update_requirement_answer** - 更新会话答案
+- ✅ **get_static_question** - 获取静态问题（basic/complete模式）
+- ✅ **generate_dynamic_question** - 生成动态问题（brainstorm/progressive模式）
+- ✅ **validate_answer_format** - 验证答案格式
+- ✅ **check_requirement_completeness** - 检查需求完整性（使用LLM）
+
 ### 批量操作（2个）
 
-- ✅ **batch_validate_skills_tool** - 批量验证多个 Agent-Skill
-- ✅ **batch_analyze_skills_tool** - 批量分析多个 Agent-Skill
+- ✅ **batch_validate_skills** - 批量验证多个 Agent-Skill
+- ✅ **batch_analyze_skills** - 批量分析多个 Agent-Skill
 
 ### 健康检查（3个）
 
-- ✅ **health_check_tool** - 完整健康检查
-- ✅ **quick_status_tool** - 快速状态摘要
-- ✅ **is_healthy_tool** - 快速健康检查
+- ✅ **health_check** - 完整健康检查
+- ✅ **quick_status** - 快速状态摘要
+- ✅ **is_healthy** - 快速健康检查
 
 ### Phase 0 验证工具（5个）
 
@@ -295,43 +304,6 @@ vim .env
 > ```
 
 ## 使用
-
-### collect_requirements - 需求澄清
-
-AI 驱动的对话式需求收集工具，支持会话状态管理。
-
-**参数：**
-- `action` (str): 执行动作（`start`/`next`/`previous`/`status`/`complete`）
-- `mode` (str): 收集模式（`basic`/`complete`/`brainstorm`/`progressive`）
-- `session_id` (str, 可选): 会话 ID（自动生成）
-- `user_input` (str, 可选): 用户输入（用于 next/complete 动作）
-
-**收集模式：**
-- `basic` - 5 步基础收集（技能名称、功能、场景、模板、额外需求）
-- `complete` - 10 步完整收集（基础 + 用户、技术栈、依赖、测试、文档）
-- `brainstorm` - AI 引导的创意发散
-- `progressive` - 快速开始，逐步完善
-
-**返回：**
-```json
-{
-  "success": true,
-  "session_id": "req_20250123_abc123",
-  "action": "start",
-  "mode": "basic",
-  "current_step": {
-    "key": "skill_name",
-    "title": "技能名称",
-    "prompt": "请输入技能名称..."
-  },
-  "step_index": 0,
-  "total_steps": 5,
-  "progress": 0.0,
-  "answers": {},
-  "message": "欢迎使用需求澄清工具！当前进度：0% (0/5)",
-  "completed": false
-}
-```
 
 ### init_skill - 初始化技能
 
