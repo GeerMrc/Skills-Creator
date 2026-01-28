@@ -1,22 +1,38 @@
-# 全面审核与修复计划：Skills-Creator 内容定位清理
+# skill-creator/ 内容精准定位全面审核与优化计划
 
-> **计划类型**: 全面审核与修复
+> **计划类型**: 内容精准定位全面审核与优化
 > **创建日期**: 2026-01-28
-> **状态**: completed
+> **状态**: planning
 > **优先级**: P0（高优先级）
 
 ---
 
-## 重要说明
+## 📋 项目开发规范要求概述（CLAUDE.md）
 
-**范围澄清**：
-- `CLAUDE.md` 和 `.claude/` 是开发环境的规范管理工具，用于管理 Skills-Creator **项目的开发流程**
-- `skill-creator/` 和 `skill-creator-mcp/` 是 **Skills-Creator 项目的核心代码组件**
-- 本计划全面审核两个核心组件的功能定位，确保内容准确、无冗余、无混淆
+### 九步法工作流程
 
-**功能定位原则**：
-- **skill-creator/ (Agent-Skill)**：教用户如何创建 Agent-Skill，如何使用 skill-creator MCP 工具，**如何与其他 MCP Server 集成**
-- **skill-creator-mcp/ (MCP Server)**：提供原子操作工具，MCP Server 安装配置，技术实现细节
+```
+步骤0: 前置任务审核 → 检查前置任务、确认Git环境
+步骤1: 制定开发计划 → .claude/plans/feat-xxx.md
+步骤2: 拆分任务清单 → TaskWrite工具（3-10个任务）
+步骤3: 执行开发工作 → 编码+测试
+步骤4: 测试验证 → pytest --cov（覆盖率≥95%）
+步骤5: 交叉验证 → 对照计划检查完成度
+步骤6: 更新文档 → CHANGELOG.md、SKILL.md等
+步骤7: 阶段性审计 → 内部审查
+步骤8: Git提交 → 规范的commit信息
+步骤9: 阶段性汇报 → 生成汇报并归档计划
+```
+
+### 核心定位原则
+
+**Agent-Skill (`skill-creator/`)**：
+- ✅ **应该包含**：如何创建Agent-Skill、如何使用skill-creator MCP工具、如何与其他MCP Server集成
+- ❌ **不应该包含**：Skills-Creator项目开发规范（九步法、Git规范）、MCP Server技术实现细节
+
+**MCP Server (`skill-creator-mcp/`)**：
+- ✅ **应该包含**：MCP工具、资源、Prompts、安装配置、技术实现
+- ❌ **不应该包含**：Agent-Skill业务知识、工作流编排
 
 ---
 
@@ -24,380 +40,291 @@
 
 ### 1.1 审核目标
 
-基于实际代码内容，全面审核 Skills-Creator 项目的所有内容：
+基于前置任务"全面审核与修复计划"的完成情况，**逐个、逐一、全面**审核`skill-creator/`目录的**所有内容**，确保：
 
-1. **skill-creator/** Agent-Skill 内容定位是否准确
-   - 只应包含"如何创建 Agent-Skill"的相关内容
-   - **应该包含**：与其他 MCP Server 集成的指南和示例
-   - 不应包含项目管理规范、MCP Server 技术实现细节
-2. **skill-creator-mcp/** MCP 功能是否过度开发/混乱
-   - MCP 应只提供原子操作，不包含业务知识
-   - 不应有功能重复的代码
-3. **混合架构职责边界**是否符合最佳实践
+1. **内容与实际功能100%一致**：工具数量、分类、命名与server.py代码完全一致
+2. **定位100%准确**：只包含Agent-Skill开发相关内容，不包含项目开发规范
+3. **无冗余内容**：不包含重复、过时、无关的内容
+4. **无引用错误**：不引用项目级文档（CLAUDE.md），不引用已删除的文档
 
-### 1.2 审核依据
+### 1.2 审核范围
 
-- **100%基于实际代码审核**：读取实际文件内容，不依赖文档摘要
-- **规范开发流程**：遵循开发环境的九步法工作流
-- **ADR 001 原则**：MCP 提供原子操作，Agent-Skill 编排工作流
+**完整文件清单**（基于前置任务清理后的状态）：
 
----
+1. **SKILL.md**：1个文件
+2. **references/**：约24个文档
+3. **examples/**：约26个文档
+4. **scripts/**：2个辅助工具脚本
 
-## 二、审核发现
+**总计**：约53个文件需要逐一审核
 
-### 2.1 skill-creator/ 内容归属分析
+### 1.3 审核依据
 
-**审核范围**：SKILL.md + 32个references + 26个examples + 2个scripts = 62个文件
-
-**发现问题**：需要处理11个文件（删除8个，移动2个，修正2个）
-
-#### A. 应该删除的文件（8个）
-
-| 文件 | 大小 | 问题描述 | 原因 |
-|------|------|----------|------|
-| `dev-standards.md` | 382行 | Skills-Creator **项目开发**规范 | **删除**（项目内部规范） |
-| `dev-standards-workflow.md` | 340行 | 九步法工作流 | **删除**（项目内部规范） |
-| `dev-standards-git.md` | 273行 | Git工作流规范 | **删除**（项目内部规范） |
-| `dev-standards-documentation.md` | 194行 | 文档管理规范 | **删除**（项目内部规范） |
-| `architecture.md` | 149行 | 与 ADR 001 重复 | **删除**（引用 ADR 001 即可） |
-| `cache-mechanism.md` | 272行 | MCP Server **内部实现细节** | **删除**（Agent-Skill用户不需要） |
-| `cache-mechanism-advanced.md` | 166行 | MCP Server **内部实现细节** | **删除**（Agent-Skill用户不需要） |
-| `requirement-collection-architecture.md` | ~200行 | **已废弃的架构**（v0.3.3重构前） | **删除**（记录的是旧架构） |
-
-**删除原因**：
-- 前5个：Skills-Creator 项目本身的开发规范，不是 Agent-Skill 开发知识
-- cache-mechanism*：MCP Server 内部实现细节，Agent-Skill 开发者不需要了解
-- requirement-collection-architecture.md：记录的是已废弃的架构（v0.3.3已重构为7个原子工具）
-
-#### B. 应该移动的文件（2个）
-
-| 文件 | 大小 | 目标位置 | 新文件名 | 原因 |
-|------|------|----------|----------|------|
-| `mcp-server-setup.md` | 289行 | `skill-creator-mcp/docs/` | `quick-start.md` | MCP Server 配置指南 |
-| `fallback-mechanism.md` | 52行 | `skill-creator-mcp/docs/` | `client-compatibility.md` | 客户端兼容性说明 |
-
-**移动原因**：这些是 MCP Server 的技术文档，应该放在 MCP Server 文档中。
-
-#### C. 应该修正的内容（4个）
-
-| 文件 | 问题 | 修正 |
-|------|------|------|
-| `SKILL.md` (第121行) | 包含 Phase 0 验证工具说明（已迁移） | **删除**此行 |
-| `SKILL.md` (第52-63行) | 包含环境配置内容 | **移除**或简化 |
-| `examples/mcp-init-examples.md` | 命名混淆 | **重命名**为`init-skill-examples.md` |
-| `examples/requirement-collection-basic.md` | 重复导航页 | **删除** |
-
-#### D. 应该保留的核心内容（27个文件，✅ 正确）
-
-**最佳实践**（3个）：best-practices-core.md, best-practices-advanced.md, validation.md, validation-guide.md, packaging.md
-**MCP 集成指南**（3个）：mcp-integration.md, **mcp-github-integration.md**, **mcp-thinking-integration.md**
-**需求收集**（9个）：requirement-collection*.md, brainstorming-techniques.md, prompt-templates.md
-**技术机制**（3个）：troubleshooting.md, troubleshooting-advanced.md
-**所有示例**（26个）：包括 **github-*, thinking-*** 集成示例
-**辅助工具**（2个）：scripts/validate_skill.py, scripts/analyze_skill.py
-**索引**（2个）：references/README.md, examples/README.md
-
-**保留文件小计**：约48个文件（删除重复导航页后），全部符合 Agent-Skill 定位 ✅
-
-### 2.2 skill-creator-mcp/ 架构评估
-
-**审核范围**：43个源文件 + 47个测试文件 + 8个文档
-
-**发现问题**：需要处理2个问题
-
-| 问题 | 优先级 | 问题描述 | 处理建议 |
-|------|--------|----------|----------|
-| **prompts/ 目录** | 需要评估 | 包含Prompt模板资源（@mcp.prompt()） | **保留**（MCP Prompt资源符合协议） |
-| **llm_services.py 内置Prompt** | P0 | `check_requirement_completeness`函数包含内置Prompt模板 | **保持现状**（向后兼容，支持自定义） |
-| **batch_operations重复** | P1 | 与batch_tools.py存在功能重叠，包含未使用的同步版本 | **清理**未使用函数 |
-| **docs/README.md过时** | P2 | 第118行提到旧的`collect_requirements`工具 | **更新**工具列表 |
-| **Resources内容** | 正确 | best_practices.py, validation_rules.py作为MCP Resources合理 | **保持现状** |
-| **test_tools.py保留** | 正确 | Phase 0工具未注册为MCP工具 | **保持现状** |
-
-**总体评估**：
-- ✅ 架构优秀，94%符合ADR 001原则
-- ✅ 需求收集已正确拆分为7个原子工具
-- ✅ Phase 0工具已正确迁移到开发脚本
-- ✅ prompts/ 目录作为 MCP Prompt 资源符合协议规范
-- ⚠️ llm_services.py 默认Prompt作为后备，支持自定义（向后兼容）
+- **100%基于实际代码审核**：读取server.py确认工具注册清单
+- **定位原则**：Agent-Skill只包含Agent-Skill开发相关内容
+- **完整性原则**：所有文件都必须审核，不能遗漏
 
 ---
 
-## 三、任务清单
+## 二、审核发现（基于前置任务）
 
-### 3.1 任务列表
+### 2.1 工具数量核实
 
-| ID | 任务名称 | 优先级 | 状态 | 负责模块 | 预计工作量 |
-|----|----------|--------|------|----------|------------|
-| T-001 | 删除项目管理文档（4个dev-standards） | P0 | pending | skill-creator/references/ | 小 |
-| T-002 | 删除architecture.md（重复） | P0 | pending | skill-creator/references/ | 小 |
-| T-003 | 删除MCP内部实现文档（3个） | P0 | pending | skill-creator/references/ | 小 |
-| T-004 | 移动MCP技术文档（2个） | P0 | pending | skill-creator/ → skill-creator-mcp/ | 小 |
-| T-005 | 更新SKILL.md定位问题 | P0 | pending | skill-creator/ | 小 |
-| T-006 | 更新references/README.md | P0 | pending | skill-creator/references/ | 小 |
-| T-007 | 更新examples/README.md | P0 | pending | skill-creator/examples/ | 小 |
-| T-008 | 清理batch_operations重复代码 | P1 | pending | skill-creator-mcp/tools/ | 中 |
-| T-009 | 更新MCP文档索引 | P2 | pending | skill-creator-mcp/docs/ | 小 |
-| T-010 | 验证打包排除规则 | P0 | pending | build | 小 |
-| T-011 | 运行完整测试验证 | P0 | pending | test | 小 |
+**实际MCP工具统计**（基于server.py代码）：
+- `mcp.add_tool()`注册：4个（技能工具：init_skill, validate_skill, analyze_skill, refactor_skill）
+- `@mcp.tool()`装饰器注册：14个
+- **总计：18个工具** ✅
 
-**总计**: 11个任务
+**工具分类验证**：
+| 类别 | 数量 | 验证状态 |
+|------|------|----------|
+| 需求收集原子工具 | 7 | ✅ 正确 |
+| 技能工具 | 4 | ✅ 正确 |
+| 打包工具 | 2 | ✅ 正确 |
+| 批量操作 | 2 | ✅ 正确 |
+| 健康检查 | 3 | ✅ 正确 |
+| **总计** | **18** | ✅ 正确 |
+
+**结论**：工具数量**18是正确的**，SKILL.md中的描述准确。
+
+### 2.2 前置任务已解决的问题
+
+前置任务"全面审核与修复计划"已完成：
+- ✅ 删除8个无关文档（dev-standards*.md、architecture.md等）
+- ✅ 移动2个MCP技术文档到skill-creator-mcp/docs/
+- ✅ 更新references/README.md和examples/README.md
+- ✅ 清理batch_operations重复代码
+- ✅ 测试全部通过（599 passed, 2 skipped）
+
+### 2.3 本次计划需要解决的问题
+
+基于探索代理的深入审核，发现以下**遗留问题**：
+
+| 问题ID | 文件 | 位置 | 问题描述 | 优先级 |
+|--------|------|------|----------|--------|
+| P-001 | SKILL.md | 第150-153行 | 包含"配置与安装"章节（不应该在Agent-Skill中） | P0 |
+| P-002 | packaging.md | 第240行 | 引用项目级文档CLAUDE.md | P0 |
+| P-003 | mcp-integration.md | 第22行 | 使用项目特定路径 | P1 |
+| P-004 | SKILL.md | 全文 | 工具命名不一致（可能造成困惑） | P2 |
+
+---
+
+## 三、全面审核任务清单
+
+### 3.1 任务列表（7个任务）
+
+| ID | 任务名称 | 审核范围 | 预计工作量 |
+|----|----------|----------|------------|
+| T-101 | 全面审核SKILL.md | skill-creator/SKILL.md（1个文件） | 中 |
+| T-102 | 逐个审核references/文档 | skill-creator/references/*.md（约24个文件） | 大 |
+| T-103 | 逐个审核examples/文档 | skill-creator/examples/*.md（约26个文件） | 大 |
+| T-104 | 审核scripts/工具 | skill-creator/scripts/（2个文件） | 小 |
+| T-105 | 全面交叉验证 | 所有文档之间的一致性 | 中 |
+| T-106 | 修复发现的所有问题 | 根据审核结果修复 | 大 |
+| T-107 | 更新测试并验证 | pytest、ruff、mypy | 中 |
+
+**总计工作量**：8-12小时
 
 ### 3.2 按优先级分类
 
-**P0任务（8个）**：必须立即处理
-- T-001: 删除项目管理文档（4个dev-standards）
-- T-002: 删除architecture.md（重复）
-- T-003: 删除MCP内部实现文档（3个）
-- T-004: 移动MCP技术文档（2个）
-- T-005: 更新SKILL.md定位问题
-- T-006: 更新references/README.md
-- T-007: 更新examples/README.md
-- T-010: 验证打包排除规则
-- T-011: 运行完整测试验证
+**P0任务（4个）**：必须立即处理
+- T-101: 全面审核SKILL.md
+- T-102: 逐个审核references/文档
+- T-106: 修复发现的所有问题
+- T-107: 更新测试并验证
 
-**P1任务（1个）**：尽快处理，影响代码质量
-- T-008: 清理batch_operations重复代码
+**P1任务（2个）**：尽快处理
+- T-103: 逐个审核examples/文档
+- T-105: 全面交叉验证
 
-**P2任务（1个）**：可选处理，优化文档
-- T-009: 更新MCP文档索引
+**P2任务（1个）**：可选处理
+- T-104: 审核scripts/工具
 
 ---
 
 ## 四、详细任务说明
 
-### T-001: 删除项目管理文档（4个dev-standards）
+### T-101: 全面审核SKILL.md
 
 **当前状态**: pending
 **优先级**: P0
-**描述**: 删除4个dev-standards文档
+**描述**: 逐行审核SKILL.md的所有内容
 
-**涉及文件**:
-- `dev-standards.md` (382行)
-- `dev-standards-workflow.md` (340行)
-- `dev-standards-git.md` (273行)
-- `dev-standards-documentation.md` (194行)
+**审核范围**：
+- skill-creator/SKILL.md（全文，约150行）
 
-**操作步骤**:
-1. 确认这些内容与 CLAUDE.md 重复
-2. 直接删除4个dev-standards文件
+**审核清单**：
+- [ ] 工具数量是否准确（18个）
+- [ ] 工具分类是否准确（5类）
+- [ ] 工具命名是否与server.py一致
+- [ ] 是否包含项目开发规范内容
+- [ ] 是否包含MCP Server内部实现
+- [ ] 是否有配置安装章节（应该删除）
+- [ ] 所有链接是否有效
+- [ ] 是否引用了已删除的文档
+- [ ] 是否有冗余或重复内容
+- [ ] 工具命名不一致是否有说明
 
-**验收标准**:
-- [ ] 4个dev-standards文件已删除
-- [ ] 相关引用已更新（T-006）
+**输出**：
+- SKILL.md审核报告（列出所有需要修改的地方）
+- 具体修改建议（行号+原文+建议修改）
 
 ---
 
-### T-002: 删除architecture.md（重复）
+### T-102: 逐个审核references/文档
 
 **当前状态**: pending
 **优先级**: P0
-**描述**: 删除与ADR 001重复的架构文档
+**描述**: 逐个审核references/中所有约24个文档
 
-**涉及文件**:
-- `architecture.md` (149行)
+**审核范围**：
+- skill-creator/references/*.md（约24个文件）
 
-**操作步骤**:
-1. 确认内容与`docs/adr/001-hybrid-architecture.md`重复
-2. 删除architecture.md
-3. 在references/README.md中添加指向ADR 001的链接
+**每个文档的审核清单**：
+- [ ] 是否只包含Agent-Skill开发相关内容
+- [ ] 是否引用项目级文档（CLAUDE.md）
+- [ ] 是否引用已删除的文档
+- [ ] 是否包含项目开发规范
+- [ ] 是否包含MCP Server内部实现
+- [ ] 内容是否准确（与实际功能一致）
+- [ ] 链接是否全部有效
+- [ ] 是否有重复内容
+- [ ] 是否自包含（不依赖外部文档）
 
-**验收标准**:
-- [ ] architecture.md已删除
-- [ ] references/README.md已添加ADR 001链接
+**已知问题文档**：
+- packaging.md（第240行引用CLAUDE.md）
+- mcp-integration.md（第22行使用项目特定路径）
 
----
-
-### T-003: 删除MCP内部实现文档（3个）
-
-**当前状态**: pending
-**优先级**: P0
-**描述**: 删除MCP Server内部实现细节文档
-
-**涉及文件**:
-- `cache-mechanism.md` (272行) - MCP Server 内部缓存实现
-- `cache-mechanism-advanced.md` (166行) - 高级缓存实现
-- `requirement-collection-architecture.md` (~200行) - 已废弃的架构文档
-
-**操作步骤**:
-1. 删除3个MCP Server内部实现文档
-2. 更新references/README.md移除引用
-
-**验收标准**:
-- [ ] 3个文件已删除
-- [ ] references/README.md已更新
+**输出**：
+- references/审核报告（逐个文档列出问题）
+- 需要修改的文档清单
+- 具体修改建议
 
 ---
 
-### T-004: 移动MCP技术文档（2个）
-
-**当前状态**: pending
-**优先级**: P0
-**描述**: 将MCP Server技术文档移动到正确位置
-
-**涉及文件**:
-| 源文件 | 目标位置 | 新文件名 |
-|--------|----------|----------|
-| `references/mcp-server-setup.md` | `skill-creator-mcp/docs/` | `quick-start.md` |
-| `references/fallback-mechanism.md` | `skill-creator-mcp/docs/` | `client-compatibility.md` |
-
-**操作步骤**:
-1. 创建`skill-creator-mcp/docs/`目录（如果不存在）
-2. 移动并重命名2个文件
-3. 在MCP Server README中添加文档链接
-
-**验收标准**:
-- [ ] 2个文件已移动并重命名
-- [ ] MCP Server README已更新
-- [ ] references/README.md已移除引用（T-006）
-
----
-
-### T-005: 更新SKILL.md定位问题
-
-**当前状态**: pending
-**优先级**: P0
-**描述**: 修正SKILL.md中的定位问题
-
-**操作步骤**:
-1. 删除第121行Phase 0验证工具说明
-2. 移除或简化第52-63行环境配置内容
-3. 更新工具数量统计为18个核心工具
-
-**验收标准**:
-- [ ] Phase 0验证工具说明已删除
-- [ ] 环境配置内容已移除或简化
-- [ ] 工具数量统计已更新
-
----
-
-### T-006: 更新references/README.md
-
-**当前状态**: pending
-**优先级**: P0
-**描述**: 移除对已删除/移动文档的引用
-
-**操作步骤**:
-1. 移除对mcp-server-setup.md的引用
-2. 移除对dev-standards*.md的引用
-3. 移除对architecture.md的引用
-4. 移除对cache-mechanism*.md的引用
-5. 移除对requirement-collection-architecture.md的引用
-6. 移除对fallback-mechanism.md的引用
-7. 添加指向ADR 001的链接
-
-**验收标准**:
-- [ ] 所有无效链接已移除
-- [ ] ADR 001链接已添加
-- [ ] 剩余链接全部有效
-
----
-
-### T-007: 更新examples/README.md
-
-**当前状态**: pending
-**优先级**: P0
-**描述**: 移除对已删除示例的引用
-
-**操作步骤**:
-1. 移除对cache-advanced-examples.md的引用
-2. 移除对requirement-collection-basic.md的引用
-3. 更新示例索引
-
-**验收标准**:
-- [ ] 无效链接已移除
-- [ ] 示例索引已更新
-
----
-
-### T-008: 清理batch_operations重复代码
+### T-103: 逐个审核examples/文档
 
 **当前状态**: pending
 **优先级**: P1
-**描述**: 清理batch_operations.py中未使用的代码
+**描述**: 逐个审核examples/中所有约26个示例文档
 
-**涉及文件**:
-- `skill-creator-mcp/tools/batch_operations.py`
+**审核范围**：
+- skill-creator/examples/*.md（约26个文件）
 
-**操作步骤**:
-1. 删除未使用的同步版本函数
-2. 清理重复代码
-3. 运行测试验证
+**每个文档的审核清单**：
+- [ ] 示例是否准确（与实际功能一致）
+- [ ] 是否引用已删除的文档
+- [ ] 链接是否全部有效
+- [ ] 是否符合Agent-Skill定位
+- [ ] 是否与references/内容一致
+- [ ] 代码示例是否可运行
+- [ ] 是否有过时的内容
 
-**验收标准**:
-- [ ] 未使用函数已删除
-- [ ] 测试全部通过
+**输出**：
+- examples/审核报告（逐个文档列出问题）
+- 需要修改的文档清单
+- 具体修改建议
 
 ---
 
-### T-009: 更新MCP文档索引
+### T-104: 审核scripts/工具
 
 **当前状态**: pending
 **优先级**: P2
-**描述**: 更新MCP Server文档索引
+**描述**: 审核skill-creator/scripts/中的辅助工具
 
-**涉及文件**:
-- `skill-creator-mcp/docs/README.md`
+**审核范围**：
+- skill-creator/scripts/validate_skill.py
+- skill-creator/scripts/analyze_skill.py
 
-**操作步骤**:
-1. 添加新移动过来的文档链接
-2. 更新第118行的工具列表
+**审核清单**：
+- [ ] 脚本是否符合黑盒化原则
+- [ ] 是否应该移动到MCP Server
+- [ ] 文档是否完整
+- [ ] 是否可独立运行
+- [ ] 依赖是否正确
 
-**验收标准**:
-- [ ] 文档索引已更新
-- [ ] 工具列表已更新
-
----
-
-### T-010: 验证打包排除规则
-
-**当前状态**: pending
-**优先级**: P0
-**描述**: 验证打包工具正确排除无关文件
-
-**操作步骤**:
-1. 检查`skill-creator-mcp/src/skill_creator_mcp/utils/packagers.py`
-2. 确认排除列表包含：`.claude/`, `.git/`, `dev-standards*.md`
-3. 运行打包命令验证
-
-**验证命令**:
-```bash
-cd skill-creator-mcp
-uv run python -c "
-from src.skill_creator_mcp.utils.packagers import package_agent_skill
-result = package_agent_skill(
-    skill_path='../skill-creator',
-    output_dir='./test-dist',
-    version='0.3.4',
-    format='zip'
-)
-print(result)
-"
-```
-
-**验收标准**:
-- [ ] 打包工具排除规则正确
-- [ ] 打包结果不包含已删除文档
-- [ ] 包大小和文件数量符合预期
+**输出**：
+- scripts/审核报告
+- 是否需要移动的建议
 
 ---
 
-### T-011: 运行完整测试验证
+### T-105: 全面交叉验证
+
+**当前状态**: pending
+**优先级**: P1
+**描述**: 全面交叉验证所有文档之间的一致性
+
+**验证范围**：
+- SKILL.md vs server.py（工具清单）
+- references/ vs examples/（内容一致性）
+- references/ README.md vs 实际文档（索引准确性）
+- examples/ README.md vs 实际文档（索引准确性）
+
+**验证清单**：
+- [ ] SKILL.md工具列表与server.py完全一致
+- [ ] references/文档之间无矛盾
+- [ ] examples/文档与references/内容一致
+- [ ] README.md索引准确（无遗漏、无无效链接）
+- [ ] 没有重复的内容
+- [ ] 术语使用一致
+
+**输出**：
+- 交叉验证报告
+- 发现的不一致之处
+- 修正建议
+
+---
+
+### T-106: 修复发现的所有问题
 
 **当前状态**: pending
 **优先级**: P0
-**描述**: 运行完整测试套件确保修改未破坏功能
+**描述**: 根据审核结果，修复所有发现的问题
 
-**操作步骤**:
-1. 运行pytest --cov
-2. 运行ruff check .
-3. 运行mypy src/
-4. 验证所有测试通过
+**修复范围**：
+- 所有需要修改的文档
 
-**验收标准**:
-- [ ] pytest测试全部通过（覆盖率 ≥95%）
+**修复清单**：
+- [ ] 删除SKILL.md配置安装章节
+- [ ] 修正packaging.md对CLAUDE.md的引用
+- [ ] 修正mcp-integration.md的路径
+- [ ] 修复所有无效链接
+- [ ] 删除所有重复内容
+- [ ] 删除所有无关内容
+- [ ] 统一术语使用
+- [ ] 添加缺失的说明（如工具命名规律）
+
+**验收标准**：
+- [ ] 所有定位问题已修复
+- [ ] 所有无效链接已修复
+- [ ] 无冗余内容
+- [ ] 内容准确且一致
+
+---
+
+### T-107: 更新测试并验证
+
+**当前状态**: pending
+**优先级**: P0
+**描述**: 更新测试用例以反映所有变更，运行完整测试
+
+**测试范围**：
+- skill-creator-mcp/tests/test_packaging_links.py（链接检查测试）
+
+**测试清单**：
+- [ ] 更新链接检查测试（移除已删除链接的检查）
+- [ ] 运行pytest --cov（覆盖率≥95%）
+- [ ] 运行ruff check .（0错误）
+- [ ] 运行mypy src/（0错误）
+- [ ] 验证所有测试通过
+
+**验收标准**：
+- [ ] pytest测试全部通过
 - [ ] ruff检查0错误
 - [ ] mypy检查0错误
+- [ ] 测试覆盖率≥95%
 
 ---
 
@@ -407,33 +334,18 @@ print(result)
 
 | 状态 | 开始时间 | 任务完成 | 最近更新 |
 |------|----------|----------|----------|
-| completed | 2026-01-28 | 11/11 (100%) | 2026-01-28 |
+| planning | 2026-01-28 | 0/7 (0%) | - |
 
-### 5.2 任务完成情况
+### 5.2 归档检查清单
 
-| ID | 任务名称 | 状态 | 完成时间 |
-|----|----------|------|----------|
-| T-001 | 删除项目管理文档(4个dev-standards) | ✅ | 2026-01-28 |
-| T-002 | 删除architecture.md(重复) | ✅ | 2026-01-28 |
-| T-003 | 删除MCP内部实现文档(3个) | ✅ | 2026-01-28 |
-| T-004 | 移动MCP技术文档到正确位置 | ✅ | 2026-01-28 |
-| T-005 | 更新SKILL.md定位问题 | ✅ | 2026-01-28 |
-| T-006 | 更新references/README.md索引 | ✅ | 2026-01-28 |
-| T-007 | 更新examples/README.md索引 | ✅ | 2026-01-28 |
-| T-008 | 清理batch_operations重复代码 | ✅ | 2026-01-28 |
-| T-009 | 更新MCP Server文档索引 | ✅ | 2026-01-28 |
-| T-010 | 验证打包排除规则 | ✅ | 2026-01-28 |
-| T-011 | 运行完整测试验证 | ✅ | 2026-01-28 |
-
-### 5.3 归档检查清单
-
-- [x] P0任务全部完成 (9个)
-- [x] P1任务全部完成 (1个)
-- [x] P2任务全部完成 (1个)
-- [x] 验收标准全部满足
-- [x] 有完整的Git commit记录
-- [x] 测试全部通过 (599 passed, 2 skipped)
-- [x] 文档已同步更新
+- [ ] P0任务全部完成 (4个)
+- [ ] P1任务全部完成 (2个)
+- [ ] P2任务全部完成 (1个)
+- [ ] 所有文档已审核（约53个文件）
+- [ ] 所有问题已修复
+- [ ] 测试全部通过
+- [ ] 有完整的Git commit记录
+- [ ] 文档已同步更新
 
 ---
 
@@ -441,117 +353,67 @@ print(result)
 
 | 风险 | 严重性 | 缓解措施 |
 |------|--------|----------|
-| 删除prompts目录影响代码 | 中 | 需要检查代码依赖，更新测试 |
-| 移动文档后引用失效 | 低 | 全面搜索引用并更新（T-006, T-007） |
-| 打包排除规则不完整 | 低 | 运行打包命令验证（T-012） |
-| 测试失败 | 低 | 修改主要涉及文档移动，少量代码修改 |
+| 审核遗漏问题 | 中 | 逐个文档审核，使用checklist |
+| 修改影响用户体验 | 低 | 保留必要内容，只删除无关内容 |
+| 测试失败 | 低 | 修改主要涉及文档，少量代码 |
+| 链接检查遗漏 | 低 | 运行完整测试验证 |
 
 ---
 
 ## 七、预期成果
 
-### 7.1 清理前后对比
+### 7.1 优化前后对比
 
-| 指标 | 清理前 | 清理后 | 改进 |
+| 指标 | 优化前 | 优化后 | 改进 |
 |------|--------|--------|------|
-| skill-creator/references/ 文件数 | 32个 | ~24个 | -8个 |
-| skill-creator-mcp/docs/ 文件数 | ~8个 | ~10个 | +2个 |
-| 符合定位文档比例 | 75% | 100% | +25% |
-| 职责边界清晰度 | 85/100 | 98/100 | +13分 |
+| 定位准确文档比例 | 95% | 100% | +5% |
+| 引用项目文档数量 | 1处 | 0处 | -1处 |
+| 不该出现的内容 | 1处 | 0处 | -1处 |
+| 审核文件数量 | 部分 | 53个（全部） | +30个 |
+| 无效链接数量 | 未知 | 0处 | - |
 
-### 7.2 架构改进
+### 7.2 核心改进
 
-- ✅ Agent-Skill只包含 Agent-Skill 开发相关内容
-- ✅ MCP Server文档归位到正确位置
-- ✅ 项目开发规范与Agent-Skill分离
-- ✅ **MCP Server prompts/ 作为 Prompt 资源保留**（符合MCP协议）
-- ✅ **llm_services.py 保持向后兼容**（默认Prompt作为后备）
-- ✅ **完全符合 ADR 001 原则**
-- ✅ 打包时不包含无关内容
-- ✅ 职责边界清晰
-
-### 7.3 核心改进点
-
-1. **删除无关内容**：移除项目开发规范和MCP内部实现细节
-2. **理清职责边界**：移动MCP技术文档到MCP Server
-3. **优化用户体验**：让 Agent-Skill 用户专注于创建技能，不被技术细节干扰
-4. **保持架构合规**：MCP Prompt 资源和默认Prompt保持向后兼容
+1. **全面审核**：所有53个文件逐一审核，不遗漏
+2. **定位准确**：100%符合Agent-Skill定位原则
+3. **内容一致**：所有文档之间内容一致、无矛盾
+4. **链接有效**：所有链接有效、无死链
+5. **无冗余内容**：删除所有重复、过时、无关内容
 
 ---
 
 ## 八、相关文件
 
-### 关键文件路径
+### 需要审核的文件
 
-| 类型 | 路径 |
-|------|------|
-| **Agent-Skill入口** | `skill-creator/SKILL.md` |
-| **引用文档索引** | `skill-creator/references/README.md` |
-| **示例索引** | `skill-creator/examples/README.md` |
-| **MCP Server入口** | `skill-creator-mcp/README.md` |
-| **MCP打包工具** | `skill-creator-mcp/src/skill_creator_mcp/utils/packagers.py` |
-| **MCP Prompts** | `skill-creator-mcp/prompts/`（将被删除） |
-| **项目规范** | `CLAUDE.md` |
-| **架构决策** | `docs/adr/001-hybrid-architecture.md` |
+**总计：约53个文件**
 
-### 需要删除的文件（8个）
+| 目录 | 文件数 | 说明 |
+|------|--------|------|
+| skill-creator/SKILL.md | 1 | Agent-Skill入口文档 |
+| skill-creator/references/ | ~24 | 引用文档（最佳实践、集成指南等） |
+| skill-creator/examples/ | ~26 | 使用示例文档 |
+| skill-creator/scripts/ | 2 | 辅助工具脚本 |
 
-**skill-creator/references/**:
-- dev-standards.md
-- dev-standards-workflow.md
-- dev-standards-git.md
-- dev-standards-documentation.md
-- architecture.md
-- cache-mechanism.md
-- cache-mechanism-advanced.md
-- requirement-collection-architecture.md
+### 已知问题文件
 
-**skill-creator/examples/**:
-- cache-advanced-examples.md
-- requirement-collection-basic.md
-
-### 需要移动的文件（2个）
-
-| 源路径 | 目标路径 | 新文件名 |
-|--------|----------|----------|
-| `skill-creator/references/mcp-server-setup.md` | `skill-creator-mcp/docs/` | `quick-start.md` |
-| `skill-creator/references/fallback-mechanism.md` | `skill-creator-mcp/docs/` | `client-compatibility.md` | |
-
-### 应该保留的核心内容（✅）
-
-**集成指南和示例**（skill-creator 的核心功能）：
-- references/mcp-github-integration.md
-- references/mcp-thinking-integration.md
-- examples/github-requirement-tracking.md
-- examples/github-automation.md
-- examples/thinking-analysis.md
-- examples/thinking-export.md
-
-**业务知识**：
-- references/prompt-templates.md
-- references/requirement-collection*.md
-- references/brainstorming-techniques.md
-
-**最佳实践**：
-- references/best-practices-*.md
-- references/validation*.md
-- references/packaging.md
-
-**辅助工具**：
-- scripts/validate_skill.py
-- scripts/analyze_skill.py
+| 文件 | 位置 | 问题 | 优先级 |
+|------|------|------|--------|
+| SKILL.md | 第150-153行 | 配置安装章节 | P0 |
+| packaging.md | 第240行 | 引用CLAUDE.md | P0 |
+| mcp-integration.md | 第22行 | 项目特定路径 | P1 |
 
 ---
 
 ## 九、参考资料
 
-- **CLAUDE.md**: Skills-Creator 开发指南
-- **ADR 001**: 混合架构设计原则 (docs/adr/001-hybrid-architecture.md)
-- **ARCHITECTURE_AUDIT_REPORT_v2.md**: 架构审计报告
-- **packaging.md**: Agent-Skill 打包规范
+- **CLAUDE.md**: Skills-Creator 开发指南（项目开发规范）
+- **ADR 001**: 混合架构设计原则
+- **前置任务**: 全面审核与修复计划（已归档）
 
 ---
 
 **计划创建时间**: 2026-01-28
 **最后更新**: 2026-01-28
-**预计工作量**: 6-8小时
+**预计工作量**: 8-12小时
+**审核文件数量**: 约53个文件

@@ -149,7 +149,7 @@ await collect_requirements(
 
 ## 参考资料
 
-- **指南文档**: `references/brainstorming-techniques.md`
+- **指南文档**: [brainstorming-techniques.md](../references/brainstorming-techniques.md)
 - **基础示例**: `examples/requirement-collection-basic.md`
 
 ---

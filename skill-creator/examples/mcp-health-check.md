@@ -300,4 +300,3 @@ reset_performance_stats()
 
 - [MCP 集成指南](../references/mcp-integration.md) - MCP 工具使用详解
 - [批量操作示例](mcp-batch-operations.md) - 批量验证和分析
-- [缓存机制指南](../references/cache-mechanism.md) - 缓存使用和优化

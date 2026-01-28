@@ -283,4 +283,3 @@ with open("validation_results.json", "w") as f:
 
 - [MCP 集成指南](../references/mcp-integration.md) - MCP 工具使用详解
 - [健康检查示例](mcp-health-check.md) - 系统监控和性能指标
-- [缓存机制指南](../references/cache-mechanism.md) - 提高批量操作性能

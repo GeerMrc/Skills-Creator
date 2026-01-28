@@ -19,7 +19,7 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
       "command": "uv",
       "args": [
         "--directory",
-        "/path/to/Skills-Creator/skill-creator-mcp",
+        "$PROJECT_ROOT/skill-creator-mcp",
         "run",
         "python",
         "-m",

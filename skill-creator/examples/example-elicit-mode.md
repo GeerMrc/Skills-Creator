@@ -217,4 +217,4 @@ else:
 - **[完整模式示例](example-complete-mode.md)** - 10 步收集
 - **[渐进模式示例](example-progressive-mode.md)** - 快速原型
 - **[需求收集模式详解](../references/requirement-collection-modes.md)** - 模式对比
-- **[回退机制文档](../references/fallback-mechanism.md)** - 客户端限制说明
+- **[需求收集工作流](../references/requirement-workflow.md)** - 客户端限制和回退机制说明

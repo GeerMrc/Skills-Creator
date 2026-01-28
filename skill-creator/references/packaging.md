@@ -237,7 +237,6 @@ git push --tags
 |------|------|
 | [基础示例](../examples/packaging-basic.md) | 快速开始和常见用例 |
 | [高级示例](../examples/packaging-advanced.md) | 批量打包、CI/CD集成 |
-| [打包规范](../CLAUDE.md#七agent-skill-打包规范) | CLAUDE.md 中的打包章节 |
 
 ---
 

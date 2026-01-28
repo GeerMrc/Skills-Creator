@@ -169,7 +169,7 @@ init_skill(name="quick-note-taker", template="minimal")
 > - 智能选择下一个问题
 > - 固定规则检查完整性
 
-详见 [回退机制文档](../references/fallback-mechanism.md)
+详见 [需求收集工作流](../references/requirement-workflow.md) 中的客户端限制和回退机制说明
 
 ---
 

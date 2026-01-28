@@ -221,22 +221,30 @@ def test_packaged_skill_integrity(temp_dir: Path):
 
 def test_architecture_doc_replaced_by_adr():
     """测试 architecture.md 已被 ADR 001 替代."""
+    import os
     from pathlib import Path
+
     # architecture.md 已删除，应该引用 ADR 001
-    # 测试文件在 skill-creator-mcp/tests/，需要往上4级到项目根目录
-    # 因为: skill-creator-mcp/tests/ -> skill-creator-mcp/ -> 项目根目录/
-    adr_path = Path(__file__).parent.parent.parent.parent / 'docs' / 'adr' / '001-hybrid-architecture.md'
-    # 如果路径不存在，尝试使用相对路径
-    if not adr_path.exists():
-        # 尝试从当前工作目录解析
-        import os
-        cwd = Path(os.getcwd())
-        if 'skill-creator-mcp' in cwd.parts:
-            # 如果在 skill-creator-mcp 目录中
-            adr_path = cwd.parent.parent / 'docs' / 'adr' / '001-hybrid-architecture.md'
-        else:
-            # 在项目根目录中
-            adr_path = cwd / 'docs' / 'adr' / '001-hybrid-architecture.md'
+    # 测试文件在 skill-creator-mcp/tests/，项目结构:
+    # /models/claude-glm/Skills-Creator/
+    #   ├── skill-creator-mcp/
+    #   │   └── tests/
+    #   └── docs/adr/001-hybrid-architecture.md
+
+    # 方法1：从 __file__ 往上3级到 skill-creator-mcp，再到项目根目录
+    test_file = Path(__file__).resolve()
+    skill_creator_mcp = test_file.parent.parent  # 往上2级到 skill-creator-mcp
+    project_root = skill_creator_mcp.parent  # 再往上1级到项目根目录
+    adr_path = project_root / 'docs' / 'adr' / '001-hybrid-architecture.md'
+
+    # 方法2：使用当前工作目录（更可靠）
+    cwd = Path(os.getcwd()).resolve()
+    if 'skill-creator-mcp' in cwd.parts:
+        # 从 skill-creator-mcp 往上1级到项目根目录
+        adr_path_from_cwd = cwd.parent / 'docs' / 'adr' / '001-hybrid-architecture.md'
+        if adr_path_from_cwd.exists():
+            adr_path = adr_path_from_cwd
+
     assert adr_path.exists(), f"ADR 001 不存在于 {adr_path}，架构文档应该引用 ADR 001"
 
 

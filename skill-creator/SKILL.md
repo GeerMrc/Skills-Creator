@@ -146,7 +146,3 @@ Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（18 工具
 - 详见：[需求收集工作流指南](references/requirement-workflow.md)
 
 详见：[ADR 001 混合架构设计](../../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
-
-## 配置与安装
-
-> 📘 完整的配置和安装指南请参考 [MCP Server 快速开始](../../skill-creator-mcp/docs/quick-start.md)
