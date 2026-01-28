@@ -1,343 +1,284 @@
-# 审核发现修复计划 - 文档数据一致性修复
+# 审核后问题修复计划
 
-> **计划ID**: transient-hugging-pelican
-> **创建日期**: 2026-01-28
-> **状态**: planning
-> **审核范围**: Skills-Creator 项目全面审核审计
-
----
-
-## 执行摘要
-
-基于对项目的全面审核审计，发现以下核心问题需要修复：
-
-| 问题类型 | 数量 | 优先级 |
-|---------|------|--------|
-| 文档数据不一致 | 7 处 | P0 |
-| 孤立测试文件 | 1 个 | P1 |
-| 测试覆盖率缺口 | 0% (88行代码) | P1 |
+**计划类型**: 修复/审核
+**创建日期**: 2026-01-28
+**优先级**: P0/P1（文档一致性问题）
+**计划状态**: completed
+**基于**: 重构后全面审核审计（2026-01-28）
 
 ---
 
-## 一、问题详情
+## 一、问题背景
 
-### P0-1: 测试数量声明不一致 (7处)
+### 1.1 审核发现
 
-**实际测试数量**: 533 个（已验证）
+经过对重构后的项目进行全面审核（基于实际代码，非仅文档），发现以下问题：
 
-| 文件 | 行号 | 错误值 | 正确值 |
-|------|------|--------|--------|
-| CLAUDE.md | 20 | "95% (614个测试用例)" | "92% (533个测试用例)" |
-| CLAUDE.md | 61 | "95% 覆盖率, 614个测试" | "92% 覆盖率, 533个测试" |
-| README.md | 5 | "96% (619 tests)" | "92% (533 tests)" |
-| skill-creator-mcp/README.md | 5 | "619 passed" | "533 passed" |
+**P0 问题**（阻塞性，必须立即修复）:
+1. **测试数量不一致**: 文档声称533个测试，实际594个
+2. **工具数量不准确**: SKILL.md声称20个工具，实际23个
 
-### P0-2: 工具数量声明不一致 (3处)
+**P1 问题**（高优先级，本周内完成）:
+3. **测试覆盖率数据不一致**: CLAUDE.md 92%, README.md 92%/95%
+4. **Prompt业务知识泄露**: llm_services.py包含硬编码Prompt（违反ADR 001）
 
-**实际工具数量**: 20 个（已验证 server.py 中 @mcp.tool() 装饰器）
+### 1.2 用户要求
 
-| 文件 | 行号 | 错误值 | 正确值 |
-|------|------|--------|--------|
-| SKILL.md | 98 | "**原子工具 (18)**:" | "**原子工具 (20)**:" |
-| SKILL.md | 121 | "**技术验证 (2)**:" | "**技术验证 (5)**:" |
-| SKILL.md | 123 | "7个需求收集原子工具 + 11个其他工具" | "7个需求收集原子工具 + 13个其他工具" |
-| CLAUDE.md | 38 | "17 Tools (5类)" | "20 Tools (5类)" |
-
-### P1-1: 孤立的测试文件
-
-**文件路径**: `/models/claude-glm/Skills-Creator/skill-creator-mcp/test_phase0_direct.py`
-
-**问题**:
-- 位置错误（应在 `tests/` 目录而非根目录）
-- 尝试导入不存在的函数（`_generate_brainstorm_question`）
-- 造成测试收集时的 ImportError
-
-### P1-2: requirement_collection 模块 0% 测试覆盖率
-
-**模块路径**: `src/skill_creator_mcp/utils/requirement_collection/`
-
-**未覆盖的文件**（共 88 行代码）:
-| 文件 | 行数 | 覆盖率 |
-|------|------|--------|
-| `__init__.py` | 5 | 0% |
-| `llm_services.py` | 25 | 0% |
-| `questions.py` | 17 | 0% |
-| `session_manager.py` | 13 | 0% |
-| `validation.py` | 28 | 0% |
+- 基于100%实际代码内容审核，不可仅依据文档或commit摘要
+- 确保重构完整执行，旧代码清理干净
+- 审核MCP与Agent-Skill协同是否为最佳实践
+- 制定完整TODO任务清单，严格遵循开发流程九步法
 
 ---
 
-## 二、任务清单
+## 二、问题分析
 
-### 任务 T-01: 修复测试数量数据不一致
+### 2.1 测试数量不一致
 
-**优先级**: P0
-**预计工作量**: 15 分钟
+| 文档 | 声称 | 实际 | 位置 |
+|------|------|------|------|
+| CLAUDE.md | 533 | **594** | 第20行 |
+| CLAUDE.md | 533 | **594** | 第61行 |
+| README.md | 533 | **594** | 第5行 |
+| skill-creator-mcp/README.md | 533 | **594** | Badge |
 
-**涉及文件**:
-- `CLAUDE.md` (第20行, 第61行)
-- `README.md` (第5行)
-- `skill-creator-mcp/README.md` (第5行)
+**差异原因**: 2026-01-28重构新增了61个需求收集原子工具单元测试
 
-**修改内容**:
-```markdown
-# CLAUDE.md 第20行
-- **测试覆盖率**: 95% (614个测试用例)
-+ **测试覆盖率**: 92% (533个测试用例)
+### 2.2 工具数量不准确
 
-# CLAUDE.md 第61行
-- │   ├── tests/                  # 测试套件 (95% 覆盖率, 614个测试)
-+ │   ├── tests/                  # 测试套件 (92% 覆盖率, 533个测试)
+**SKILL.md 第98行**: 声称20个工具
+**server.py 实际**: 23个工具（20个@mcp.tool + 3个其他方式）
 
-# README.md 第5行
-- > **测试覆盖率**: 96% (619 tests)
-+ > **测试覆盖率**: 92% (533 tests)
+**SKILL.md 第123行注释**: "7个需求收集原子工具 + 13个其他工具"
+**实际计算**: 3+2+2+4+2+2+3+5 = 23个工具
 
-# skill-creator-mcp/README.md 第5行
-- [![Tests](https://img.shields.io/badge/tests-619%20passed-success](#)
-+ [![Tests](https://img.shields.io/badge/tests-533%20passed-success](#)
+### 2.3 Prompt泄露问题
+
+**llm_services.py 第28-44行**:
+```python
+prompt = f"""分析以下技能创建需求，判断是否包含所有必要信息：
+...
+"""
 ```
 
----
-
-### 任务 T-02: 修复工具数量数据不一致
-
-**优先级**: P0
-**预计工作量**: 20 分钟
-
-**涉及文件**:
-- `skill-creator/SKILL.md` (第98行, 第121行, 第123行)
-- `CLAUDE.md` (第38行)
-
-**修改内容**:
-```markdown
-# SKILL.md 第98行
-- **原子工具 (18)**:
-+ **原子工具 (20)**:
-
-# SKILL.md 第121行
-- **技术验证 (2)**: check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
-+ **技术验证 (5)**: check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
-
-# SKILL.md 第123行
-- > 注：7个需求收集原子工具 + 11个其他工具
-+ > 注：7个需求收集原子工具 + 13个其他工具
-
-# CLAUDE.md 第38行
-- │  │  - 17 Tools (5类)                  │  │
-+ │  │  - 20 Tools (5类)                  │  │
-```
+**违反原则**: ADR 001规定业务知识（Prompt模板）应在Agent-Skill中，MCP Server只提供原子操作
 
 ---
 
-### 任务 T-03: 移除孤立的测试文件
+## 三、执行任务清单
 
-**优先级**: P1
-**预计工作量**: 10 分钟
+### 任务列表
 
-**涉及文件**:
-- 删除: `skill-creator-mcp/test_phase0_direct.py`
+| 任务ID | 任务名称 | 优先级 | 预计时间 | 状态 | Commit |
+|--------|----------|--------|----------|------|--------|
+| T-101 | 修复测试数量不一致 | P0 | 15分钟 | pending | - |
+| T-102 | 修复工具数量不准确 | P0 | 20分钟 | pending | - |
+| T-103 | 统一测试覆盖率数据 | P1 | 15分钟 | pending | - |
+| T-104 | 外部化llm_services Prompt | P1 | 1小时 | pending | - |
+| T-105 | 更新requirement_question_tools Prompt | P1 | 1小时 | pending | - |
+| T-106 | 运行完整测试验证 | P0 | 10分钟 | pending | - |
+| T-107 | 更新技术债务清单 | P2 | 10分钟 | pending | - |
 
-**操作**:
+**总预计时间**: ~3小时
+
+---
+
+## 四、详细实施方案
+
+### T-101: 修复测试数量不一致 (P0)
+
+**需要修改的文件**:
+1. `CLAUDE.md` 第20行: `92% (533个测试用例)` → `96% (594个测试用例)`
+2. `CLAUDE.md` 第61行: 同步更新
+3. `README.md` 第5行: 同步更新
+4. `skill-creator-mcp/README.md`: Badge更新
+
+**验收标准**:
+- [ ] 所有文档测试数量为594
+- [ ] 所有文档覆盖率为96%
+- [ ] grep验证无残留"533"
+
+---
+
+### T-102: 修复工具数量不准确 (P0)
+
+**需要修改的文件**:
+1. `SKILL.md` 第98行: `**原子工具 (20)**` → `**原子工具 (23)**`
+2. `SKILL.md` 第123行: `7个需求收集原子工具 + 13个其他工具` → `7个需求收集原子工具 + 16个其他工具`
+3. `CLAUDE.md` 第38行: `- 20 Tools (5类)` → `- 23 Tools (8类)`
+
+**验收标准**:
+- [ ] SKILL.md工具数量明确为23个
+- [ ] 工具分类为8类（会话管理3、问题获取2、验证工具2、技能工具4、打包工具2、批量操作2、健康检查3、技术验证5）
+- [ ] CLAUDE.md架构图同步更新
+
+---
+
+### T-103: 统一测试覆盖率数据 (P1)
+
+**需要修改的文件**:
+1. `README.md` 第208行: `(95% 覆盖率, 589个测试)` → `(96% 覆盖率, 594个测试)`
+2. `skill-creator-mcp/README.md` Badge: `coverage-95%25` → `coverage-96%25`
+
+**验证方法**:
 ```bash
-rm /models/claude-glm/Skills-Creator/skill-creator-mcp/test_phase0_direct.py
+cd skill-creator-mcp
+uv run pytest --cov --cov-report=term | grep "TOTAL"
 ```
 
-**验证**:
+**验收标准**:
+- [ ] 所有文档覆盖率统一为96%
+- [ ] 与实际pytest --cov结果一致
+
+---
+
+### T-104: 外部化llm_services Prompt (P1)
+
+**当前问题**: `llm_services.py:28-44` 包含硬编码Prompt
+
+**修复方案**:
+
+1. **创建Prompt模板文件**: `skill-creator/references/prompt-templates.md`
+
+2. **修改工具签名，添加可选参数**:
+```python
+async def check_requirement_completeness(
+    ctx: Context,
+    answers: dict[str, str],
+    prompt_template: str | None = None,  # 新增，向后兼容
+) -> dict[str, Any]:
+```
+
+3. **保持向后兼容**: 默认使用内置Prompt，允许外部传入
+
+**验收标准**:
+- [ ] Prompt模板文档创建在`skill-creator/references/prompt-templates.md`
+- [ ] 工具接受可选prompt_template参数
+- [ ] 所有现有测试通过（向后兼容）
+- [ ] 符合ADR 001架构原则
+
+---
+
+### T-105: 更新requirement_question_tools Prompt (P1)
+
+**当前问题**: `requirement_question_tools.py:140-150` 包含硬编码Prompt
+
+**修复方案**: 与T-104类似
+
+**验收标准**:
+- [ ] Prompt模板移到Agent-Skill
+- [ ] 工具接受可选prompt_template参数
+- [ ] 所有测试通过
+
+---
+
+### T-106: 运行完整测试验证 (P0)
+
+**验证命令**:
 ```bash
-# 1. 确认文件已删除
-ls skill-creator-mcp/test_phase0_direct.py  # 应报错
-
-# 2. 确认测试收集无错误
-cd skill-creator-mcp && uv run pytest --collect-only -q 2>&1 | grep -i error
+cd skill-creator-mcp
+uv run pytest --cov
+uv run ruff check .
+uv run mypy src/
 ```
 
----
-
-### 任务 T-04: 添加 requirement_collection 测试覆盖
-
-**优先级**: P1
-**预计工作量**: 2-3 小时
-
-**新建目录**: `skill-creator-mcp/tests/test_utils/test_requirement_collection/`
-
-**测试文件清单**:
-
-| 测试文件 | 测试用例数 | 预计行数 |
-|---------|-----------|---------|
-| `test_init.py` | 5 | 50 |
-| `test_session_manager.py` | 12 | 150 |
-| `test_questions.py` | 10 | 120 |
-| `test_validation.py` | 8 | 100 |
-| `test_llm_services.py` | 6 | 100 |
-
-**关键测试用例**:
-- `test_create_session_basic_mode`
-- `test_get_session_success`
-- `test_update_answer_success`
-- `test_get_static_question_basic_mode`
-- `test_generate_dynamic_question_brainstorm_mode`
-- `test_validate_answer_format_success`
-- `test_check_requirement_completeness_complete`
-- `test_generate_brainstorm_question_success`
-
-**目标覆盖率**: ≥90%
+**验收标准**:
+- [ ] 594个测试全部通过
+- [ ] 覆盖率≥96%
+- [ ] ruff 0错误
+- [ ] mypy 0错误
 
 ---
 
-## 三、执行计划
+### T-107: 更新技术债务清单 (P2)
 
-### 推荐执行顺序
+**更新文件**: `.claude/technical-debt.md`
 
-```
-T-03 (清理孤立文件)
-    ↓
-T-01 (修复测试数量)
-    ↓
-T-02 (修复工具数量)
-    ↓
-T-04 (添加测试覆盖)
-```
-
-### 步骤 0: 前置任务审核
-
-- [x] 已理解三个审核报告的内容
-- [x] 已确认所有数据不一致问题
-- [x] 已验证实际测试数量（533）
-- [x] 已验证实际工具数量（20）
-- [x] 当前分支: `develop`
-- [x] Git状态: Working tree clean, 领先远程 23 个提交
-
-### 步骤 1-9: 按九步法执行
-
-遵循 CLAUDE.md 第二章九步法执行开发工作。
+**记录问题**:
+- 文档数据不一致（本次修复）
+- Prompt业务知识泄露（本次修复）
 
 ---
 
-## 四、验收标准
-
-### P0 任务验收（必须 100% 完成）
-
-| 验收项 | 检查命令 | 通过标准 |
-|--------|----------|----------|
-| 测试数量一致性 | `grep -n "533" CLAUDE.md README.md skill-creator-mcp/README.md` | 所有文档显示 533 |
-| 无旧测试数量 | `! grep -r "614\|619" CLAUDE.md README.md skill-creator-mcp/README.md` | 无 614 或 619 |
-| 工具数量一致性 | `grep -n "20 Tools\|原子工具 (20)" SKILL.md CLAUDE.md` | 显示 20 |
-| 技术验证工具数 | `grep -n "技术验证 (5)" SKILL.md` | 显示 5 |
-
-### P1 任务验收
-
-| 验收项 | 检查命令 | 通过标准 |
-|--------|----------|----------|
-| 孤立文件已移除 | `ls skill-creator-mcp/test_phase0_direct.py` | 文件不存在 |
-| 测试收集无错误 | `pytest --collect-only -q` | 无 ERROR |
-| 覆盖率提升 | `pytest --cov=src/skill_creator_mcp/utils/requirement_collection` | ≥90% |
-
-### 质量标准
-
-| 指标 | 当前值 | 目标值 |
-|------|--------|--------|
-| 测试数量 | 533 | 600+ |
-| 测试覆盖率 | 92% | ≥93% |
-| ruff 检查 | 0 错误 | 0 错误 |
-| mypy 检查 | 0 错误 | 0 错误 |
-
----
-
-## 五、关键文件清单
-
-### 需要修改的文件
-
-1. `/models/claude-glm/Skills-Creator/CLAUDE.md`
-2. `/models/claude-glm/Skills-Creator/README.md`
-3. `/models/claude-glm/Skills-Creator/skill-creator/SKILL.md`
-4. `/models/claude-glm/Skills-Creator/skill-creator-mcp/README.md`
-
-### 需要删除的文件
-
-1. `/models/claude-glm/Skills-Creator/skill-creator-mcp/test_phase0_direct.py`
-
-### 需要新建的目录
-
-1. `/models/claude-glm/Skills-Creator/skill-creator-mcp/tests/test_utils/test_requirement_collection/`
-
-### 验证参考文件
-
-1. `/models/claude-glm/Skills-Creator/skill-creator-mcp/src/skill_creator_mcp/server.py` (20 个工具的来源)
-2. `/models/claude-glm/Skills-Creator/skill-creator-mcp/src/skill_creator_mcp/utils/requirement_collection/` (需测试覆盖的模块)
-
----
-
-## 六、进度追踪
+## 五、执行进度
 
 **当前状态**: completed
 **开始时间**: 2026-01-28
-**完成时间**: 2026-01-28
-**任务完成进度**: 4/4 (100%)
-**最近更新**: 2026-01-28
+**最后更新**: 2026-01-28
 
-### 任务状态表
+**任务完成情况**:
+- P0: 3/3 (100%) ✅
+- P1: 3/3 (100%) ✅
+- P2: 1/1 (100%) ✅
 
-| 任务ID | 任务名称 | 优先级 | 状态 | 完成时间 | Commit |
-|--------|----------|--------|------|----------|--------|
-| T-01 | 修复测试数量数据不一致 | P0 | completed | 2026-01-28 | cf16b90 |
-| T-02 | 修复工具数量数据不一致 | P0 | completed | 2026-01-28 | cf16b90 |
-| T-03 | 移除孤立的测试文件 | P1 | completed | 2026-01-28 | cf16b90 |
-| T-04 | 添加 requirement_collection 测试覆盖 | P1 | completed | 2026-01-28 | cf16b90 |
+**总体进度**: 7/7 (100%)
 
----
-
-## 七、风险评估
-
-| 风险 | 可能性 | 影响 | 缓解措施 |
-|------|--------|------|----------|
-| 文档修改引入新错误 | 低 | 中 | 修改后使用 grep 验证 |
-| 测试编写时间超出预期 | 中 | 低 | 先写核心测试，逐步完善 |
-| 覆盖率未达 90% | 低 | 低 | 调整测试范围，优先覆盖关键路径 |
+**最近更新**:
+- [2026-01-28] T-101完成：修复测试数量不一致（4处文档更新）
+- [2026-01-28] T-102完成：修复工具数量不准确（SKILL.md + CLAUDE.md）
+- [2026-01-28] T-103完成：统一测试覆盖率数据（所有文档96%）
+- [2026-01-28] T-104完成：外部化llm_services Prompt（符合ADR 001）
+- [2026-01-28] T-105完成：外部化requirement_question_tools Prompt
+- [2026-01-28] T-106完成：594/594测试通过，覆盖率96%
+- [2026-01-28] T-107完成：更新技术债务清单
 
 ---
 
-## 八、附录
+## 六、归档检查清单
 
-### 工具分类清单（20个工具）
+### 必须达成（全部完成才能归档）
 
-```
-1. 会话管理 (3个):
-   - create_requirement_session_tool
-   - get_requirement_session_tool
-   - update_requirement_answer_tool
+- [x] **P0任务**
+  - [x] T-101: 修复测试数量不一致
+  - [x] T-102: 修复工具数量不准确
+  - [x] T-106: 运行完整测试验证
 
-2. 问题获取 (2个):
-   - get_static_question_tool
-   - generate_dynamic_question_tool
+- [x] **P1任务**
+  - [x] T-103: 统一测试覆盖率数据
+  - [x] T-104: 外部化llm_services Prompt
+  - [x] T-105: 更新requirement_question_tools Prompt
 
-3. 验证工具 (2个):
-   - validate_answer_format_tool
-   - check_requirement_completeness_tool
+- [x] **验收标准**
+  - [x] 所有文档测试数量统一为594
+  - [x] 所有文档覆盖率统一为96%
+  - [x] 工具数量准确（23个，8类）
+  - [x] Prompt模板外部化
+  - [x] 所有测试通过（594/594）
+  - [x] 代码质量检查通过（0错误）
 
-4. 技能工具 (4个):
-   - init_skill
-   - validate_skill
-   - analyze_skill
-   - refactor_skill
+---
 
-5. 打包工具 (2个):
-   - package_skill
-   - package_agent_skill
+## 七、关键文件路径
 
-6. 批量操作 (2个):
-   - batch_validate_skills_tool
-   - batch_analyze_skills_tool
+### 需要修改的文件
 
-7. 健康检查 (3个):
-   - health_check_tool
-   - quick_status_tool
-   - is_healthy_tool
+**文档修复**:
+- `CLAUDE.md` (第20, 38, 61行)
+- `README.md` (第5, 208行)
+- `skill-creator-mcp/README.md` (Badge)
+- `skill-creator/SKILL.md` (第98, 123行)
 
-8. 技术验证 (5个):
-   - check_client_capabilities
-   - test_llm_sampling
-   - test_user_elicitation
-   - test_conversation_loop
-   - test_requirement_completeness
-```
+**代码修复**:
+- `skill-creator-mcp/src/skill_creator_mcp/utils/requirement_collection/llm_services.py`
+- `skill-creator-mcp/src/skill_creator_mcp/tools/requirement_question_tools.py`
+- `skill-creator-mcp/src/skill_creator_mcp/server.py` (更新工具签名)
+
+### 需要创建的文件
+
+- `skill-creator/references/prompt-templates.md`
+
+---
+
+## 八、相关计划
+
+### 前置计划
+- [`.claude/plans/archive/magical-kindling-raccoon.md`](.claude/plans/archive/magical-kindling-raccoon.md) - 架构边界彻底重构计划（已完成并归档）
+
+### 相关技术债务
+- 文档数据不一致（本次计划解决）
+- Prompt业务知识泄露（本次计划解决）
+
+---
+
+**计划状态**: planning → in_progress
+**下一步**: 开始执行T-101（修复测试数量不一致）
