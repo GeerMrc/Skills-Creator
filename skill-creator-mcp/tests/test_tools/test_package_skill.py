@@ -907,3 +907,154 @@ def test_package_agent_skill_invalid_skill_md(temp_dir: Path):
 
     assert result.success is False
     assert "SKILL.md" in result.error
+
+
+# ==================== 覆盖率补充测试 ====================
+
+
+def test_package_skill_validation_errors_detailed(temp_dir: Path):
+    """测试验证失败时返回详细错误信息."""
+    skill_dir = temp_dir / "invalid-detailed"
+    skill_dir.mkdir(parents=True)
+    # 创建无效的 SKILL.md（缺少必需字段）
+    (skill_dir / "SKILL.md").write_text(
+        "---\n"
+        "name: test\n"
+        # 缺少 description 和 allowed-tools
+        "---\n"
+        "# Test\n"
+    )
+    # 缺少必需目录
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        package_format="zip",
+        validate_before_package=True,
+    )
+
+    assert result.success is False
+    assert result.validation_passed is False
+    assert result.validation_errors  # 应该有具体的错误列表
+    assert len(result.validation_errors) > 0
+
+
+def test_package_skill_tar_gz_format(temp_dir: Path):
+    """测试 tar.gz 打包格式."""
+    skill_dir = temp_dir / "test-skill-tar"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Test")
+    (skill_dir / "references").mkdir()
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        package_format="tar.gz",
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    assert result.format == "tar.gz"
+    assert result.package_path.endswith(".tar.gz")
+    assert Path(result.package_path).exists()
+
+
+def test_package_skill_tar_bz2_format(temp_dir: Path):
+    """测试 tar.bz2 打包格式."""
+    skill_dir = temp_dir / "test-skill-bz2"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Test")
+    (skill_dir / "references").mkdir()
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    output_dir = temp_dir / "output"
+    output_dir.mkdir()
+
+    result = package_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        package_format="tar.bz2",
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    assert result.format == "tar.bz2"
+    assert result.package_path.endswith(".tar.bz2")
+    assert Path(result.package_path).exists()
+
+
+def test_collect_agent_skill_files_minimal_skill(temp_dir: Path):
+    """测试收集最小技能的文件."""
+    skill_dir = temp_dir / "minimal-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Minimal")
+    # 只有 SKILL.md，没有其他目录
+
+    files = _collect_agent_skill_files(skill_dir, include_tests=False)
+
+    # 应该至少包含 SKILL.md
+    assert len(files) >= 1
+    assert any(f.name == "SKILL.md" for f in files)
+
+
+def test_collect_agent_skill_files_with_optional_dirs(temp_dir: Path):
+    """测试收集包含可选目录的技能文件."""
+    skill_dir = temp_dir / "optional-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Test")
+
+    # 创建所有可选目录
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "references").mkdir()
+    (skill_dir / "scripts").mkdir()
+
+    # 添加一些文件（包括scripts目录）
+    (skill_dir / "examples" / "example.md").write_text("# Example")
+    (skill_dir / "references" / "guide.md").write_text("# Guide")
+    (skill_dir / "scripts" / "script.py").write_text("# Script")
+
+    files = _collect_agent_skill_files(skill_dir, include_tests=False)
+
+    # 应该包含所有文件
+    assert len(files) >= 4  # SKILL.md + 3个目录文件
+    assert any(f.name == "SKILL.md" for f in files)
+    assert any(f.name == "example.md" for f in files)
+    assert any(f.name == "guide.md" for f in files)
+    assert any(f.name == "script.py" for f in files)
+
+
+def test_package_skill_with_custom_output_dir(temp_dir: Path):
+    """测试使用自定义输出目录."""
+    skill_dir = temp_dir / "test-custom-output"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("# Test")
+    (skill_dir / "references").mkdir()
+    (skill_dir / "examples").mkdir()
+    (skill_dir / "scripts").mkdir()
+    (skill_dir / ".claude").mkdir()
+
+    # 使用嵌套的输出目录
+    output_dir = temp_dir / "nested" / "output" / "dir"
+
+    result = package_skill(
+        skill_path=str(skill_dir),
+        output_dir=str(output_dir),
+        package_format="zip",
+        validate_before_package=False,
+    )
+
+    assert result.success is True
+    # 输出目录应该被自动创建
+    assert output_dir.exists()
+    assert Path(result.package_path).parent == output_dir
