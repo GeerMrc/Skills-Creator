@@ -7,10 +7,9 @@
 """
 
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, Mock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 
 # ============================================================================
 # create_requirement_session 测试

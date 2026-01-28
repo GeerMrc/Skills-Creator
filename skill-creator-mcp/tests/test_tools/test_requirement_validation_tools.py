@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
 
-
 # ============================================================================
 # validate_answer_format 测试
 # ============================================================================

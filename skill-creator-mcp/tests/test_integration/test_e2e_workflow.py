@@ -31,13 +31,12 @@ async def test_collect_requirements_basic_mode_full_workflow():
 
     from fastmcp import Context
 
-    from skill_creator_mcp.models.skill_config import SessionState
+    from skill_creator_mcp.tools.requirement_question_tools import get_static_question
     from skill_creator_mcp.tools.requirement_session_tools import (
         create_requirement_session,
         get_requirement_session,
         update_requirement_answer,
     )
-    from skill_creator_mcp.tools.requirement_question_tools import get_static_question
     from skill_creator_mcp.tools.requirement_validation_tools import (
         validate_answer_format,
     )
