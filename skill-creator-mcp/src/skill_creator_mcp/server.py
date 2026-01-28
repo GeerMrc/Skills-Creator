@@ -287,6 +287,47 @@ class TimingMiddleware:
 _timing_middleware = TimingMiddleware()
 mcp.add_middleware(_timing_middleware)
 
+
+# ==================== HTTP路由 ====================
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health_check_endpoint(request: Any) -> dict[str, Any]:
+    """HTTP健康检查端点.
+
+    提供简单的HTTP端点用于健康检查。
+
+    Args:
+        request: FastAPI/Starlette请求对象
+
+    Returns:
+        健康状态JSON响应
+    """
+    return {
+        "status": "healthy",
+        "service": "skill-creator-mcp",
+        "version": "0.3.3",
+    }
+
+
+@mcp.custom_route("/metrics", methods=["GET"])
+async def metrics_endpoint(request: Any) -> dict[str, Any]:
+    """性能指标端点.
+
+    提供MCP Server的性能指标。
+
+    Args:
+        request: FastAPI/Starlette请求对象
+
+    Returns:
+        性能指标JSON响应
+    """
+    stats = _timing_middleware.get_stats()
+    return {
+        "service": "skill-creator-mcp",
+        "metrics": stats,
+    }
+
 # ==================== 注册工具模块 ====================
 # Phase 2.2 重构：从独立工具模块注册 MCP 工具
 
