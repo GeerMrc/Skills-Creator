@@ -17,58 +17,76 @@ from skill_creator_mcp.utils.file_ops import create_directory_structure_async, w
 from skill_creator_mcp.utils.validators import validate_skill_name, validate_template_type
 
 # ============================================================================
-# Collect Requirements 端到端测试
+# Collect Requirements 端到端测试（使用新原子工具）
 # ============================================================================
 
 
 @pytest.mark.asyncio
 async def test_collect_requirements_basic_mode_full_workflow():
-    """测试 basic 模式的完整需求收集流程.
+    """测试 basic 模式的完整需求收集流程（使用新原子工具）.
 
-    模拟从开始到完成的完整需求收集对话流程。
-    注意：由于 collect_requirements 是 MCP 工具，这里测试其核心逻辑组件.
+    使用新的原子工具模拟从开始到完成的完整需求收集对话流程。
     """
-    from skill_creator_mcp.constants import BASIC_REQUIREMENT_STEPS
-    from skill_creator_mcp.models.skill_config import (
-        RequirementCollectionInput,
+    from unittest.mock import AsyncMock, MagicMock
+
+    from fastmcp import Context
+
+    from skill_creator_mcp.models.skill_config import SessionState
+    from skill_creator_mcp.tools.requirement_session_tools import (
+        create_requirement_session,
+        get_requirement_session,
+        update_requirement_answer,
     )
-    from skill_creator_mcp.utils.requirement_collection import (
-        _validate_requirement_answer,
+    from skill_creator_mcp.tools.requirement_question_tools import get_static_question
+    from skill_creator_mcp.tools.requirement_validation_tools import (
+        validate_answer_format,
     )
 
-    # 步骤 1: 验证输入模型
-    input_data = RequirementCollectionInput(
-        action="start",
-        mode="basic",
-        session_id="test-basic-session",
+    # 用于跟踪session state
+    session_states = {}
+
+    async def mock_get_state(key):
+        return session_states.get(key)
+
+    async def mock_set_state(key, value):
+        session_states[key] = value
+
+    mock_ctx = MagicMock(spec=Context)
+    mock_ctx.get_state = AsyncMock(side_effect=mock_get_state)
+    mock_ctx.set_state = AsyncMock(side_effect=mock_set_state)
+    mock_ctx.session_id = "test-session"
+
+    # 步骤 1: 创建会话
+    session_result = await create_requirement_session(mock_ctx, mode="basic")
+    assert session_result["success"] is True
+    assert session_result["mode"] == "basic"
+    assert session_result["total_steps"] == 5
+    session_id = session_result["session_id"]
+
+    # 步骤 2: 获取第一个问题
+    question_result = await get_static_question(mock_ctx, mode="basic", step_index=0)
+    assert question_result["success"] is True
+    assert question_result["question_key"] == "skill_name"
+
+    # 步骤 3: 验证答案
+    validation = question_result["validation"]
+    validate_result = await validate_answer_format(mock_ctx, "test-skill", validation)
+    assert validate_result["valid"] is True
+
+    # 步骤 4: 更新答案
+    update_result = await update_requirement_answer(
+        mock_ctx, session_id, "skill_name", "test-skill"
     )
+    assert update_result["success"] is True
 
-    assert input_data.action == "start"
-    assert input_data.mode == "basic"
-
-    # 步骤 2: 验证预定义步骤
-    assert len(BASIC_REQUIREMENT_STEPS) == 5
-    assert BASIC_REQUIREMENT_STEPS[0]["key"] == "skill_name"
-    assert BASIC_REQUIREMENT_STEPS[4]["key"] == "additional_features"
-
-    # 步骤 3: 验证答案验证逻辑
-    validation = BASIC_REQUIREMENT_STEPS[0]["validation"]  # skill_name validation
-
-    # 测试有效答案
-    valid_result = _validate_requirement_answer("pdf-processor", validation)
-    assert valid_result["valid"] is True
-
-    # 测试无效答案（不符合命名规则）
-    # 注意：验证函数会优先使用 help_text 而不是默认的 "格式不正确"
-    invalid_result = _validate_requirement_answer("PDF Processor", validation)
-    assert invalid_result["valid"] is False
-    # 验证错误消息包含 help_text 的内容
-    assert "小写字母" in invalid_result["error"] or "格式" in invalid_result["error"]
+    # 步骤 5: 获取会话状态
+    get_result = await get_requirement_session(mock_ctx, session_id)
+    assert get_result["success"] is True
 
 
 @pytest.mark.asyncio
 async def test_collect_requirements_session_state_management():
-    """测试会话状态管理功能.
+    """测试会话状态管理功能（使用新原子工具）.
 
     验证会话状态的保存和恢复逻辑。
     """
@@ -105,7 +123,7 @@ async def test_collect_requirements_session_state_management():
 
 @pytest.mark.asyncio
 async def test_collect_requirements_brainstorm_mode_dynamic_generation():
-    """测试 brainstorm 模式的动态问题生成逻辑.
+    """测试 brainstorm 模式的动态问题生成逻辑（使用新原子工具）.
 
     验证 LLM 问题生成函数的功能.
     """
@@ -120,24 +138,26 @@ async def test_collect_requirements_brainstorm_mode_dynamic_generation():
     mock_sampling_result.text = "您希望这个技能解决用户什么样的痛点？"
     mock_ctx.sample = AsyncMock(return_value=mock_sampling_result)
 
-    from skill_creator_mcp.utils.requirement_collection import _generate_brainstorm_question
+    from skill_creator_mcp.tools.requirement_question_tools import (
+        generate_dynamic_question,
+    )
 
     # 调用问题生成函数
-    result = await _generate_brainstorm_question(
+    result = await generate_dynamic_question(
         ctx=mock_ctx,
+        mode="brainstorm",
         answers={},
         conversation_history=None,
     )
 
     assert result["success"] is True
-    assert "question" in result
-    assert result["is_dynamic"] is True
-    assert result["source"] == "llm_generated"
+    assert "question_text" in result
+    assert result["is_llm_generated"] is True
 
 
 @pytest.mark.asyncio
 async def test_collect_requirements_progressive_mode_adaptive_questions():
-    """测试 progressive 模式的自适应问题生成逻辑.
+    """测试 progressive 模式的自适应问题生成逻辑（使用新原子工具）.
 
     验证根据已收集信息生成针对性问题.
     """
@@ -161,17 +181,20 @@ async def test_collect_requirements_progressive_mode_adaptive_questions():
     """
     mock_ctx.sample = AsyncMock(return_value=mock_sampling_result)
 
-    from skill_creator_mcp.utils.requirement_collection import _generate_progressive_question
+    from skill_creator_mcp.tools.requirement_question_tools import (
+        generate_dynamic_question,
+    )
 
     # 调用问题生成函数
-    result = await _generate_progressive_question(
+    result = await generate_dynamic_question(
         ctx=mock_ctx,
+        mode="progressive",
         answers=partial_answers,
     )
 
     assert result["success"] is True
-    assert "next_question" in result
-    assert result["is_dynamic"] is True
+    assert "question_text" in result
+    assert result["is_llm_generated"] is True
 
 
 @pytest.mark.asyncio

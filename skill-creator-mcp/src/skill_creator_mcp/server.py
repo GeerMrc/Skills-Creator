@@ -38,8 +38,20 @@ from .tools.package_tools import (
 from .tools.package_tools import (
     package_skill as package_skill_impl,
 )
-from .tools.requirement_tools import (
-    collect_requirements as collect_requirements_impl,
+from .tools.requirement_question_tools import (
+    generate_dynamic_question,
+    get_static_question,
+)
+
+# 新的原子化需求收集工具（架构重构）
+from .tools.requirement_session_tools import (
+    create_requirement_session,
+    get_requirement_session,
+    update_requirement_answer,
+)
+from .tools.requirement_validation_tools import (
+    check_requirement_completeness,
+    validate_answer_format,
 )
 from .tools.skill_tools import (
     analyze_skill,
@@ -216,35 +228,163 @@ async def package_agent_skill(
     return await package_agent_skill_impl(ctx, mcp, skill_path, output_dir, version, format, include_tests, validate_before_package)
 
 
-# 需求收集工具（requirement_tools.py）
-@mcp.tool()
-async def collect_requirements(
-    ctx: Context,
-    action: str = "start",
-    mode: str = "basic",
-    session_id: str | None = None,
-    user_input: str | None = None,
-    use_elicit: bool = False,
-) -> dict[str, Any]:
-    """
-    AI 驱动的需求澄清/收集工具.
+# ==================== 需求收集原子工具 ====================
+# 架构重构：将 collect_requirements 拆分为原子操作工具
+# 符合 ADR 001: MCP Server 只提供原子操作，不包含工作流逻辑
+# 工作流编排由 Agent-Skill 负责
 
-    通过对话方式逐步收集创建 Agent-Skill 所需的关键信息。
-    支持 session state 管理，可以中断后恢复。
+
+@mcp.tool()
+async def create_requirement_session_tool(
+    ctx: Context,
+    mode: str = "basic",
+    total_steps: int | None = None,
+) -> dict[str, Any]:
+    """创建新的需求收集会话.
+
+    这是一个原子操作工具，只负责创建会话状态。
+    工作流编排由 Agent-Skill 负责。
 
     Args:
         ctx: MCP 上下文
-        action: 执行动作（start=开始，next=下一步，previous=上一步，status=查询状态，complete=完成）
-        mode: 收集模式（basic=基础5步，complete=完整10步，brainstorm=头脑风暴，progressive=渐进式）
-        session_id: 会话ID（自动生成，用于多轮对话）
-        user_input: 用户输入（用于 next/complete 动作，use_elicit=False 时使用）
-        use_elicit: 是否使用 ctx.elicit() 自动收集输入（默认 False）。True 时会自动调用
-                   ctx.elicit() 收集所有必需的输入，无需手动调用 action="next"。
+        mode: 收集模式（basic/complete/brainstorm/progressive）
+        total_steps: 总步骤数（可选，默认根据模式自动计算）
 
     Returns:
-        包含收集结果的字典
+        包含会话信息的字典
     """
-    return await collect_requirements_impl(ctx, mcp, action, mode, session_id, user_input, use_elicit)
+    return await create_requirement_session(ctx, mode, total_steps)
+
+
+@mcp.tool()
+async def get_requirement_session_tool(
+    ctx: Context,
+    session_id: str,
+) -> dict[str, Any]:
+    """获取需求收集会话状态.
+
+    这是一个原子操作工具，只负责读取会话状态。
+
+    Args:
+        ctx: MCP 上下文
+        session_id: 会话ID
+
+    Returns:
+        包含会话状态的字典
+    """
+    return await get_requirement_session(ctx, session_id)
+
+
+@mcp.tool()
+async def update_requirement_answer_tool(
+    ctx: Context,
+    session_id: str,
+    question_key: str,
+    answer: str,
+) -> dict[str, Any]:
+    """更新需求收集会话中的答案.
+
+    这是一个原子操作工具，只负责更新单个答案。
+    不包含验证逻辑，验证由专门的工具处理。
+
+    Args:
+        ctx: MCP 上下文
+        session_id: 会话ID
+        question_key: 问题键（如 skill_name, skill_function）
+        answer: 用户答案
+
+    Returns:
+        包含更新结果的字典
+    """
+    return await update_requirement_answer(ctx, session_id, question_key, answer)
+
+
+@mcp.tool()
+async def get_static_question_tool(
+    ctx: Context,
+    mode: str,
+    step_index: int,
+) -> dict[str, Any]:
+    """获取静态问题（用于 basic/complete 模式）.
+
+    这是一个原子操作工具，只负责获取预定义的问题。
+    不包含循环逻辑，循环由 Agent-Skill 编排。
+
+    Args:
+        ctx: MCP 上下文
+        mode: 收集模式（basic/complete）
+        step_index: 步骤索引（从0开始）
+
+    Returns:
+        包含问题信息的字典
+    """
+    return await get_static_question(ctx, mode, step_index)
+
+
+@mcp.tool()
+async def generate_dynamic_question_tool(
+    ctx: Context,
+    mode: str,
+    answers: dict[str, str],
+    conversation_history: list[dict] | None = None,
+) -> dict[str, Any]:
+    """生成动态问题（用于 brainstorm/progressive 模式）.
+
+    这是一个原子操作工具，使用 LLM 生成下一个问题。
+    不包含循环逻辑，循环由 Agent-Skill 编排。
+
+    Args:
+        ctx: MCP 上下文
+        mode: 收集模式（brainstorm/progressive）
+        answers: 已收集的答案
+        conversation_history: 对话历史（用于 brainstorm 模式）
+
+    Returns:
+        包含生成问题的字典
+    """
+    return await generate_dynamic_question(ctx, mode, answers, conversation_history)
+
+
+@mcp.tool()
+async def validate_answer_format_tool(
+    ctx: Context,
+    answer: str,
+    validation: dict[str, Any],
+) -> dict[str, Any]:
+    """验证答案格式.
+
+    这是一个原子操作工具，只负责验证单个答案。
+    不包含重试逻辑，重试由 Agent-Skill 编排。
+
+    Args:
+        ctx: MCP 上下文
+        answer: 用户输入的答案
+        validation: 验证规则字典
+
+    Returns:
+        包含验证结果的字典
+    """
+    return await validate_answer_format(ctx, answer, validation)
+
+
+@mcp.tool()
+async def check_requirement_completeness_tool(
+    ctx: Context,
+    answers: dict[str, str],
+) -> dict[str, Any]:
+    """检查需求完整性（使用 LLM）.
+
+    这是一个原子操作工具，只负责完整性检查。
+    不包含补充收集逻辑，补充由 Agent-Skill 编排。
+
+    Args:
+        ctx: MCP 上下文
+        answers: 已收集的答案
+
+    Returns:
+        包含完整性检查结果的字典
+    """
+    return await check_requirement_completeness(ctx, answers)
 
 
 # 测试工具（test_tools.py）
