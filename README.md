@@ -2,7 +2,7 @@
 
 > **版本**: v0.3.3
 > **项目类型**: MCP Server + Agent-Skill 混合架构
-> **测试覆盖率**: 96% (594 tests)
+> **测试覆盖率**: 96% (601个测试, 599通过, 2跳过)
 
 > **📢 目录结构变更通知 (v0.2.0)**: Agent-Skill 相关代码已统一到 `skill-creator/` 目录。如果您直接引用 `SKILL.md`、`examples/` 或 `references/`，请参阅 [迁移指南](MIGRATION.md) 更新您的路径配置。
 
@@ -205,7 +205,7 @@ Skills-Creator/
 │   │   ├── resources/          # 3个资源
 │   │   ├── prompts/            # 3个提示模板
 │   │   └── utils/              # 工具函数
-│   ├── tests/                  # 测试套件 (96% 覆盖率, 594个测试)
+│   ├── tests/                  # 测试套件 (96% 覆盖率, 601个测试, 599通过)
 │   └── pyproject.toml          # 项目配置
 ├── docs/                       # 项目文档
 │   └── adr/
@@ -254,7 +254,9 @@ Skills-Creator/
 
 ## MCP 工具列表
 
-### 核心工具（6个）
+MCP Server 提供 18 个工具，按功能划分为 5 类：
+
+### 技能生命周期（4个）
 
 | 工具 | 功能 |
 |------|------|
@@ -262,24 +264,40 @@ Skills-Creator/
 | `validate_skill` | 验证技能规范 |
 | `analyze_skill` | 分析技能质量 |
 | `refactor_skill` | 生成重构建议 |
-| `package_skill` | 打包技能为分发格式 |
-| `package_agent_skill` | Agent-Skill 标准打包（推荐） |
 
-### 扩展工具（11个）
+### 打包工具（2个）
 
 | 工具 | 功能 |
 |------|------|
-| `collect_requirements` | AI 驱动的需求澄清 |
-| `batch_validate_skills_tool` | 批量验证多个技能 |
-| `batch_analyze_skills_tool` | 批量分析多个技能 |
-| `health_check_tool` | 系统健康检查（完整） |
-| `quick_status_tool` | 快速状态摘要 |
-| `is_healthy_tool` | 健康状态判断 |
-| `test_llm_sampling` | 测试 LLM Sampling 能力 |
-| `test_user_elicitation` | 测试用户征询能力 |
-| `test_conversation_loop` | 测试对话循环能力 |
-| `check_client_capabilities` | 检测客户端能力 |
-| `test_requirement_completeness` | 测试需求完整性 |
+| `package_skill` | 打包技能为分发格式 |
+| `package_agent_skill` | Agent-Skill 标准打包（推荐） |
+
+### 需求收集原子工具（7个）
+
+| 工具 | 功能 |
+|------|------|
+| `create_requirement_session` | 创建需求收集会话 |
+| `get_requirement_session` | 获取会话状态 |
+| `update_requirement_answer` | 更新答案 |
+| `get_static_question` | 获取静态问题 |
+| `generate_dynamic_question` | 生成动态问题 |
+| `validate_answer_format` | 验证答案格式 |
+| `check_requirement_completeness` | 检查完整性 |
+
+### 批量操作（2个）
+
+| 工具 | 功能 |
+|------|------|
+| `batch_validate_skills` | 批量验证多个技能 |
+| `batch_analyze_skills` | 批量分析多个技能 |
+
+### 健康检查（3个）
+
+| 工具 | 功能 |
+|------|------|
+| `health_check` | 系统健康检查（完整） |
+| `quick_status` | 快速状态摘要 |
+| `is_healthy` | 健康状态判断 |
 
 ### package_agent_skill 详细说明
 
@@ -335,7 +353,7 @@ uv run python -m skill_creator_mcp.http
 
 | 指标 | 当前值 | 目标值 |
 |------|--------|--------|
-| 测试覆盖率 | 96% (594个测试) | ≥95% |
+| 测试覆盖率 | 96% (601个测试, 599通过) | ≥95% |
 | 代码规范 | ✅ 通过 | 0错误 |
 | 类型检查 | ✅ 通过 | 0错误 |
 | 安全检查 | ✅ 通过 | 0高危 |

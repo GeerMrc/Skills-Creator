@@ -15,17 +15,32 @@ This page contains the API reference documentation for skill-creator-mcp.
 MCP Tools
 ----------
 
-Skill Creator MCP Server provides 16 tools organized into 4 categories.
+Skill Creator MCP Server provides 18 tools organized into 5 categories.
 
-Core Development Tools (6)
+Skill Lifecycle Tools (4)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: skill_creator_mcp.server.collect_requirements
 .. autofunction:: skill_creator_mcp.server.init_skill
 .. autofunction:: skill_creator_mcp.server.validate_skill
 .. autofunction:: skill_creator_mcp.server.analyze_skill
 .. autofunction:: skill_creator_mcp.server.refactor_skill
+
+Packaging Tools (2)
+~~~~~~~~~~~~~~~~~~~
+
 .. autofunction:: skill_creator_mcp.server.package_skill
+.. autofunction:: skill_creator_mcp.server.package_agent_skill
+
+Requirement Collection Tools (7)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: skill_creator_mcp.server.create_requirement_session_tool
+.. autofunction:: skill_creator_mcp.server.get_requirement_session_tool
+.. autofunction:: skill_creator_mcp.server.update_requirement_answer_tool
+.. autofunction:: skill_creator_mcp.server.get_static_question_tool
+.. autofunction:: skill_creator_mcp.server.generate_dynamic_question_tool
+.. autofunction:: skill_creator_mcp.server.validate_answer_format_tool
+.. autofunction:: skill_creator_mcp.server.check_requirement_completeness_tool
 
 Batch Operations (2)
 ~~~~~~~~~~~~~~~~~~~~~
@@ -39,15 +54,6 @@ Health Check Tools (3)
 .. autofunction:: skill_creator_mcp.server.health_check_tool
 .. autofunction:: skill_creator_mcp.server.quick_status_tool
 .. autofunction:: skill_creator_mcp.server.is_healthy_tool
-
-Phase 0 Verification Tools (5)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: skill_creator_mcp.server.check_client_capabilities
-.. autofunction:: skill_creator_mcp.server.test_llm_sampling
-.. autofunction:: skill_creator_mcp.server.test_user_elicitation
-.. autofunction:: skill_creator_mcp.server.test_conversation_loop
-.. autofunction:: skill_creator_mcp.server.test_requirement_completeness
 
 Data Models
 ------------
@@ -105,26 +111,31 @@ Available Prompts:
 Tool Categories Reference
 -------------------------
 
-**Core Development Tools** (6):
-  - ``collect_requirements`` - AI-driven requirement clarification
+**Skill Lifecycle Tools** (4):
   - ``init_skill`` - Initialize new Agent-Skill project
   - ``validate_skill`` - Validate skill structure and content
   - ``analyze_skill`` - Analyze code quality and complexity
   - ``refactor_skill`` - Generate refactoring suggestions
+
+**Packaging Tools** (2):
   - ``package_skill`` - Package skill for distribution
+  - ``package_agent_skill`` - Standard Agent-Skill packaging
+
+**Requirement Collection Tools** (7):
+  - ``create_requirement_session`` - Create requirement collection session
+  - ``get_requirement_session`` - Get session state
+  - ``update_requirement_answer`` - Update answer
+  - ``get_static_question`` - Get static question
+  - ``generate_dynamic_question`` - Generate dynamic question
+  - ``validate_answer_format`` - Validate answer format
+  - ``check_requirement_completeness`` - Check completeness
 
 **Batch Operations** (2):
-  - ``batch_validate_skills_tool`` - Validate multiple skills concurrently
-  - ``batch_analyze_skills_tool`` - Analyze multiple skills concurrently
+  - ``batch_validate_skills`` - Validate multiple skills concurrently
+  - ``batch_analyze_skills`` - Analyze multiple skills concurrently
 
 **Health Check Tools** (3):
-  - ``health_check_tool`` - Complete health check
-  - ``quick_status_tool`` - Quick status summary
-  - ``is_healthy_tool`` - Quick health check
-
-**Phase 0 Verification Tools** (5):
-  - ``check_client_capabilities`` - Check MCP client capabilities
-  - ``test_llm_sampling`` - Test LLM Sampling ability
-  - ``test_user_elicitation`` - Test user elicitation ability
-  - ``test_conversation_loop`` - Test conversation loop ability
+  - ``health_check`` - Complete health check
+  - ``quick_status`` - Quick status summary
+  - ``is_healthy`` - Quick health check
   - ``test_requirement_completeness`` - Test requirement completeness judgment

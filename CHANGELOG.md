@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - Documentation Updates (2026-01-28)
+
+- **P0-001**: 修复文档中的过时引用
+  - 移除所有 `collect_requirements` 工具引用（已废弃）
+  - 更新为7个需求收集原子工具
+  - 受影响文件：`docs/ide-config.md`, `docs/claude-code-config.md`, `docs/index.rst`, `docs/api/index.rst`, `skill-creator/references/mcp-integration.md`
+
+- **P0-002**: 更新测试数量声明
+  - README.md: 594 → 601个测试
+  - CHANGELOG.md: 594 → 601个测试
+
+- **P0-003**: 更新MCP工具列表
+  - README.md: 更新为18个工具（5类）
+  - 移除Phase 0验证工具引用
+  - 添加需求收集原子工具列表
+
 ### Fixed - Documentation Data Inconsistencies (2026-01-28)
 
 - **P0-001**: 修复测试数量声明不一致（7处）
@@ -29,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 创建 `tests/test_utils/test_requirement_collection/` 目录
   - 新增 61 个单元测试用例
   - 覆盖率: 0% → 98%（88 行代码）
-  - 总测试数量: 533 → 594
+  - 总测试数量: 533 → 601（599通过，2跳过）
 
 ### Added - Requirement Collection Unit Tests (2026-01-28)
 

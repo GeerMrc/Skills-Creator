@@ -467,13 +467,24 @@ claude mcp list
 
 ### 可用工具列表
 
-**核心开发工具（6个）**：
+**核心开发工具（4个）**：
 - `init_skill` - 初始化新的 Agent-Skill
 - `validate_skill` - 验证技能结构和内容
 - `analyze_skill` - 分析代码质量和复杂度
 - `refactor_skill` - 生成重构建议
-- `package_skill` - 打包发布工具
-- `collect_requirements` - AI 驱动的需求澄清
+
+**打包工具（2个）**：
+- `package_skill` - 通用打包工具
+- `package_agent_skill` - Agent-Skill标准打包工具
+
+**需求收集原子工具（7个）**：
+- `create_requirement_session` - 创建需求收集会话
+- `get_requirement_session` - 获取会话状态
+- `update_requirement_answer` - 更新答案
+- `get_static_question` - 获取静态问题
+- `generate_dynamic_question` - 生成动态问题
+- `validate_answer_format` - 验证答案格式
+- `check_requirement_completeness` - 检查完整性
 
 **批量操作（2个）**：
 - `batch_validate_skills_tool` - 批量验证多个技能

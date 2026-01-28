@@ -358,29 +358,35 @@ pip install skill-creator-mcp
 
 ### 可用工具列表
 
-**核心开发工具（6个）**：
+**核心开发工具（4个）**：
 1. `init_skill` - 初始化新的 Agent-Skill
 2. `validate_skill` - 验证技能结构和内容
 3. `analyze_skill` - 分析代码质量和复杂度
 4. `refactor_skill` - 生成重构建议
-5. `package_skill` - 打包发布工具
-6. `collect_requirements` - AI 驱动的需求澄清
+
+**打包工具（2个）**：
+5. `package_skill` - 通用打包工具
+6. `package_agent_skill` - Agent-Skill标准打包工具
+
+**需求收集原子工具（7个）**：
+7. `create_requirement_session` - 创建需求收集会话
+8. `get_requirement_session` - 获取会话状态
+9. `update_requirement_answer` - 更新答案
+10. `get_static_question` - 获取静态问题
+11. `generate_dynamic_question` - 生成动态问题
+12. `validate_answer_format` - 验证答案格式
+13. `check_requirement_completeness` - 检查完整性
 
 **批量操作（2个）**：
-7. `batch_validate_skills_tool` - 批量验证多个技能
-8. `batch_analyze_skills_tool` - 批量分析多个技能
+14. `batch_validate_skills` - 批量验证多个技能
+15. `batch_analyze_skills` - 批量分析多个技能
 
 **健康检查（3个）**：
-9. `health_check_tool` - 完整健康检查
-10. `quick_status_tool` - 快速状态摘要
-11. `is_healthy_tool` - 快速健康检查
+16. `health_check` - 完整健康检查
+17. `quick_status` - 快速状态摘要
+18. `is_healthy` - 快速健康检查
 
-**Phase 0验证工具（5个）**：
-12. `check_client_capabilities` - 检测客户端能力
-13. `test_llm_sampling` - 测试 LLM Sampling
-14. `test_user_elicitation` - 测试用户征询
-15. `test_conversation_loop` - 测试对话循环
-16. `test_requirement_completeness` - 测试需求完整性
+**总计**: 18个工具
 
 ### 常见问题
 

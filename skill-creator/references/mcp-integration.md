@@ -338,7 +338,10 @@ Thinking MCP 提供思考记录能力，实现代码分析思考过程记录、�
 **完整流程**（结合所有 MCP）：
 
 ```
-1. collect_requirements         # 收集需求
+1. create_requirement_session    # 创建需求收集会话
+   → get_static_question         # 获取静态问题
+   → update_requirement_answer   # 更新答案
+   → check_requirement_completeness  # 检查完整性
    → create_issue (GitHub)       # 创建需求跟踪 Issue
 
 2. init_skill                    # 初始化技能
