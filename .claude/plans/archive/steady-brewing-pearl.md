@@ -334,5 +334,9 @@ uv run mypy src/
 
 ---
 
-**计划状态**: planning → in_progress
-**下一步**: 开始执行T-A01（更新README.md移除旧工具引用）
+---
+
+**计划状态**: completed → archived
+**完成时间**: 2026-01-28
+**Git提交**: 0afcfbb
+**归档位置**: .claude/plans/archive/
