@@ -4,11 +4,14 @@
 符合 ADR 001: MCP Server 只提供原子操作 + 文件I/O + 数据验证。
 """
 
-import json
 import re
 from typing import Any
 
 from fastmcp import Context
+
+from ..utils.requirement_collection.llm_services import (
+    check_requirement_completeness as _check_requirement_completeness,
+)
 
 
 async def validate_answer_format(
@@ -115,89 +118,43 @@ async def validate_answer_format(
 async def check_requirement_completeness(
     ctx: Context,
     answers: dict[str, str],
+    prompt_template: str | None = None,
 ) -> dict[str, Any]:
     """
-    检查需求完整性（使用 LLM）.
+    检查需求完整性（MCP工具版本）.
 
-    这是一个原子操作工具，只负责完整性检查。
-    不包含补充收集逻辑，补充由 Agent-Skill 编排。
+    这是一个MCP工具包装函数，调用llm_services中的核心函数。
+    返回值格式符合MCP工具规范（包含success键）。
 
     Args:
         ctx: MCP 上下文
         answers: 已收集的答案
+        prompt_template: 自定义Prompt模板（可选）
 
     Returns:
         包含完整性检查结果的字典: {
+            "success": bool,
             "complete": bool,
             "missing_items": list[str],
-            "suggestions": list[str]
+            "suggestions": list[str],
+            "error": str | None (可选)
         }
     """
-    try:
-        prompt = f"""分析以下技能创建需求，判断是否包含所有必要信息：
+    result = await _check_requirement_completeness(ctx, answers, prompt_template)
 
-已收集的信息：
-{json.dumps(answers, indent=2, ensure_ascii=False)}
+    # 包装返回值，添加success键
+    wrapped_result = {
+        "success": True,
+        "complete": result.get("complete", False),
+        "missing_items": result.get("missing_items", []),
+        "suggestions": result.get("suggestions", []),
+    }
 
-必要信息包括：
-1. skill_name - 技能名称
-2. skill_function - 主要功能
-3. use_cases - 使用场景
-4. template_type - 模板类型
+    # 如果有error键，传递它
+    if "error" in result:
+        wrapped_result["error"] = result["error"]
 
-请返回 JSON 格式，包含：
-- complete: bool（是否完整）
-- missing_items: list[str]（缺失的信息列表）
-- suggestions: list[str]（补充建议列表）
-
-只返回 JSON，不要其他内容。"""
-
-        result = await ctx.sample(
-            messages=prompt,
-            system_prompt="你是一个技能创建顾问，负责评估需求的完整性。",
-            temperature=0.3,
-        )
-
-        if result.text:
-            try:
-                # 提取 JSON 部分
-                json_start = result.text.find("{")
-                json_end = result.text.rfind("}") + 1
-                if json_start >= 0 and json_end > json_start:
-                    json_str = result.text[json_start:json_end]
-                    parsed = json.loads(json_str)
-                    return {
-                        "success": True,
-                        "complete": parsed.get("complete", False),
-                        "missing_items": parsed.get("missing_items", []),
-                        "suggestions": parsed.get("suggestions", []),
-                    }
-            except json.JSONDecodeError:
-                pass
-
-        # 默认返回（如果 LLM 解析失败）
-        required_keys = ["skill_name", "skill_function", "use_cases", "template_type"]
-        missing = [k for k in required_keys if k not in answers or not answers[k]]
-
-        return {
-            "success": True,
-            "complete": len(missing) == 0,
-            "missing_items": missing,
-            "suggestions": [] if len(missing) == 0 else ["请补充缺失的关键信息"],
-        }
-
-    except Exception as e:
-        # 如果 LLM 调用失败，进行简单的完整性检查
-        required_keys = ["skill_name", "skill_function", "use_cases", "template_type"]
-        missing = [k for k in required_keys if k not in answers or not answers[k]]
-
-        return {
-            "success": True,
-            "complete": len(missing) == 0,
-            "missing_items": missing,
-            "suggestions": ["请补充缺失的关键信息"] if missing else [],
-            "error": str(e),
-        }
+    return wrapped_result
 
 
 __all__ = [

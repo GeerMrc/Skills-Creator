@@ -81,7 +81,7 @@ async def check_requirement_completeness(
             "suggestions": [] if len(missing) == 0 else ["请补充缺失的关键信息"],
         }
 
-    except Exception:
+    except Exception as e:
         # 如果 LLM 调用失败，进行简单的完整性检查
         required_keys = ["skill_name", "skill_function", "use_cases", "template_type"]
         missing = [k for k in required_keys if k not in answers or not answers[k]]
@@ -90,6 +90,7 @@ async def check_requirement_completeness(
             "complete": len(missing) == 0,
             "missing_items": missing,
             "suggestions": ["请补充缺失的关键信息"] if missing else [],
+            "error": str(e),
         }
 
 
