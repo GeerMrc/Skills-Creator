@@ -1,22 +1,23 @@
 # 需求澄清指南
 
-`collect_requirements` 是 Skill-Creator 提供的 AI 驱动需求澄清工具，通过对话式交互逐步收集技能创建所需信息。
+> **重要更新**：需求收集功能已重构为7个原子化工具，符合ADR 001架构原则。
+
+Skill-Creator 提供的需求收集功能基于 **MCP原子化工具 + Agent-Skill工作流编排** 的混合架构。
 
 ## 快速开始
 
 ```python
-# 基础模式 - 5步快速收集
-result = await collect_requirements(
-    action="start",
-    mode="basic"
-)
+# 通过 Agent-Skill 工作流使用需求收集
+# 详见 skill-creator/SKILL.md 的需求收集章节
 
-# Elicit 自动模式 - 一键完成所有收集
-result = await collect_requirements(
-    action="start",
-    mode="basic",
-    use_elicit=True
-)
+# MCP 层原子化工具（7个）：
+# - create_requirement_session_tool   # 创建会话
+# - get_requirement_session_tool      # 获取会话状态
+# - update_requirement_answer_tool    # 更新答案
+# - get_static_question_tool          # 获取静态问题
+# - generate_dynamic_question_tool    # 生成动态问题
+# - validate_answer_format_tool       # 验证答案格式
+# - check_requirement_completeness_tool  # 检查完整性
 ```
 
 ## 文档导航
@@ -31,11 +32,13 @@ result = await collect_requirements(
 
 ## 核心特性
 
-- **会话状态管理**：使用 FastMCP Context API，支持中断后恢复
-- **AI 驱动引导**：通过 `ctx.sample()` 获取 AI 生成的响应
-- **输入验证**：实时验证格式、长度、选项
+- **原子化工具**：7个独立的MCP工具，职责单一，符合ADR 001原则
+- **工作流编排**：Agent-Skill负责业务流程编排
+- **会话状态管理**：通过 `create_requirement_session_tool` 和 `get_requirement_session_tool` 管理
+- **AI 驱动引导**：通过 `generate_dynamic_question_tool` 获取 AI 生成的动态问题
+- **输入验证**：通过 `validate_answer_format_tool` 实时验证格式、长度、选项
 - **4 种收集模式**：basic、complete、brainstorm、progressive
-- **Elicit 自动模式**：设置 `use_elicit=True` 一键完成收集
+- **完整性检查**：通过 `check_requirement_completeness_tool` 确保需求完整性
 
 ## 收集模式对比
 
@@ -61,23 +64,25 @@ result = await collect_requirements(
 
 ## 架构说明
 
-### 为什么循环逻辑在MCP层？
+### MCP + Agent-Skill 混合架构
 
-`collect_requirements` 工具的内部实现包含了循环逻辑（`while not session_state.completed`），这看起来违反了"MCP提供原子操作"的原则。这个设计是**技术约束下的权衡决策**。
+需求收集功能采用符合ADR 001原则的原子化架构：
 
-#### 技术原因
+**MCP Server层（skill-creator-mcp）**：
+- 提供7个原子化工具，每个工具职责单一
+- 处理文件I/O、数据验证、状态管理等原子操作
+- 返回结构化结果
 
-1. **`ctx.elicit()` 只能在MCP层调用**
-   - FastMCP的elicit API是MCP Server级别的
-   - Agent-Skill无法直接访问ctx对象
+**Agent-Skill层（skill-creator）**：
+- 编排工作流程，管理业务逻辑
+- 传递知识和最佳实践
+- 提供渐进式披露的内容
 
-2. **会话状态管理需要MCP能力**
-   - `ctx.set_state` / `ctx.get_state` 是MCP Server的能力
-   - 状态持久化需要MCP Server支持
-
-3. **LLM采样需要MCP上下文**
-   - `ctx.sample()` 用于动态问题生成
-   - 需要MCP Server的LLM集成
+**架构优势**：
+1. **职责分离**：MCP提供原子操作，Agent-Skill编排工作流
+2. **符合MCP规范**：遵循Model Context Protocol最佳实践
+3. **易于维护**：每个工具独立，便于测试和更新
+4. **灵活扩展**：可单独替换某个工具而不影响整体
 
 #### 架构权衡
 

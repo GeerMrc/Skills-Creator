@@ -1,6 +1,6 @@
 # Elicit 自动模式使用示例
 
-本文档展示如何使用 `collect_requirements` 的 Elicit 模式一键完成需求收集。
+本文档展示如何使用需求收集功能的 Elicit 模式一键完成需求收集。
 
 ## 概述
 

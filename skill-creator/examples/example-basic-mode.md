@@ -1,6 +1,6 @@
 # 基础模式使用示例
 
-本文档展示如何使用 `collect_requirements` 的基础模式创建技能。
+本文档展示如何使用需求收集功能的基础模式创建技能。
 
 ## 概述
 
@@ -204,7 +204,7 @@ if not result["is_complete"]:
 
 ```python
 # 步骤 1：开始收集
-result = await collect_requirements(action="start", mode="basic")
+# 通过Agent-Skill工作流调用action="start", mode="basic")
 session_id = result["session_id"]
 
 # 步骤 2-5：逐个回答
@@ -217,7 +217,7 @@ questions_answers = {
 }
 
 for answer in questions_answers.values():
-    result = await collect_requirements(
+    # 通过Agent-Skill工作流调用
         action="next",
         session_id=session_id,
         user_input=answer
@@ -225,7 +225,7 @@ for answer in questions_answers.values():
     print(f"进度：{result['progress']}%")
 
 # 步骤 6：完成收集
-result = await collect_requirements(action="complete", session_id=session_id)
+# 通过Agent-Skill工作流调用action="complete", session_id=session_id)
 
 if result["is_complete"]:
     # 创建技能

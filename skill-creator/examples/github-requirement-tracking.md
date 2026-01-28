@@ -1,6 +1,6 @@
 # GitHub 需求跟踪集成示例
 
-演示如何将 `collect_requirements` 与 GitHub MCP 集成，自动创建需求跟踪 Issue。
+演示如何将需求收集功能与 GitHub MCP 集成，自动创建需求跟踪 Issue。
 
 ## 概述
 
@@ -12,7 +12,7 @@
 
 ```python
 # 使用 complete 模式收集完整需求
-result = collect_requirements(
+# 通过Agent-Skill工作流调用
     action="complete",
     mode="complete"
 )
@@ -90,13 +90,13 @@ Issue详情:
 
 ```python
 # 开始需求收集
-result = collect_requirements(
+# 通过Agent-Skill工作流调用
     action="start",
     mode="complete"
 )
 
 # 逐步回答问题
-result = collect_requirements(
+# 通过Agent-Skill工作流调用
     action="next",
     session_id=result["session_id"],
     user_input="pdf-processor"
@@ -157,7 +157,7 @@ pr = await create_pull_request(
 
 **集成前**:
 ```
-1. collect_requirements 返回需求
+1. 需求收集工作流返回需求
 2. 用户手动复制到文档
 3. 或口头告诉团队
 4. 细节容易遗漏
@@ -165,7 +165,7 @@ pr = await create_pull_request(
 
 **集成后**:
 ```
-1. collect_requirements 返回需求
+1. 需求收集工作流返回需求
 2. 自动创建 GitHub Issue #123
 3. 团队可在 Issue 中讨论
 4. 需求永久可追溯

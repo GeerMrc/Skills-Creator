@@ -1,7 +1,7 @@
 # Brainstorm 模式使用示例
 
 > **版本**: v0.3.0-alpha
-> **工具**: `collect_requirements` - `brainstorm` 模式
+> **工具**: 7个原子化MCP工具（通过Agent-Skill工作流使用） - `brainstorm` 模式
 > **用途**: 展示如何使用头脑风暴模式探索技能需求
 
 ---

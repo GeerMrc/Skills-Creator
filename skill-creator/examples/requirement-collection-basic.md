@@ -2,7 +2,9 @@
 
 > **说明**：本文档为需求澄清所有示例的导航索引，帮助快速找到合适的示例文档。
 
-本文档提供 `collect_requirements` 工具的各种使用示例。
+> **架构更新**：需求收集功能现在基于7个原子化MCP工具，通过Agent-Skill工作流编排使用。
+
+本文档提供需求收集功能的各种使用示例。
 
 ## 示例导航
 
@@ -24,18 +26,24 @@
 
 ## 快速开始
 
+需求收集功能通过Agent-Skill工作流使用，详见 `skill-creator/SKILL.md`。
+
+底层使用7个原子化MCP工具：
+- `create_requirement_session_tool` - 创建会话
+- `get_requirement_session_tool` - 获取会话状态
+- `update_requirement_answer_tool` - 更新答案
+- `get_static_question_tool` - 获取预定义问题
+- `generate_dynamic_question_tool` - 生成动态问题
+- `validate_answer_format_tool` - 验证答案格式
+- `check_requirement_completeness_tool` - 检查完整性
+
 ### 最简单的方式：基础模式
 
-```json
-{
-  "action": "start",
-  "mode": "basic"
-}
-```
-
-然后逐个回答问题。
+通过Agent-Skill工作流启动basic模式，然后逐个回答问题。
 
 ### 最快速的方式：Elicit 模式
+
+通过Agent-Skill工作流启动elicit模式，一键自动收集。
 
 ```json
 {

@@ -48,7 +48,7 @@ async def create_skill_workflow(skill_name: str):
     """技能创建标准工作流."""
 
     # 步骤1: 收集需求
-    requirements = await collect_requirements(
+    # 通过Agent-Skill工作流调用
         ctx,
         action="start",
         mode="basic"

@@ -1,8 +1,12 @@
 # 需求澄清基础指南
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 ## 概述
 
-Skill-Creator 提供 AI 驱动的需求澄清工具 `collect_requirements`，通过对话式交互逐步收集技能创建所需信息。该工具支持会话状态管理，允许中断后恢复，并提供实时进度跟踪。
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
+Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP工具 + Agent-Skill工作流编排** 的混合架构。
 
 > **相关文档**：
 > - [需求收集模式详解](requirement-collection-modes.md) - 各种收集模式的详细说明
@@ -13,33 +17,59 @@ Skill-Creator 提供 AI 驱动的需求澄清工具 `collect_requirements`，通
 
 ## 核心概念
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
+### 7个原子化工具
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
+需求收集功能由7个独立的MCP工具提供：
+
+| 工具 | 功能 |
+|------|------|
+| `create_requirement_session_tool` | 创建需求收集会话 |
+| `get_requirement_session_tool` | 获取会话状态 |
+| `update_requirement_answer_tool` | 更新答案 |
+| `get_static_question_tool` | 获取预定义问题（basic/complete模式） |
+| `generate_dynamic_question_tool` | 生成动态问题（brainstorm/progressive模式） |
+| `validate_answer_format_tool` | 验证答案格式 |
+| `check_requirement_completeness_tool` | 检查需求完整性 |
+
 ### 会话状态管理
 
-`collect_requirements` 使用 FastMCP 的 Context API 管理会话状态：
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 
-- **状态存储**：通过 `ctx.get_state()` 和 `ctx.set_state()` 持久化会话
+通过 `create_requirement_session_tool` 和 `get_requirement_session_tool` 管理会话状态：
+
+- **状态存储**：持久化会话数据
 - **自动恢复**：中断后可从上次步骤继续
 - **会话隔离**：不同会话互不影响
 
 ### AI 驱动引导
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 使用 LLM 动态生成问题和引导对话：
 
-- **智能采样**：通过 `ctx.sample()` 获取 AI 生成的响应
+- **智能采样**：通过 `generate_dynamic_question_tool` 获取 AI 生成的响应
 - **上下文感知**：根据已收集信息调整后续问题
-- **完整性检查**：使用 LLM 判断需求是否完整
+- **完整性检查**：通过 `check_requirement_completeness_tool` 使用 LLM 判断需求是否完整
 
 ### 输入验证
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 
 实时验证用户输入：
 
 - **格式检查**：正则表达式、长度限制
 - **选项验证**：确保输入在可选项范围内
-- **即时反馈**：错误时返回具体帮助文本
+- **即时反馈**：通过 `validate_answer_format_tool` 错误时返回具体帮助文本
 
 ## 收集模式概览
 
-`collect_requirements` 支持 4 种收集模式 + 1 种自动化模式：
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
+需求收集功能支持 4 种收集模式 + 1 种自动化模式：
 
 | 模式 | 步骤 | 适用场景 |
 |------|------|----------|
@@ -51,6 +81,8 @@ Skill-Creator 提供 AI 驱动的需求澄清工具 `collect_requirements`，通
 
 ### 基础模式 (basic)
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 5 步快速收集核心信息：
 1. 技能名称
 2. 主要功能
@@ -60,11 +92,15 @@ Skill-Creator 提供 AI 驱动的需求澄清工具 `collect_requirements`，通
 
 ### 完整模式 (complete)
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 10 步全面收集技术细节：
 - 包含基础模式的 5 步
 - 加上：目标用户、技术栈、外部依赖、测试要求、文档级别
 
 ### 头脑风暴模式 (brainstorm)
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 
 AI 引导的创意发散：
 - 开放性问题引导思考
@@ -73,12 +109,16 @@ AI 引导的创意发散：
 
 ### 渐进式模式 (progressive)
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 快速开始，后续完善：
 - 核心信息优先
 - 允许跳过非关键步骤
 - 后续可补充细节
 
 ### Elicit 自动模式
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 
 设置 `use_elicit=True` 后，AI 自动调用 `ctx.elicit()` 逐个收集输入：
 
@@ -98,16 +138,24 @@ AI 引导的创意发散：
 
 ## 快速开始
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 ### 基础用法
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 
 ```python
 # 1. 开始收集
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 result = await collect_requirements(
     action="start",
     mode="basic"
 )
 
 # 2. 逐个回答问题
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 result = await collect_requirements(
     action="next",
     session_id=result["session_id"],
@@ -115,6 +163,8 @@ result = await collect_requirements(
 )
 
 # 3. 完成收集
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 result = await collect_requirements(
     action="complete",
     session_id=result["session_id"]
@@ -123,8 +173,12 @@ result = await collect_requirements(
 
 ### Elicit 自动模式
 
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 ```python
 # 一步完成所有收集
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 result = await collect_requirements(
     action="start",
     mode="basic",
@@ -133,6 +187,8 @@ result = await collect_requirements(
 ```
 
 ## 相关文档
+
+> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 
 - **[需求收集模式详解](requirement-collection-modes.md)** - 各种模式的详细说明和对比
 - **[需求收集 API 参考](requirement-collection-api.md)** - API 文档索引

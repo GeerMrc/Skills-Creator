@@ -25,7 +25,7 @@ mcp_servers: ["skill-creator", "GitHub"]
 **使用场景**：
 
 ```python
-result = collect_requirements(action="complete", mode="complete")
+# 通过Agent-Skill工作流使用需求收集action="complete", mode="complete")
 if result["is_complete"]:
     issue = await create_issue(
         owner="your-org",
@@ -122,7 +122,7 @@ if not validation["is_valid"]:
 结合 Skill-Creator 工具的完整 GitHub 集成流程：
 
 ```
-1. collect_requirements
+1. 需求收集（7个原子化工具）
    → create_issue (GitHub)         # 创建需求跟踪 Issue
 
 2. init_skill

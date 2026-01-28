@@ -49,7 +49,7 @@ INFO:skill_creator_mcp.server:MCP Server started successfully
 **回退模式启用**：
 ```
 WARNING:skill_creator_mcp.server:Client capabilities limited
-WARNING:skill_creator_mcp.server:Fallback mode enabled for collect_requirements
+WARNING:skill_creator_mcp.server:Fallback mode enabled for requirement collection tools
 ```
 
 **会话创建**：
@@ -240,7 +240,7 @@ fallback_questions = ["备用问题1", "备用问题2"]
 ### 功能检查
 - [ ] init_skill 正常
 - [ ] validate_skill 正常
-- [ ] collect_requirements 正常
+- [ ] 需求收集工具正常
 
 ---
 

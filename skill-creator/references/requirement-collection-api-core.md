@@ -1,6 +1,8 @@
 # 需求收集 API 参考 - 核心
 
-本文档提供 `collect_requirements` 工具的核心 API 参考。
+本文档提供需求收集功能的7个原子化MCP工具的核心API参考。
+
+> **架构说明**：需求收集功能已重构为7个原子化工具，符合ADR 001架构原则。
 
 > **相关文档**：
 > - [需求澄清基础指南](requirement-collection-basics.md) - 核心概念和快速开始
@@ -9,24 +11,92 @@
 
 ## 目录
 
-- [工具签名](#工具签名)
+- [7个原子化工具](#7个原子化工具)
 - [参数说明](#参数说明)
 - [返回值](#返回值)
-- [Action 类型](#action-类型)
 - [验证规则](#验证规则)
 - [错误处理](#错误处理)
 
 ---
 
-## 工具签名
+## 7个原子化工具
+
+需求收集功能由以下7个独立的MCP工具提供：
+
+### 1. create_requirement_session_tool
+
+创建需求收集会话。
 
 ```
-collect_requirements(
-    action: str = "start",
+create_requirement_session_tool(
     mode: str = "basic",
-    session_id: str | None = None,
-    user_input: str | None = None,
-    use_elicit: bool = False,
+    total_steps: int | None = None,
+) -> dict[str, Any]
+```
+
+### 2. get_requirement_session_tool
+
+获取会话状态。
+
+```
+get_requirement_session_tool(
+    session_id: str,
+) -> dict[str, Any]
+```
+
+### 3. update_requirement_answer_tool
+
+更新答案。
+
+```
+update_requirement_answer_tool(
+    session_id: str,
+    question_key: str,
+    answer: str,
+) -> dict[str, Any]
+```
+
+### 4. get_static_question_tool
+
+获取预定义问题（basic/complete模式）。
+
+```
+get_static_question_tool(
+    mode: str,
+    step_index: int,
+) -> dict[str, Any]
+```
+
+### 5. generate_dynamic_question_tool
+
+生成动态问题（brainstorm/progressive模式）。
+
+```
+generate_dynamic_question_tool(
+    mode: str,
+    answers: dict[str, str],
+    conversation_history: list[dict] | None = None,
+) -> dict[str, Any]
+```
+
+### 6. validate_answer_format_tool
+
+验证答案格式。
+
+```
+validate_answer_format_tool(
+    answer: str,
+    validation: dict[str, Any],
+) -> dict[str, Any]
+```
+
+### 7. check_requirement_completeness_tool
+
+检查需求完整性。
+
+```
+check_requirement_completeness_tool(
+    answers: dict[str, str],
 ) -> dict[str, Any]
 ```
 
