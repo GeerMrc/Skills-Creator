@@ -200,6 +200,159 @@ pending → in_progress → completed
 | 步骤9 | 归档时缺少追溯记录 | 无法追溯 | 补充commit记录和进度报告 |
 | 步骤9 | 未归档计划 | 计划丢失 | 归档到正确位置 |
 
+### 2.5 归档前强制审核（100%强制）
+
+> **背景**：基于2026-01-28审核发现的问题（计划状态与实际严重不符），添加归档前强制审核机制。
+
+**归档前必须执行的检查**：
+
+#### 5.1 实际代码审核（100%强制）
+
+```bash
+# 1. 读取实际代码文件，验证任务完成情况
+# 不能仅依赖文档或commit摘要
+
+# 2. 运行测试验证
+uv run pytest --cov
+uv run ruff check .
+uv run mypy src/
+
+# 3. 对比验收标准
+# 逐项验证每个验收标准是否满足
+```
+
+#### 5.2 交叉验证（100%强制）
+
+```bash
+# 1. 对照计划检查所有任务完成情况
+# 检查任务状态是否与实际一致
+
+# 2. 验证所有验收标准满足
+# 不要跳过任何验收标准
+
+# 3. 如有问题，回退状态或延期归档
+# 使用TodoUpdate回退到in_progress或pending
+```
+
+#### 5.3 文档一致性检查（100%强制）
+
+```bash
+# 1. 验证README、CLAUDE.md、CHANGELOG与代码一致
+# 检查版本号、测试数量、工具数量等
+
+# 2. 搜索过时引用并清理
+grep -r "旧工具名" skill-creator/
+
+# 3. 验证所有链接有效
+# 检查文档中的交叉引用链接
+```
+
+#### 5.4 追溯记录完整性检查（100%强制）
+
+- [ ] 每个任务都有对应的commit
+- [ ] 有阶段性进度报告（如有重大变更）
+- [ ] 归档检查清单全部勾选
+- [ ] 所有验收标准满足
+
+### 2.6 禁止虚假审核
+
+**禁止行为（新增）**：
+- ❌ **虚假归档** - 未完成任务就归档
+- ❌ **虚假状态更新** - 任务状态与实际不符
+- ❌ **基于文档审核** - 仅依赖文档或commit摘要，不审核实际代码
+- ❌ **跳过交叉验证** - 不执行步骤5交叉验证
+
+**后果**：
+- 发现虚假审核，立即恢复计划
+- 重新执行完整流程
+- 记录到技术债务追踪
+
+### 2.7 任务状态验证机制
+
+**任务状态必须满足的条件**：
+
+```python
+def validate_task_status(task_id: str, claimed_status: str) -> bool:
+    """验证任务状态是否与实际一致.
+
+    Args:
+        task_id: 任务ID
+        claimed_status: 声称的状态
+
+    Returns:
+        bool: 是否与实际一致
+    """
+    # 1. 读取实际代码
+    actual_code = read_actual_files(task_id)
+
+    # 2. 运行测试验证
+    test_result = run_tests()
+
+    # 3. 对比验收标准
+    acceptance_criteria = get_acceptance_criteria(task_id)
+
+    # 4. 只有全部满足才返回True
+    return all([
+        actual_code_matches_requirements(actual_code),
+        test_result.passed,
+        acceptance_criteria_satisfied(acceptance_criteria)
+    ])
+```
+
+### 2.8 归档决策流程
+
+**归档决策树**：
+
+```
+是否满足归档条件？
+├─ P0任务全部完成？
+│  ├─ 否 → ❌ 禁止归档，必须完成
+│  └─ 是 → 继续
+├─ P1任务全部完成（或用户同意跳过）？
+│  ├─ 否 → ❌ 禁止归档，必须完成或获取用户同意
+│  └─ 是 → 继续
+├─ 所有验收标准满足？
+│  ├─ 否 → ❌ 禁止归档，必须满足
+│  └─ 是 → 继续
+├─ 有完整的Git commit记录？
+│  ├─ 否 → ❌ 禁止归档，必须补充
+│  └─ 是 → 继续
+├─ 有阶段性进度报告？
+│  ├─ 否 → ❌ 禁止归档，必须生成
+│  └─ 是 → 继续
+└─ 100%基于实际代码审核？
+   ├─ 否 → ❌ 禁止归档，必须审核实际代码
+   └─ 是 → ✅ 允许归档
+```
+
+### 2.9 归档后审计机制
+
+**归档后随机审计**：
+
+- 每次归档后，随机抽取1-2个任务进行审计
+- 验证任务状态与实际代码一致
+- 如发现虚假审核，立即恢复计划并记录
+
+**审计频率**：每次归档后强制执行
+
+**审计流程**：
+
+```bash
+# 1. 选择审计任务（随机）
+task_id = select_random_task(completed_tasks)
+
+# 2. 读取实际代码验证
+actual_status = verify_task_status(task_id)
+
+# 3. 对比计划状态
+planned_status = get_task_status_from_plan(task_id)
+
+# 4. 如不一致，恢复计划
+if actual_status != planned_status:
+    restore_plan()
+    record_audit_finding()
+```
+
 ---
 
 ## 三、Git规范与禁止行为
