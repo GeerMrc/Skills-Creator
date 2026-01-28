@@ -5,15 +5,43 @@ All notable changes to the skill-creator-mcp project will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-01-28
+
+### Added
+- 7个需求收集原子工具（会话管理3、问题获取2、验证工具2）
+- Prompt模板外部化到Agent-Skill
+- 需求收集工作流文档
+
+### Changed
+- 架构边界重构：拆分collect_requirements为原子工具
+- 工具数量从16个增加到23个
+- 测试数量从533个增加到594个
+- 测试覆盖率为96%
+
+### Fixed
+- 函数重复定义问题（check_requirement_completeness）
+- mypy类型检查错误
+- 文档数据不一致（测试数量、工具数量、覆盖率）
+
+## [0.3.2] - 2026-01-27
+
+### Fixed
+- 计划管理流程规范化
+
+## [0.3.1] - 2026-01-27
+
+### Added
+- Agent-Skill打包规范
+
 ## [0.3.0] - 2026-01-26
 
 ### Added
 - GitHub MCP 集成测试
 - Thinking MCP 集成测试
-- 完整的集成测试套件（563个测试用例）
+- 完整的集成测试套件（594个测试用例）
 
 ### Changed
-- 更新工具数量声明从11个到16个
+- 更新工具数量声明从11个到23个
 - 统一版本号为v0.3.0
 
 ### Fixed
