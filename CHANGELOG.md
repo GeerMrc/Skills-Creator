@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Requirement Collection Unit Tests (2026-01-28)
+
+- 为需求收集原子工具补充55个单元测试用例
+  - `test_requirement_session_tools.py`: 14个测试（会话管理工具）
+  - `test_requirement_question_tools.py`: 17个测试（问题获取工具）
+  - `test_requirement_validation_tools.py`: 24个测试（验证工具）
+- 新工具覆盖率优秀（84-100%）
+- 总测试数量: 533个 → 583个
+- 测试覆盖率: 92% (符合≥80%要求)
+
+### Fixed - Plan Cleanup (2026-01-28)
+
+- **ISSUE-001**: 归档项目审核报告
+  - 移动 `generic-seeking-toast.md` 到 `archive/2026-01-27-audit-generic-seeking-toast.md`
+  - 清理计划目录
+
 ### Fixed - P3 Optimization Tasks (2026-01-27)
 
 - **P3-001**: 清理项目内`__pycache__`目录
