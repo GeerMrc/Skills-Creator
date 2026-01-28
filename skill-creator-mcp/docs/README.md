@@ -137,7 +137,7 @@ claude mcp list
 | `quick_status_tool` | 快速状态摘要 |
 | `is_healthy_tool` | 快速健康检查 |
 
-### Phase 0 验证工具（5个）
+### 开发工具（不作为MCP工具暴露）
 
 | 工具 | 描述 |
 |------|------|
@@ -147,6 +147,10 @@ claude mcp list
 | `test_conversation_loop` | 测试对话循环能力 |
 | `test_requirement_completeness` | 测试需求完整性判断 |
 
+> 注意：这些工具仅在开发环境有用，已迁移到 `scripts/dev-tools.py`。
+> 开发者可通过 `python -m scripts.dev-tools <command>` 使用。
+> 相关测试保留在 `tests/test_utils/test_testing.py`。
+
 ---
 
 ## 📊 项目统计
@@ -154,8 +158,8 @@ claude mcp list
 | 指标 | 数值 |
 |------|------|
 | 当前版本 | v0.3.3 |
-| MCP 工具数量 | 16 个 |
-| 测试覆盖率 | 95% (589 个测试用例) |
+| MCP 工具数量 | 18 个（不含开发工具） |
+| 测试覆盖率 | 96% (601 个测试用例) |
 | 支持的模板 | 4 种（minimal/tool-based/workflow-based/analyzer-based） |
 
 ---

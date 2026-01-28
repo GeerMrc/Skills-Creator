@@ -35,7 +35,7 @@
 │                 │                         │
 │  ┌──────────────▼────────────────────┐  │
 │  │  MCP Server (skill-creator-mcp)   │  │
-│  │  - 23 Tools (6类)                  │  │
+│  │  - 18 Tools (5类)                  │  │
 │  │  - 4 Resources (只读数据)          │  │
 │  │  - 3 Prompts (可重用模板)          │  │
 │  └───────────────────────────────────┘  │
@@ -89,7 +89,7 @@
 
 ### 1.5 MCP工具分类标准
 
-MCP Server提供23个工具，按功能划分为6类：
+MCP Server提供18个工具，按功能划分为5类：
 
 | 类别 | 工具数量 | 工具列表 |
 |------|----------|----------|
@@ -98,9 +98,10 @@ MCP Server提供23个工具，按功能划分为6类：
 | **需求收集原子工具** | 7 | create_requirement_session, get_requirement_session, update_requirement_answer, get_static_question, generate_dynamic_question, validate_answer_format, check_requirement_completeness |
 | **批量操作** | 2 | batch_validate_skills, batch_analyze_skills |
 | **健康检查** | 3 | health_check, quick_status, is_healthy |
-| **技术验证** | 5 | check_client_capabilities, test_llm_sampling, test_user_elicitation, test_conversation_loop, test_requirement_completeness |
 
-**总计**: 4 + 2 + 7 + 2 + 3 + 5 = 23个工具
+**总计**: 4 + 2 + 7 + 2 + 3 = 18个工具
+
+**注意**: Phase 0验证工具（5个）已迁移到开发工具脚本（`skill-creator-mcp/scripts/dev-tools.py`），不作为MCP工具暴露。
 
 **注意**:
 - 需求收集原子工具（7个）替代了旧的`collect_requirements`单一工具，符合ADR 001原子化原则

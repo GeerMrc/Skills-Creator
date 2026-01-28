@@ -95,7 +95,7 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 ## MCP 组件
 
-**原子工具 (23)**:
+**原子工具 (18)**:
 
 **会话管理 (3)**:
 - create_requirement_session_tool - 创建需求收集会话
@@ -120,7 +120,7 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 **技术验证 (5)**: check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
 
-> 注：工具分类统计：7个需求收集原子工具 + 4个技能工具 + 2个打包工具 + 2个批量操作工具 + 3个健康检查工具 + 5个技术验证工具 = 23个工具
+> 注：工具分类统计：7个需求收集原子工具 + 4个技能工具 + 2个打包工具 + 2个批量操作工具 + 3个健康检查工具 = 18个工具
 
 **资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
 
@@ -145,7 +145,7 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 ## 架构说明
 
-Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（23 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
+Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（18 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
 
 **职责边界**（符合 ADR 001）：
 - **MCP Server**: 原子操作 + 文件I/O + 数据验证（不包含工作流逻辑、不传递业务知识）
