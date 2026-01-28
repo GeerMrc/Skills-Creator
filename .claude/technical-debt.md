@@ -1,7 +1,7 @@
 # 技术债务追踪
 
 > **创建日期**: 2026-01-26
-> **最后更新**: 2026-01-26
+> **最后更新**: 2026-01-28
 > **审查周期**: 每月
 
 ---
@@ -27,6 +27,8 @@
 | TD-001 | 测试数据不一致 | 文档可信度 | 2026-01-26 | ✅ 已修复 | [commit](../skill-creator-mcp/test_phase0_direct.py) |
 | TD-002 | MCP集成说明可能误解 | 用户困惑 | 2026-01-26 | ✅ 已修复 | [fluttering-cuddling-mountain.md](plans/archive/fluttering-cuddling-mountain.md) |
 | TD-003 | feature分支未清理 | 分支管理混乱 | 2026-01-26 | ✅ 已修复 | 分支已删除 |
+| TD-008 | collect_requirements架构边界问题 | 架构一致性 | 2026-01-28 | ✅ 已修复 | [magical-kindling-raccoon.md](plans/magical-kindling-raccoon.md) |
+| TD-009 | Session state管理归属不明确 | 职责边界 | 2026-01-28 | ✅ 已修复 | [magical-kindling-raccoon.md](plans/magical-kindling-raccoon.md) |
 
 ### P2 - 中优先级
 
@@ -35,6 +37,7 @@
 | TD-004 | Commit缺少scope | 规范不一致 | 2026-01-26 | ✅ 已修复 | [CLAUDE.md](../CLAUDE.md) |
 | TD-005 | 归档目录缺乏索引 | 查找困难 | 2026-01-26 | ✅ 已修复 | [archive/README.md](plans/archive/README.md) |
 | TD-006 | 版本号分散 | 维护困难 | 2026-01-26 | ✅ 已修复 | 统一为v0.3.0 |
+| TD-010 | v0.3.3发布计划未归档 | 计划管理 | 2026-01-28 | ✅ 已修复 | 归档到 archive/ |
 
 ### P3 - 低优先级
 
@@ -118,7 +121,8 @@
 
 | 日期 | 审查人 | 新增 | 已解决 | 备注 |
 |------|--------|------|--------|------|
-| 2026-01-26 | Claude | 7 | 0 | 初始债务清单创建 |
+| 2026-01-26 | Claude | 7 | 7 | 初始债务清单创建 |
+| 2026-01-28 | Claude | 3 | 3 | 架构边界问题修复（TD-008, TD-009, TD-010） |
 
 ---
 
@@ -155,5 +159,5 @@
 
 ---
 
-**最后审查**: 2026-01-26
-**下次审查**: 2026-02-26
+**最后审查**: 2026-01-28
+**下次审查**: 2026-02-28

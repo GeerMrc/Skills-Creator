@@ -70,15 +70,57 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 ### 需求澄清流程
 
-AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头脑风暴/渐进式 4 种模式。
+当用户说"帮我收集需求"时：
 
-> 详见：[需求澄清指南](references/requirement-collection.md) | [回退机制说明](references/fallback-mechanism.md)
+**1. 基础模式（5步）**
+- 调用 `create_requirement_session(mode="basic")` 创建会话
+- 循环调用 `get_static_question()` 获取预定义问题
+- 验证答案：`validate_answer_format()`
+- 保存答案：`update_requirement_answer()`
+- 完成后检查：`check_requirement_completeness()`
+
+**2. 完整模式（10步）**
+- 与基础模式相同，但包含更多问题
+
+**3. 动态模式（Brainstorm/Progressive）**
+- 调用 `generate_dynamic_question()` 使用 LLM 生成问题
+- 开放式探索（Brainstorm）或自适应提问（Progressive）
+- 结合对话历史和已收集信息
+
+**4. 结合最佳实践知识**
+- 根据收集到的需求提供可执行建议
+- 参考 `references/requirement-workflow.md` 获取完整工作流指南
+
+> 详见：[需求收集工作流指南](references/requirement-workflow.md) | [需求澄清指南](references/requirement-collection.md) | [回退机制说明](references/fallback-mechanism.md)
 
 ## MCP 组件
 
-**工具 (17)**: collect_requirements | init_skill | validate_skill | analyze_skill | refactor_skill | package_skill | package_agent_skill | batch_validate_skills_tool | batch_analyze_skills_tool | health_check_tool | quick_status_tool | is_healthy_tool | check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
+**原子工具 (18)**:
 
-> 注：包含11个用户工具 + 5个Phase 0技术验证工具
+**会话管理 (3)**:
+- create_requirement_session_tool - 创建需求收集会话
+- get_requirement_session_tool - 获取会话状态
+- update_requirement_answer_tool - 更新会话答案
+
+**问题获取 (2)**:
+- get_static_question_tool - 获取静态问题（basic/complete模式）
+- generate_dynamic_question_tool - 生成动态问题（brainstorm/progressive模式）
+
+**验证工具 (2)**:
+- validate_answer_format_tool - 验证答案格式
+- check_requirement_completeness_tool - 检查需求完整性（LLM）
+
+**技能工具 (4)**: init_skill | validate_skill | analyze_skill | refactor_skill
+
+**打包工具 (2)**: package_skill | package_agent_skill
+
+**批量操作 (2)**: batch_validate_skills_tool | batch_analyze_skills_tool
+
+**健康检查 (3)**: health_check_tool | quick_status_tool | is_healthy_tool
+
+**技术验证 (2)**: check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
+
+> 注：7个需求收集原子工具 + 11个其他工具
 
 **资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
 
@@ -103,9 +145,18 @@ AI 驱动的需求澄清工具 `collect_requirements`，支持基础/完整/头�
 
 ## 架构说明
 
-Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（16 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
+Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（18 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
 
-详见：[混合架构 ADR](../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md) | [需求收集示例](examples/requirement-collection-basic.md)
+**职责边界**（符合 ADR 001）：
+- **MCP Server**: 原子操作 + 文件I/O + 数据验证（不包含工作流逻辑、不传递业务知识）
+- **Agent-Skill**: 工作流编排 + 最佳实践 + 渐进式披露（不直接执行文件I/O）
+
+**需求收集工作流示例**：
+- MCP 提供 7 个原子工具（会话管理、问题获取、验证）
+- Agent-Skill 编排完整收集流程（循环、验证、重试、提供建议）
+- 详见：[需求收集工作流指南](references/requirement-workflow.md)
+
+详见：[混合架构 ADR](../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
 
 ## 配置与安装
 

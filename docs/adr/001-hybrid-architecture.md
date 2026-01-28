@@ -3,6 +3,7 @@
 ## 状态
 
 已接受 (2026-01-22)
+**更新** (2026-01-28) - 架构边界彻底重构完成
 
 ## 上下文
 
@@ -230,3 +231,39 @@ mcp_servers: ["skill-creator"]
 - [FastMCP 文档](https://jlowin.github.io/fastmcp/)
 - [协同示例文档](../../skill-creator/examples/mcp-skill-collaboration.md)
 - [MCP 集成指南](../../skill-creator/references/mcp-integration.md)
+
+---
+
+## 架构演进历史
+
+### v0.3.3 架构重构 (2026-01-28)
+
+**问题**: `collect_requirements` 工具违反职责边界
+- 包含工作流逻辑（action处理、循环控制）
+- 包含业务知识（Prompt模板、验证规则）
+- 总计约1498行相关代码
+
+**解决方案**: 彻底拆分为原子操作工具
+- **删除**: `requirement_tools.py` (185行), `actions.py` (181行), `elicit_workflow.py` (440行)
+- **新增**: 7个原子工具（会话管理3个、问题获取2个、验证2个）
+- **简化**: `validation.py` (309→85行), `llm_services.py` (268→89行), `session_manager.py` (125→47行), `questions.py` (116→72行)
+
+**成果**:
+- 代码减少: ~1683行 → ~560行
+- 符合 ADR 001: MCP只提供原子操作，Agent-Skill编排工作流
+- 测试覆盖率保持: 478 passed (≥95%)
+- 相关计划: [magical-kindling-raccoon.md](../../.claude/plans/magical-kindling-raccoon.md)
+
+**新旧对比**:
+
+| 变更项 | 旧规范 | 新规范 |
+|--------|--------|--------|
+| **需求收集API** | `collect_requirements(action, mode, session_id, ...)` | 7个原子工具 |
+| **工作流编排** | MCP Server包含完整工作流逻辑 | Agent-Skill编排工作流 |
+| **Session管理** | SessionStateManager封装所有操作 | 简化为CRUD原子操作 |
+| **Prompt工程** | MCP Server包含Prompt模板 | Agent-Skill提供Prompt知识 |
+| **代码量** | ~1683行（requirement相关） | ~560行（MCP原子工具 + Agent-Skill工作流） |
+
+**新增文档**:
+- [需求收集工作流指南](../../skill-creator/references/requirement-workflow.md)
+- Agent-Skill SKILL.md 更新（工作流编排章节）
