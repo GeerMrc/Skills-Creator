@@ -23,6 +23,28 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 ---
 
+## 最新特性（v0.3.3）
+
+### 生命周期管理
+- ✅ **AppContext** - 应用生命周期上下文
+- ✅ **app_lifespan钩子** - 启动/关闭时的资源管理
+- ✅ **请求计数和统计** - 追踪MCP服务器使用情况
+
+### 中间件支持
+- ✅ **TimingMiddleware** - 性能计时和统计
+- ✅ **LoggingMiddleware** - 日志记录（可选）
+- ✅ **ErrorHandlingMiddleware** - 错误处理（可选）
+
+### HTTP端点
+- ✅ **/health** - HTTP健康检查端点
+- ✅ **/metrics** - 性能指标端点
+
+### SSE传输协议
+- ✅ 支持Server-Sent Events (SSE)远程部署
+- ✅ 完整的SSE配置指南
+
+---
+
 ## 开发状态
 
 > 🚧 **项目正在开发中**
@@ -64,6 +86,8 @@ Agent-Skills 开发与质量保证 MCP Server。
 - ✅ **is_healthy** - 快速健康检查
 
 ### Phase 0 验证工具（5个）
+
+> **注意**：Phase 0工具已迁移到开发工具脚本（`scripts/dev-tools.py`），仅供开发者使用，不作为MCP工具暴露。
 
 - ✅ **check_client_capabilities** - 检测 MCP 客户端能力支持情况
 - ✅ **test_llm_sampling** - 测试 LLM Sampling 能力
