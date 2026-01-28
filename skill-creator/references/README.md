@@ -16,9 +16,7 @@
 
 | 文档 | 说明 | 类型 |
 |------|------|------|
-| **[MCP Server Claude Code 配置](../../skill-creator-mcp/docs/claude-code-config.md)** | Claude Code 详细配置说明 | 完整指南 |
-| **[MCP Server 配置参数](../../skill-creator-mcp/docs/configuration.md)** | 所有环境变量参考 | 参数参考 |
-| **[MCP Server IDE 配置](../../skill-creator-mcp/docs/ide-config.md)** | 各种 IDE 集成配置 | 配置示例 |
+| **[MCP Server 配置指南](mcp-server-setup.md)** | Claude Code 和 IDE 配置说明 | 完整指南 |
 
 ### 验证相关
 
@@ -61,9 +59,7 @@
 |------|---------|
 | 如何使用 MCP 工具 | [MCP 集成指南](mcp-integration.md) |
 | Agent-Skill 开发规范 | [最佳实践 - 核心](best-practices-core.md) |
-| 如何配置 Claude Code | [MCP Server Claude Code 配置](../../skill-creator-mcp/docs/claude-code-config.md) |
-| 所有环境变量配置 | [MCP Server 配置参数](../../skill-creator-mcp/docs/configuration.md) |
-| 在 IDE 中配置 MCP | [MCP Server IDE 配置](../../skill-creator-mcp/docs/ide-config.md) |
+| 如何配置 Claude Code 和 IDE | [MCP Server 配置指南](mcp-server-setup.md) |
 | 如何验证技能 | [验证指南](validation-guide.md) |
 | 需求澄清功能 | [需求澄清指南](requirement-collection.md) |
 | API 参数和返回值 | [API 核心参考](requirement-collection-api-core.md) |

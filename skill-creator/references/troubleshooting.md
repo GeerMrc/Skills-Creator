@@ -201,5 +201,5 @@ cd skill-creator-mcp && grep version pyproject.toml
 如果以上解决方案无法解决您的问题：
 
 1. 收集信息：错误信息、客户端版本、Python 版本、FastMCP 版本
-2. 检查已知问题：[ISSUES.md](../../../ISSUES.md)、[CHANGELOG.md](../../../CHANGELOG.md)
+2. 检查已知问题：访问 [GitHub Issues](https://github.com/your-repo/issues) 和 [CHANGELOG](https://github.com/your-repo/blob/main/CHANGELOG.md)
 3. 提交问题：GitHub Issues

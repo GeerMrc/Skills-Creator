@@ -156,8 +156,8 @@ Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（23 工具
 - Agent-Skill 编排完整收集流程（循环、验证、重试、提供建议）
 - 详见：[需求收集工作流指南](references/requirement-workflow.md)
 
-详见：[混合架构 ADR](../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
+详见：[混合架构设计](references/architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
 
 ## 配置与安装
 
-> 📘 完整的配置和安装指南请参考 [MCP Server 文档](../skill-creator-mcp/docs/README.md)
+> 📘 完整的配置和安装指南请参考 [MCP Server 配置指南](references/mcp-server-setup.md)
