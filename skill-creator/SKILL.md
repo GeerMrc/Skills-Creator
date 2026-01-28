@@ -95,7 +95,7 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 ## MCP 组件
 
-**原子工具 (20)**:
+**原子工具 (23)**:
 
 **会话管理 (3)**:
 - create_requirement_session_tool - 创建需求收集会话
@@ -120,7 +120,7 @@ export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
 
 **技术验证 (5)**: check_client_capabilities | test_llm_sampling | test_user_elicitation | test_conversation_loop | test_requirement_completeness
 
-> 注：7个需求收集原子工具 + 13个其他工具
+> 注：7个需求收集原子工具 + 16个其他工具
 
 **资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
 

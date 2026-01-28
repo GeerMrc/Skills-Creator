@@ -14,21 +14,27 @@ from fastmcp import Context
 async def check_requirement_completeness(
     ctx: Context,
     answers: dict[str, str],
+    prompt_template: str | None = None,
 ) -> dict[str, Any]:
     """使用 LLM 检查需求完整性.
 
     Args:
         ctx: MCP 上下文
         answers: 已收集的答案
+        prompt_template: 自定义Prompt模板（可选，用于特殊场景）。
+                        默认使用内置Prompt，保持向后兼容。
+                        Prompt模板应在Agent-Skill中定义，符合ADR 001。
 
     Returns:
         包含完整性检查结果的字典
     """
     try:
-        prompt = f"""分析以下技能创建需求，判断是否包含所有必要信息：
+        # 使用默认Prompt（向后兼容），或使用Agent-Skill提供的自定义Prompt
+        if prompt_template is None:
+            prompt_template = """分析以下技能创建需求，判断是否包含所有必要信息：
 
 已收集的信息：
-{json.dumps(answers, indent=2, ensure_ascii=False)}
+{answers}
 
 必要信息包括：
 1. skill_name - 技能名称
@@ -42,6 +48,10 @@ async def check_requirement_completeness(
 - suggestions: list[str]（补充建议列表）
 
 只返回 JSON，不要其他内容。"""
+
+        prompt = prompt_template.format(
+            answers=json.dumps(answers, indent=2, ensure_ascii=False)
+        )
 
         result = await ctx.sample(
             messages=prompt,

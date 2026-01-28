@@ -76,6 +76,7 @@ async def generate_dynamic_question(
     mode: str,
     answers: dict[str, str],
     conversation_history: list[dict] | None = None,
+    prompt_template: str | None = None,
 ) -> dict[str, Any]:
     """
     生成动态问题（用于 brainstorm/progressive 模式）.
@@ -88,6 +89,8 @@ async def generate_dynamic_question(
         mode: 收集模式（brainstorm/progressive）
         answers: 已收集的答案
         conversation_history: 对话历史（用于 brainstorm 模式）
+        prompt_template: 自定义Prompt模板（可选，用于特殊场景）。
+                        Prompt模板应由Agent-Skill提供，符合ADR 001架构原则。
 
     Returns:
         包含生成问题的字典: {
@@ -98,7 +101,7 @@ async def generate_dynamic_question(
     """
     try:
         if mode == "brainstorm":
-            return await _generate_brainstorm_question(ctx, answers, conversation_history or [])
+            return await _generate_brainstorm_question(ctx, answers, conversation_history or [], prompt_template)
         elif mode == "progressive":
             return await _generate_progressive_question(ctx, answers)
         else:
@@ -119,8 +122,17 @@ async def _generate_brainstorm_question(
     ctx: Context,
     answers: dict[str, str],
     conversation_history: list[dict[str, str]],
+    prompt_template: str | None = None,
 ) -> dict[str, Any]:
-    """使用 LLM 为 brainstorm 模式生成探索性问题."""
+    """使用 LLM 为 brainstorm 模式生成探索性问题.
+
+    Args:
+        ctx: MCP 上下文
+        answers: 已收集的答案
+        conversation_history: 对话历史
+        prompt_template: 自定义Prompt模板（可选，用于特殊场景）。
+                        Prompt模板应由Agent-Skill提供，符合ADR 001架构原则。
+    """
     try:
         # 构建上下文
         context_parts = []
@@ -136,8 +148,9 @@ async def _generate_brainstorm_question(
 
         context = "\n".join(context_parts) if context_parts else "这是对话的开始。"
 
-        # 生成探索性问题
-        prompt = f"""你是一个技能创建顾问，正在帮助用户通过头脑风暴方式探索技能需求。
+        # 使用默认Prompt（向后兼容），或使用Agent-Skill提供的自定义Prompt
+        if prompt_template is None:
+            prompt_template = """你是一个技能创建顾问，正在帮助用户通过头脑风暴方式探索技能需求。
 
 {context}
 
@@ -148,6 +161,9 @@ async def _generate_brainstorm_question(
 4. 避免重复已问过的内容
 
 请只返回问题文本，不要其他内容。"""
+
+        # 生成探索性问题
+        prompt = prompt_template.format(context=context)
 
         result = await ctx.sample(
             messages=prompt,

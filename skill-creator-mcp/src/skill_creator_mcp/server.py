@@ -327,6 +327,7 @@ async def generate_dynamic_question_tool(
     mode: str,
     answers: dict[str, str],
     conversation_history: list[dict] | None = None,
+    prompt_template: str | None = None,
 ) -> dict[str, Any]:
     """生成动态问题（用于 brainstorm/progressive 模式）.
 
@@ -338,11 +339,13 @@ async def generate_dynamic_question_tool(
         mode: 收集模式（brainstorm/progressive）
         answers: 已收集的答案
         conversation_history: 对话历史（用于 brainstorm 模式）
+        prompt_template: 自定义Prompt模板（可选，用于特殊场景）。
+                        Prompt模板应由Agent-Skill提供，符合ADR 001架构原则。
 
     Returns:
         包含生成问题的字典
     """
-    return await generate_dynamic_question(ctx, mode, answers, conversation_history)
+    return await generate_dynamic_question(ctx, mode, answers, conversation_history, prompt_template)
 
 
 @mcp.tool()
@@ -371,6 +374,7 @@ async def validate_answer_format_tool(
 async def check_requirement_completeness_tool(
     ctx: Context,
     answers: dict[str, str],
+    prompt_template: str | None = None,
 ) -> dict[str, Any]:
     """检查需求完整性（使用 LLM）.
 
@@ -380,11 +384,13 @@ async def check_requirement_completeness_tool(
     Args:
         ctx: MCP 上下文
         answers: 已收集的答案
+        prompt_template: 自定义Prompt模板（可选，用于特殊场景）。
+                        Prompt模板应由Agent-Skill提供，符合ADR 001架构原则。
 
     Returns:
         包含完整性检查结果的字典
     """
-    return await check_requirement_completeness(ctx, answers)
+    return await check_requirement_completeness(ctx, answers, prompt_template)
 
 
 # 测试工具（test_tools.py）

@@ -221,6 +221,58 @@ Agent-Skill 应根据收集到的需求，结合 references/ 中的最佳实践�
 
 ---
 
+## Prompt 模板管理
+
+根据 ADR 001 架构原则，业务知识（包括 Prompt 模板）应在 Agent-Skill 中管理，MCP Server 只提供原子操作。
+
+### Prompt 模板位置
+
+**主文档**: [`prompt-templates.md`](prompt-templates.md)
+
+包含完整的 Prompt 模板定义和使用说明。
+
+### 使用方式
+
+**基本模式**（使用 MCP 默认 Prompt）:
+```python
+# 直接调用 MCP 工具，无需传递 prompt 参数
+result = await check_requirement_completeness_tool(ctx, answers={
+    "skill_name": "my-skill",
+    "skill_function": "数据验证"
+})
+```
+
+**自定义模式**（高级用户）:
+```python
+# 从模板文件加载 Prompt
+template = load_prompt_template("requirement-completeness")
+prompt = template.format(answers=json.dumps(answers))
+
+# 传递自定义 Prompt
+result = await check_requirement_completeness_tool(
+    ctx,
+    answers={...},
+    prompt_template=prompt
+)
+```
+
+### 可用 Prompt 模板
+
+| 模板名称 | 用途 | 适用场景 |
+|---------|------|----------|
+| `requirement-completeness` | 检查需求完整性 | basic/complete 模式结束时 |
+| `brainstorm-question` | 生成探索性问题 | brainstorm/progressive 模式 |
+
+### MCP 工具参数说明
+
+**check_requirement_completeness_tool**:
+- `answers`: dict[str, str] (必填) - 已收集的答案
+- `prompt_template`: str (可选) - 自定义 Prompt 模板
+
+**默认行为**: 如果不提供 `prompt_template`，MCP 将使用内置默认 Prompt（向后兼容）。
+
+---
+
 ## MCP 原子工具列表
 
 | 工具 | 功能 | 返回值 |
