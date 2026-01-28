@@ -2,7 +2,7 @@
 
 > **版本**: v0.3.3
 > **项目类型**: MCP Server + Agent-Skill 混合架构
-> **测试覆盖率**: 96% (619 tests)
+> **测试覆盖率**: 92% (533 tests)
 
 > **📢 目录结构变更通知 (v0.2.0)**: Agent-Skill 相关代码已统一到 `skill-creator/` 目录。如果您直接引用 `SKILL.md`、`examples/` 或 `references/`，请参阅 [迁移指南](MIGRATION.md) 更新您的路径配置。
 

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - Documentation Data Inconsistencies (2026-01-28)
+
+- **P0-001**: 修复测试数量声明不一致（7处）
+  - CLAUDE.md: 614 → 533（2处）
+  - README.md: 619 → 533
+  - skill-creator-mcp/README.md: 619 → 533
+  - 覆盖率声明同步更新为 92%
+
+- **P0-002**: 修复工具数量声明不一致（4处）
+  - SKILL.md: 原子工具 18 → 20
+  - SKILL.md: 技术验证 2 → 5
+  - SKILL.md: 其他工具 11 → 13
+  - CLAUDE.md: 17 Tools → 20 Tools
+
+- **P1-001**: 移除孤立的测试文件
+  - 删除 `test_phase0_direct.py`（位置错误且有导入错误）
+  - 测试收集无错误
+
+- **P1-002**: 添加 requirement_collection 测试覆盖
+  - 创建 `tests/test_utils/test_requirement_collection/` 目录
+  - 新增 61 个单元测试用例
+  - 覆盖率: 0% → 98%（88 行代码）
+  - 总测试数量: 533 → 594
+
 ### Added - Requirement Collection Unit Tests (2026-01-28)
 
 - 为需求收集原子工具补充55个单元测试用例
