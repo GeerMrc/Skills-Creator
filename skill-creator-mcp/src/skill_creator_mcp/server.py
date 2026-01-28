@@ -4,9 +4,10 @@
 分析和重构 Agent-Skills。
 """
 
+import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from fastmcp import Context, FastMCP
 
@@ -190,6 +191,101 @@ mcp = FastMCP(
     """,
     lifespan=app_lifespan,
 )
+
+
+# ==================== 中间件实现 ====================
+
+class LoggingMiddleware:
+    """日志记录中间件.
+
+    记录MCP工具的调用信息。
+    """
+
+    def __init__(self):
+        self._logger = None
+
+    async def __call__(self, context: Any, call_next: Callable) -> Any:
+        """处理请求."""
+        if self._logger is None:
+            from .logging_config import get_logger
+            self._logger = get_logger(__name__)
+
+        tool_name = getattr(context, "name", "unknown")
+
+        # 记录调用开始
+        self._logger.info(f"Tool called: {tool_name}")
+
+        # 执行下一个中间件或工具
+        start_time = time.time()
+        try:
+            result = await call_next(context)
+            elapsed = time.time() - start_time
+            self._logger.info(f"Tool {tool_name} completed in {elapsed:.3f}s")
+            return result
+        except Exception as e:
+            elapsed = time.time() - start_time
+            self._logger.error(f"Tool {tool_name} failed after {elapsed:.3f}s: {e}")
+            raise
+
+
+class ErrorHandlingMiddleware:
+    """错误处理中间件.
+
+    捕获并处理工具执行过程中的异常。
+    """
+
+    async def __call__(self, context: Any, call_next: Callable) -> Any:
+        """处理请求."""
+        try:
+            return await call_next(context)
+        except Exception as e:
+            # 记录错误并重新抛出
+            from .logging_config import get_logger
+            logger = get_logger(__name__)
+            logger.error(f"Error in tool execution: {e}", exc_info=True)
+            raise
+
+
+class TimingMiddleware:
+    """性能计时中间件.
+
+    记录工具执行时间并收集性能统计。
+    """
+
+    def __init__(self):
+        self._timings: dict[str, list[float]] = {}
+
+    async def __call__(self, context: Any, call_next: Callable) -> Any:
+        """处理请求."""
+        tool_name = getattr(context, "name", "unknown")
+
+        start_time = time.time()
+        try:
+            result = await call_next(context)
+            return result
+        finally:
+            elapsed = time.time() - start_time
+            if tool_name not in self._timings:
+                self._timings[tool_name] = []
+            self._timings[tool_name].append(elapsed)
+
+    def get_stats(self) -> dict[str, dict[str, float]]:
+        """获取性能统计."""
+        stats = {}
+        for tool_name, timings in self._timings.items():
+            if timings:
+                stats[tool_name] = {
+                    "count": len(timings),
+                    "min": min(timings),
+                    "max": max(timings),
+                    "avg": sum(timings) / len(timings),
+                }
+        return stats
+
+
+# 注册中间件
+_timing_middleware = TimingMiddleware()
+mcp.add_middleware(_timing_middleware)
 
 # ==================== 注册工具模块 ====================
 # Phase 2.2 重构：从独立工具模块注册 MCP 工具
