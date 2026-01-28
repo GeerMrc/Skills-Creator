@@ -59,21 +59,11 @@ from .tools.skill_tools import (
     refactor_skill,
     validate_skill,
 )
-from .tools.test_tools import (
-    check_client_capabilities as check_client_capabilities_impl,
-)
-from .tools.test_tools import (
-    test_conversation_loop as test_conversation_loop_impl,
-)
-from .tools.test_tools import (
-    test_llm_sampling as test_llm_sampling_impl,
-)
-from .tools.test_tools import (
-    test_requirement_completeness as test_requirement_completeness_impl,
-)
-from .tools.test_tools import (
-    test_user_elicitation as test_user_elicitation_impl,
-)
+
+# Phase 0 验证工具已迁移到开发工具脚本
+# 保留在 .tools.test_tools 模块中供测试使用
+# 但不注册为MCP工具
+
 
 # 创建 MCP Server
 mcp = FastMCP(
@@ -393,85 +383,28 @@ async def check_requirement_completeness_tool(
     return await check_requirement_completeness(ctx, answers, prompt_template)
 
 
-# 测试工具（test_tools.py）
-@mcp.tool()
-async def check_client_capabilities(ctx: Context) -> dict[str, Any]:
-    """检测 MCP 客户端的能力支持情况.
-
-    检测客户端是否支持高级 MCP 功能，如 sampling 和 elicitation。
-
-    Returns:
-        包含客户端能力检测结果的字典
-    """
-    return await check_client_capabilities_impl(ctx, mcp)
-
-
-@mcp.tool()
-async def test_llm_sampling(ctx: Context, prompt: str) -> dict[str, Any]:
-    """测试 LLM Sampling 能力.
-
-    验证 MCP Server 可以通过 ctx.sample() 调用客户端 LLM。
-
-    Args:
-        ctx: MCP 上下文
-        prompt: 要发送给 LLM 的提示文本
-
-    Returns:
-        包含测试结果的字典，包括 LLM 响应文本和历史记录
-    """
-    return await test_llm_sampling_impl(ctx, mcp, prompt)
-
-
-@mcp.tool()
-async def test_user_elicitation(
-    ctx: Context, prompt: str = "请提供技能名称（小写字母、数字、连字符）"
-) -> dict[str, Any]:
-    """测试用户征询 (User Elicitation) 能力.
-
-    验证可以通过 ctx.elicit() 请求用户输入结构化数据。
-
-    Args:
-        ctx: MCP 上下文
-        prompt: 向用户显示的提示文本
-
-    Returns:
-        包含测试结果的字典
-    """
-    return await test_user_elicitation_impl(ctx, mcp, prompt)
-
-
-@mcp.tool()
-async def test_conversation_loop(ctx: Context, user_input: str) -> dict[str, Any]:
-    """测试对话循环和状态管理能力.
-
-    验证可以在对话循环中使用 session state 保存历史，
-    并且 LLM 可以利用对话历史生成更连贯的响应。
-
-    Args:
-        ctx: MCP 上下文
-        user_input: 用户输入的文本
-
-    Returns:
-        包含测试结果的字典，包括 LLM 响应和会话状态
-    """
-    return await test_conversation_loop_impl(ctx, mcp, user_input)
-
-
-@mcp.tool()
-async def test_requirement_completeness(ctx: Context, requirement: str) -> dict[str, Any]:
-    """测试需求完整性判断能力.
-
-    验证 LLM 能够判断需求是否完整，并识别缺失的关键信息。
-
-    Args:
-        ctx: MCP 上下文
-        requirement: 技能创建需求描述
-
-    Returns:
-        包含测试结果的字典，包括完整性分析和缺失信息列表
-    """
-    return await test_requirement_completeness_impl(ctx, mcp, requirement)
-
+# ============================================================================
+# 注意：Phase 0 验证工具已迁移到开发工具脚本
+# ============================================================================
+# 以下5个Phase 0验证工具仅在开发环境有用，已从MCP工具中移除：
+# - check_client_capabilities
+# - test_llm_sampling
+# - test_user_elicitation
+# - test_conversation_loop
+# - test_requirement_completeness
+#
+# 这些工具的实现代码保留在 src/skill_creator_mcp/tools/test_tools.py
+# 相关测试保留在 tests/test_utils/test_testing.py
+# 开发者可以通过以下方式使用：
+#   python -m scripts.dev-tools <command> [args]
+#
+# 迁移原因：
+# - 这些工具仅在开发环境（场景A）有用
+# - 在打包分发（场景B）和远程使用（场景C）中，用户不需要这些功能
+# - 减少生产环境工具复杂度
+#
+# 相关计划：.claude/plans/immutable-twirling-harbor.md (全面审核审计与优化计划)
+# ============================================================================
 
 # 批量操作工具（batch_tools.py）
 @mcp.tool()
