@@ -2,8 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-568%20passed-success](#)
-[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen](#)
+[![Tests](https://img.shields.io/badge/tests-566%20passed-success](#)
+[![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen](#)
 
 Agent-Skills 开发与质量保证 MCP Server。
 

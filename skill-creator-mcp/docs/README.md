@@ -162,7 +162,7 @@ claude mcp list
 |------|------|
 | 当前版本 | v0.3.4 |
 | MCP 工具数量 | 12 个核心工具（不含开发工具） |
-| 测试覆盖率 | 95% (568 个测试用例) |
+| 测试覆盖率 | 97% (566 个测试用例) |
 | 支持的模板 | 4 种（minimal/tool-based/workflow-based/analyzer-based） |
 
 ---
