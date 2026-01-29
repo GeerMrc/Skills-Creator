@@ -86,17 +86,13 @@
 **Week 1-2: 高级功能** ✅ 已完成 (2026-01-25)
 - [x] 添加缓存机制（资源内容）- MemoryCache类，LRU缓存，TTL过期
 - [ ] 实现增量分析 (待开发)
-- [x] 添加批量操作支持 - batch_validate_skills, batch_analyze_skills
 
 **Week 3: 监控和可观测性** ✅ 已完成 (2026-01-25)
-- [x] 添加健康检查端点 - health_check, quick_status, is_healthy
 - [x] 实现性能指标收集 - CPU、内存、磁盘、请求统计
 - [ ] 添加使用统计 (待开发)
 
 **Week 4: 文档完善** ✅ 已完成 (2026-01-25)
 - [x] 更新 SKILL.md 集成指南
-- [x] 创建批量操作使用示例
-- [x] 创建健康检查使用示例
 - [x] 添加缓存机制使用指南
 - [x] 更新触发词和核心能力说明
 
@@ -196,17 +192,13 @@
 - ✅ CI/CD 流程 (code-review.yml, release.yml, security.yml)
 - ✅ 文档重构 (SKILL.md更新 + 3个新文档)
 - ✅ Code Review 流程
-- ✅ 性能优化 (批量操作、缓存机制)
+- ✅ 性能优化 (缓存机制)
 
 **新增模块**：
-- ✅ tools/batch_operations.py (228行) - 批量验证和分析
-- ✅ tools/health_check.py (315行) - 健康检查和监控
 - ✅ utils/cache.py (236行) - LRU缓存机制
 
 **MCP工具**：
-- ✅ 注册5个新MCP工具 (共11个工具)
-- ✅ 批量操作: batch_validate_skills_tool, batch_analyze_skills_tool
-- ✅ 健康检查: health_check_tool, quick_status_tool, is_healthy_tool
+- ✅ 统一打包工具: package_skill（支持通用和Agent-Skill标准两种模式）
 
 **文档和测试**：
 - ✅ Sphinx API文档生成 (docs/conf.py + 自动构建)

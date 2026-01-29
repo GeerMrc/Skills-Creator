@@ -265,12 +265,11 @@ MCP Server 提供 18 个工具，按功能划分为 5 类：
 | `analyze_skill` | 分析技能质量 |
 | `refactor_skill` | 生成重构建议 |
 
-### 打包工具（2个）
+### 打包工具（1个）
 
 | 工具 | 功能 |
 |------|------|
-| `package_skill` | 打包技能为分发格式 |
-| `package_agent_skill` | Agent-Skill 标准打包（推荐） |
+| `package_skill` | 统一打包工具（支持通用和Agent-Skill标准两种模式） |
 
 ### 需求收集原子工具（7个）
 
@@ -284,40 +283,15 @@ MCP Server 提供 18 个工具，按功能划分为 5 类：
 | `validate_answer_format` | 验证答案格式 |
 | `check_requirement_completeness` | 检查完整性 |
 
-### 批量操作（2个）
+### 打包工具（1个）
 
 | 工具 | 功能 |
 |------|------|
-| `batch_validate_skills` | 批量验证多个技能 |
-| `batch_analyze_skills` | 批量分析多个技能 |
+| `package_skill` | 统一打包工具（支持通用和Agent-Skill标准两种模式） |
 
-### 健康检查（3个）
-
-| 工具 | 功能 |
-|------|------|
-| `health_check` | 系统健康检查（完整） |
-| `quick_status` | 快速状态摘要 |
-| `is_healthy` | 健康状态判断 |
-
-### package_agent_skill 详细说明
-
-**package_agent_skill** - Agent-Skill 标准打包工具（推荐使用）
-
-**参数**:
-- `skill_path` (str): Agent-Skill 目录路径
-- `output_dir` (str, 可选): 输出目录，默认使用环境变量
-- `version` (str, 可选): 版本号，格式如 "0.3.3"
-- `format` (str): 打包格式，默认 "zip"
-- `include_tests` (bool): 是否包含测试文件，默认 False
-- `validate_before_package` (bool): 打包前是否验证，默认 True
-
-**特点**:
-- 生成标准化包名: `skill-creator-v{version}.zip`
-- 使用严格排除模式，确保包最小化
-- 打包前自动验证结构和内容
-- 支持环境变量 `SKILL_CREATOR_OUTPUT_DIR`
-
-**配置优先级**：工具参数 > 环境变量 `SKILL_CREATOR_OUTPUT_DIR` > 默认值 `.`
+**package_skill** 统一打包工具，支持两种模式：
+- `strict=False` (默认): 通用打包模式
+- `strict=True`: Agent-Skill 标准打包模式，需要 `version` 参数
 
 ---
 
