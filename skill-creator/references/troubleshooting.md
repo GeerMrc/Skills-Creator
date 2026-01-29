@@ -66,7 +66,7 @@
 
 1. 检查会话 ID 是否正确
    ```python
-   result = await collect_requirements(action="status", session_id="your_session_id")
+   result = await get_requirement_session_tool(session_id="your_session_id")
    ```
 
 2. 确认客户端支持状态持久化
@@ -74,8 +74,8 @@
 
 3. 重新开始收集
    ```python
-   result = await collect_requirements(action="start", mode="basic")
-   session_id = result["session_id"]
+   session = await create_requirement_session_tool(mode="basic")
+   session_id = session["session_id"]
    ```
 
 ---
@@ -169,11 +169,11 @@ touch skill/examples/creating-a-skill.md
 
 1. 查看缺失信息
    ```python
-   result = await collect_requirements(action="complete", session_id=...)
-   print("缺失信息：", result["missing_info"])
+   result = await check_requirement_completeness_tool(answers=...)
+   print("缺失信息：", result["missing_items"])
    ```
 
-2. 使用 `next` 继续补充，或选择 `progressive` 模式快速开始
+2. 使用 `update_requirement_answer_tool` 继续补充，或选择 `progressive` 模式快速开始
 
 ---
 

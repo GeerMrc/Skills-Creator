@@ -94,24 +94,20 @@ question = "您主要处理哪种类型的数据？是时序数据、地理数�
 
 ```python
 # 开始头脑风暴会话
+session = await create_requirement_session_tool(mode="brainstorm")
 
-
-result = await collect_requirements(
-    ctx=ctx,
-    action="start",
-    mode="brainstorm",  # 关键参数
-    session_id="my_brainstorm_session"
+# 获取第一个动态生成的问题
+question = await generate_dynamic_question_tool(
+    mode="brainstorm",
+    answers={},
+    conversation_history=[]
 )
 
 # 返回结果
-
-
 {
-    "success": true,
     "question": "请描述您希望这个技能实现的核心价值...",
-    "is_dynamic_mode": true,
-    "is_llm_generated": true,
-    "message": "Brainstorm 模式 - 问题 1"
+    "question_key": "brainstorm_0",
+    "is_llm_generated": true
 }
 ```
 
@@ -121,25 +117,24 @@ result = await collect_requirements(
 
 ```python
 # 提供答案，进入下一个问题
+await update_requirement_answer_tool(
+    session_id=session["session_id"],
+    question_key="brainstorm_0",
+    answer="我希望帮助非技术人员快速理解复杂数据"
+)
 
-
-result = await collect_requirements(
-    ctx=ctx,
-    action="next",
+# 获取下一个动态生成的问题
+next_question = await generate_dynamic_question_tool(
     mode="brainstorm",
-    session_id="my_brainstorm_session",
-    user_input="我希望帮助非技术人员快速理解复杂数据"
+    answers=session["answers"],
+    conversation_history=[{"question": "...", "answer": "我希望帮助非技术人员快速理解复杂数据"}]
 )
 
 # LLM 基于答案生成新的探索性问题
-
-
 {
-    "success": true,
     "question": "您认为什么样的可视化方式最能帮助用户理解？是图表、热力图还是交互式探索？",
-    "is_dynamic_mode": true,
-    "is_llm_generated": true,
-    "message": "Brainstorm 模式 - 问题 2"
+    "question_key": "brainstorm_1",
+    "is_llm_generated": true
 }
 ```
 
@@ -149,29 +144,22 @@ result = await collect_requirements(
 
 ```python
 # 完成收集，获取总结
-
-
-result = await collect_requirements(
-    ctx=ctx,
-    action="complete",
-    mode="brainstorm",
-    session_id="my_brainstorm_session"
-)
+result = await get_requirement_session_tool(session_id=session["session_id"])
 
 # 返回所有收集到的信息
-
-
 {
-    "success": true,
+    "session_id": "uuid-xxx",
+    "mode": "brainstorm",
     "answers": {
-        "answer_0": "我希望帮助非技术人员快速理解复杂数据",
-        "answer_1": "交互式图表，支持数据钻取",
-        "answer_2": "主要面向业务分析师",
-        ...
+        "brainstorm_0": "我希望帮助非技术人员快速理解复杂数据",
+        "brainstorm_1": "交互式图表，支持数据钻取",
+        "brainstorm_2": "主要面向业务分析师"
     },
-    "completed": true,
-    "message": "BRAINSTORM 模式需求收集完成！"
+    "completed": true
 }
+
+# 可选：检查完整性
+completeness = await check_requirement_completeness_tool(answers=result["answers"])
 ```
 
 ---
@@ -295,24 +283,18 @@ Q: 根据您的描述，这个技能需要处理哪类数据格式？
 
 
 
-**A**: 使用 `action="status"` 查看当前会话状态和已收集的答案：
+**A**: 使用 `get_requirement_session_tool` 查看当前会话状态和已收集的答案：
 
 ```python
-result = await collect_requirements(
-    ctx=ctx,
-    action="status",
-    mode="brainstorm",
-    session_id="my_session"
-)
+result = await get_requirement_session_tool(session_id="my_session")
 
 # 返回所有已收集的信息
-
-
 {
+    "session_id": "uuid-xxx",
+    "mode": "brainstorm",
     "answers": {...},
-    "step_index": 3,
-    "total_steps": 100,
-    "progress": 15
+    "current_step": 3,
+    "status": "in_progress"
 }
 ```
 

@@ -313,7 +313,7 @@ generate_dynamic_question() 或 check_requirement_completeness() 失败时：
 
 ```python
 # Agent-Skill 伪代码
-async def collect_requirements_basic_mode():
+async def requirement_collection_basic_mode():
     # 1. 创建会话
     session = await create_requirement_session(mode="basic")
     session_id = session["session_id"]

@@ -119,19 +119,29 @@ Issue详情:
 ### 步骤1：收集需求
 
 ```python
-# 开始需求收集
-# 通过Agent-Skill工作流调用
-    action="start",
-    mode="complete"
-)
+# 开始需求收集（使用7个原子工具）
+session = await create_requirement_session_tool(mode="complete")
+session_id = session["session_id"]
 
 # 逐步回答问题
-# 通过Agent-Skill工作流调用
-    action="next",
-    session_id=result["session_id"],
-    user_input="pdf-processor"
-)
-# ... 继续回答其他问题
+answers = {}
+for i in range(10):  # complete模式有10个问题
+    question = await get_static_question_tool(mode="complete", step_index=i)
+    answer = await ctx.elicit(question["prompt"])
+    answers[question["key"]] = answer
+    await update_requirement_answer_tool(
+        session_id=session_id,
+        question_key=question["key"],
+        answer=answer
+    )
+
+# 检查完整性
+completeness = await check_requirement_completeness_tool(answers=answers)
+result = {
+    "is_complete": completeness["is_complete"],
+    "answers": answers,
+    "session_id": session_id
+}
 ```
 
 ### 步骤2：验证需求完整性

@@ -143,8 +143,7 @@ print(template[:100])  # 打印前 100 字符
 
 ```python
 # 获取原始会话状态
-result = await collect_requirements(
-    action="status",
+result = await get_requirement_session_tool(
     session_id="req_xxx"
 )
 
@@ -158,11 +157,14 @@ print(json.dumps(result, indent=2))
 # 使用保存的 session_id 恢复
 saved_session_id = "req_20260124_123456"
 
-result = await collect_requirements(
-    action="next",
-    mode="basic",
+# 获取会话状态
+session = await get_requirement_session_tool(session_id=saved_session_id)
+
+# 更新答案
+result = await update_requirement_answer_tool(
     session_id=saved_session_id,
-    user_input="answer"
+    question_key="skill_name",
+    answer="answer"
 )
 ```
 

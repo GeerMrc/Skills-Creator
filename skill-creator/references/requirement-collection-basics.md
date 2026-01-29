@@ -168,30 +168,41 @@ AI 引导的创意发散：
 
 
 ```python
-# 1. 开始收集
+# 1. 创建会话
+session = await create_requirement_session_tool(mode="basic")
+# 返回: {"session_id": "uuid-123", "total_steps": 5, "status": "in_progress"}
 
+# 2. 获取第一个问题
+question = await get_static_question_tool(mode="basic", step_index=0)
+# 返回: {"question": "请输入技能名称", "key": "skill_name", ...}
 
-result = await collect_requirements(
-    action="start",
-    mode="basic"
+# 3. 收集用户答案
+answer = await ctx.elicit(question["prompt"])
+
+# 4. 更新答案
+await update_requirement_answer_tool(
+    session_id=session["session_id"],
+    question_key=question["key"],
+    answer=answer
 )
 
-# 2. 逐个回答问题
+# 5. 验证答案格式（可选）
+validation = question.get("validation")
+if validation:
+    result = await validate_answer_format_tool(answer=answer, validation=validation)
+    if not result["valid"]:
+        # 返回错误信息并重新收集
+        help_text = result.get("help_text", "输入格式不正确")
+        answer = await ctx.elicit(f"{help_text}\n\n{question['prompt']}")
 
+# 6. 重复步骤2-5直到所有问题完成
+# ...
 
-result = await collect_requirements(
-    action="next",
-    session_id=result["session_id"],
-    user_input="pdf-parser"
-)
-
-# 3. 完成收集
-
-
-result = await collect_requirements(
-    action="complete",
-    session_id=result["session_id"]
-)
+# 7. 检查完整性（可选）
+completeness = await check_requirement_completeness_tool(answers=session["answers"])
+if not completeness["is_complete"]:
+    # 可以继续补充收集
+    pass
 ```
 
 ### Elicit 自动模式
@@ -199,14 +210,20 @@ result = await collect_requirements(
 
 
 ```python
-# 一步完成所有收集
+# 使用 Agent-Skill 的 elicit 模式（推荐）
+# 这由 skill-creator Agent-Skill 自动处理
+# 无需手动编写代码
 
-
-result = await collect_requirements(
-    action="start",
-    mode="basic",
-    use_elicit=True  # AI 自动收集所有输入
-)
+# 如果需要手动实现类似功能：
+session = await create_requirement_session_tool(mode="basic")
+for i in range(session["total_steps"]):
+    question = await get_static_question_tool(mode="basic", step_index=i)
+    answer = await ctx.elicit(question["prompt"])
+    await update_requirement_session_tool(
+        session_id=session["session_id"],
+        question_key=question["key"],
+        answer=answer
+    )
 ```
 
 ## 相关文档
