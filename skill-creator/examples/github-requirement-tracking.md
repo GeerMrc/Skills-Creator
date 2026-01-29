@@ -32,10 +32,14 @@ session = await create_requirement_session_tool(mode="complete")
 session_id = session["session_id"]
 
 # 获取并回答问题（10步）
+# 注意：以下代码展示工作流逻辑，实际需要通过 Agent-Skill 层编排
+# 用户输入由 Agent-Skill 层处理，MCP 工具只提供原子操作
 answers = {}
 for i in range(10):
     question = await get_static_question_tool(mode="complete", step_index=i)
-    answer = await ctx.elicit(question["prompt"])
+    # answer = 由 Agent-Skill 层通过用户交互获取
+    # 这里假设 answer 已通过某种方式获得
+    answer = "<由用户提供的答案>"
     answers[question["key"]] = answer
     await update_requirement_answer_tool(
         session_id=session_id,
@@ -124,10 +128,12 @@ session = await create_requirement_session_tool(mode="complete")
 session_id = session["session_id"]
 
 # 逐步回答问题
+# 注意：以下代码展示工作流逻辑，实际需要通过 Agent-Skill 层编排
 answers = {}
 for i in range(10):  # complete模式有10个问题
     question = await get_static_question_tool(mode="complete", step_index=i)
-    answer = await ctx.elicit(question["prompt"])
+    # answer = 由 Agent-Skill 层通过用户交互获取
+    answer = "<由用户提供的答案>"
     answers[question["key"]] = answer
     await update_requirement_answer_tool(
         session_id=session_id,

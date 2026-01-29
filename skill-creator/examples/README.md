@@ -19,7 +19,6 @@
 | **[基础模式](example-basic-mode.md)** | basic | 5 | ~250 |
 | **[完整模式](example-complete-mode.md)** | complete | 10 | ~320 |
 | **[渐进模式](example-progressive-mode.md)** | progressive | 动态 | ~350 |
-| **[Elicit 模式](example-elicit-mode.md)** | elicit | 自动 | ~350 |
 
 ### MCP 工具示例
 
@@ -61,7 +60,6 @@
 | 需求 | 推荐示例 |
 |------|---------|
 | 快速创建技能 | [基础模式](example-basic-mode.md) |
-| 一键完成收集 | [Elicit 模式](example-elicit-mode.md) |
 | 了解如何初始化 | [init_skill 示例](mcp-init-examples.md) |
 | 验证我的技能 | [validate_skill 示例](mcp-validate-examples.md) |
 | 分析代码质量 | [analyze_skill 示例](mcp-analyze-examples.md) |
@@ -79,7 +77,6 @@
 | **basic** | 5 | ⭐⭐⭐ | ⭐⭐⭐⭐ | 快速验证概念 |
 | **complete** | 10 | ⭐⭐ | ⭐⭐⭐⭐⭐ | 复杂技能开发 |
 | **progressive** | 动态 | ⭐⭐⭐⭐ | ⭐⭐⭐ | 快速原型 |
-| **elicit** | 自动 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 一键完成 |
 
 ---
 

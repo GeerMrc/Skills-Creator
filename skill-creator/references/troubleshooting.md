@@ -52,11 +52,12 @@
 
 ### 问题：高级功能不可用
 
-**原因**：客户端不支持 FastMCP 的高级 API（`ctx.sample()` 或 `ctx.elicit()`）
+**原因**：客户端不支持所需的交互 API
 
 **解决方案**：
-- 回退模式会自动启用，功能完全相同
-- 详见 [回退机制说明](../../skill-creator-mcp/docs/client-compatibility.md)
+- 使用 skill-creator Agent-Skill 进行工作流编排
+- Agent-Skill 层负责处理用户交互和状态管理
+- 详见 [MCP集成指南](mcp-integration.md)
 
 ---
 

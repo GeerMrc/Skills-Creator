@@ -14,10 +14,11 @@
 >
 > **新代码（推荐）**：
 > ```python
-> # 使用7个原子化工具
+> # 使用7个原子化工具（通过 Agent-Skill 层编排）
 > session = await create_requirement_session_tool(mode="basic")
 > question = await get_static_question_tool(mode="basic", step_index=0)
-> answer = await ctx.elicit(question["prompt"])
+> # answer 由 Agent-Skill 层通过用户交互获取
+> answer = "<由用户提供的答案>"
 > await update_requirement_answer_tool(session_id=session["session_id"], ...)
 > ```
 >
@@ -139,25 +140,12 @@ AI 引导的创意发散：
 - 允许跳过非关键步骤
 - 后续可补充细节
 
-### Elicit 自动模式
+### 注意事项
 
-
-
-设置 `use_elicit=True` 后，AI 自动调用 `ctx.elicit()` 逐个收集输入：
-
-- **自动化**：无需手动调用 action="next"
-- **验证重试**：输入无效时自动重新请求
-- **状态保存**：每步后自动保存会话状态
-- **取消友好**：用户可随时取消
-
-**与传统模式的区别**：
-
-| 特性 | 传统模式 | Elicit 模式 |
-|------|----------|------------|
-| 调用次数 | 多次（每步一次） | 一次（自动收集所有） |
-| 用户交互 | 手动调用 next | AI 自动调用 elicit |
-| 状态管理 | 手动管理 | 自动保存每步 |
-| 适用场景 | 需要中断/恢复的场景 | 快速完成需求收集 |
+**关于用户输入**：
+- 用户输入由 Agent-Skill 层处理，MCP 工具只提供原子操作
+- 实际使用时通过 skill-creator Agent-Skill 进行工作流编排
+- MCP 工具不包含用户交互逻辑
 
 ## 快速开始
 
@@ -176,8 +164,9 @@ session = await create_requirement_session_tool(mode="basic")
 question = await get_static_question_tool(mode="basic", step_index=0)
 # 返回: {"question": "请输入技能名称", "key": "skill_name", ...}
 
-# 3. 收集用户答案
-answer = await ctx.elicit(question["prompt"])
+# 3. 收集用户答案（由 Agent-Skill 层处理）
+# 注意：以下代码展示工作流逻辑，实际需要通过 Agent-Skill 层编排
+answer = "<由用户提供的答案>"  # 实际由 Agent-Skill 层获取
 
 # 4. 更新答案
 await update_requirement_answer_tool(
@@ -193,7 +182,8 @@ if validation:
     if not result["valid"]:
         # 返回错误信息并重新收集
         help_text = result.get("help_text", "输入格式不正确")
-        answer = await ctx.elicit(f"{help_text}\n\n{question['prompt']}")
+        # 重新获取用户输入（由 Agent-Skill 层处理）
+        answer = f"{help_text}\n\n{question['prompt']}"
 
 # 6. 重复步骤2-5直到所有问题完成
 # ...
@@ -205,21 +195,20 @@ if not completeness["is_complete"]:
     pass
 ```
 
-### Elicit 自动模式
-
-
+### Agent-Skill 层编排
 
 ```python
-# 使用 Agent-Skill 的 elicit 模式（推荐）
-# 这由 skill-creator Agent-Skill 自动处理
-# 无需手动编写代码
+# 通过 skill-creator Agent-Skill 自动处理工作流
+# Agent-Skill 负责用户交互和状态管理
+# MCP 工具提供原子操作支持
 
-# 如果需要手动实现类似功能：
+# 示例：展示工作流概念（实际使用 Agent-Skill）
 session = await create_requirement_session_tool(mode="basic")
 for i in range(session["total_steps"]):
     question = await get_static_question_tool(mode="basic", step_index=i)
-    answer = await ctx.elicit(question["prompt"])
-    await update_requirement_session_tool(
+    # answer 由 Agent-Skill 层通过用户交互获取
+    answer = "<由用户提供的答案>"
+    await update_requirement_answer_tool(
         session_id=session["session_id"],
         question_key=question["key"],
         answer=answer

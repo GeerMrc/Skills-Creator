@@ -51,11 +51,12 @@
 ### 示例对话
 
 ```python
-# 基础模式使用示例
+# 基础模式使用示例（由 Agent-Skill 层编排）
 session = await create_requirement_session_tool(mode="basic")
 for i in range(session["total_steps"]):
     question = await get_static_question_tool(mode="basic", step_index=i)
-    answer = await ctx.elicit(question["prompt"])
+    # answer 由 Agent-Skill 层通过用户交互获取
+    answer = "<由用户提供的答案>"
     await update_requirement_answer_tool(
         session_id=session["session_id"],
         question_key=question["key"],
@@ -141,8 +142,8 @@ for i in range(5):  # 默认5轮对话
         conversation_history=conversation_history
     )
 
-    # 收集用户回答
-    answer = await ctx.elicit(question["question"])
+    # 收集用户回答（由 Agent-Skill 层处理）
+    answer = "<由用户提供的答案>"
     await update_requirement_answer_tool(
         session_id=session["session_id"],
         question_key=question["question_key"],
@@ -205,7 +206,8 @@ while True:
     if not question.get("question"):
         break  # 没有更多问题
 
-    answer = await ctx.elicit(question["question"])
+    # answer 由 Agent-Skill 层通过用户交互获取
+    answer = "<由用户提供的答案>"
     await update_requirement_answer_tool(
         session_id=session["session_id"],
         question_key=question["question_key"],
@@ -226,28 +228,22 @@ while True:
 
 ---
 
-## Elicit 自动模式
+## Agent-Skill 层编排
 
+**工作原理**：需求收集通过 Agent-Skill 工作流自动处理。
 
-
-设置 `use_elicit=True` 后，AI 自动调用 `ctx.elicit()` 逐个收集输入。
-
-### 工作原理
-
-**注意**：Elicit 模式已由 Agent-Skill 工作流自动处理。
-
-在新的7工具架构中，`ctx.elicit()` 调用由 skill-creator Agent-Skill 自动管理，无需手动设置。
+在新的7工具架构中，用户交互由 skill-creator Agent-Skill 自动管理，无需手动处理。
 
 ```python
 # 新架构：使用 Agent-Skill (推荐)
-# skill-creator 会自动处理 elicit 调用
+# skill-creator 会自动处理用户交互和工作流编排
 
-# 如果需要手动实现：
+# 展示工作流概念：
 session = await create_requirement_session_tool(mode="basic")
 for i in range(session["total_steps"]):
     question = await get_static_question_tool(mode="basic", step_index=i)
-    # Agent-Skill 会自动调用 ctx.elicit()
-    answer = await ctx.elicit(question["prompt"])
+    # Agent-Skill 层负责获取用户输入
+    answer = "<由用户提供的答案>"
     await update_requirement_answer_tool(
         session_id=session["session_id"],
         question_key=question["key"],
@@ -255,38 +251,9 @@ for i in range(session["total_steps"]):
     )
 ```
 
-**后台行为**（Agent-Skill 自动处理）：
-1. Agent-Skill 自动调用 `ctx.elicit()`
-2. 验证失败时自动重试（通过 `validate_answer_format_tool`）
-3. 每步后自动保存会话状态
-4. 收集完成后返回结果
-
-### 与传统模式的区别
-
-
-
-| 特性 | 传统模式 | Agent-Skill 模式 |
-|------|----------|------------|
-| 调用方式 | 多次原子工具调用 | Agent-Skill 自动编排 |
-| 用户交互 | 手动传递 user_input | Agent-Skill 自动调用 elicit |
-| 状态管理 | 手动管理 session_id | 自动保存每步 |
-| 中断恢复 | 需要保存 session_id | 自动保存 |
-| 适用场景 | 需要精细控制的场景 | 快速完成需求收集 |
-
-### 使用示例
-
-```python
-# 详见 [需求收集 API 示例](requirement-collection-api-examples.md)
-```
-
-### 注意事项
-
-
-
-- 需要客户端支持 `ctx.elicit()`
-- 用户取消时返回 `cancelled` 状态
-- 验证失败自动重试 3 次
-- 动态模式 (brainstorm/progressive) 默认 5 轮
+**职责分工**：
+- **MCP工具**：提供原子操作（创建会话、获取问题、验证答案等）
+- **Agent-Skill**：编排工作流、处理用户交互、管理状态
 
 ---
 
@@ -314,7 +281,6 @@ for i in range(session["total_steps"]):
 | **complete** | 10 | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
 | **brainstorm** | 动态 | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
 | **progressive** | 动态 | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **elicit** | 自动 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
 
 ---
 

@@ -54,10 +54,13 @@ async def create_skill_workflow(skill_name: str):
     session_id = session["session_id"]
 
     # 1.2 获取并回答问题
+    # 注意：用户输入由 Agent-Skill 层处理，MCP 工具只提供原子操作
     answers = {}
     for i in range(5):  # basic模式有5个问题
         question = await get_static_question_tool(mode="basic", step_index=i)
-        answer = await ctx.elicit(question["prompt"])  # Agent-Skill层交互
+        # answer 由 Agent-Skill 层通过用户交互获取
+        # 这里展示工作流逻辑，实际使用时需要从外部获取用户输入
+        answer = "<由用户提供的答案>"
         answers[question["key"]] = answer
         await update_requirement_answer_tool(
             session_id=session_id,
@@ -200,8 +203,9 @@ async def collect_requirements_workflow():
         # 获取问题
         question = await get_static_question_tool(mode="basic", step_index=i)
 
-        # 获取用户输入（Agent-Skill层的elicit）
-        answer = await ctx.elicit(question["prompt"])
+        # 获取用户输入（由 Agent-Skill 层处理）
+        # 注意：实际使用时通过 Agent-Skill 的用户交互机制获取
+        answer = "<由用户提供的答案>"
 
         # 验证答案
         if question.get("validation"):
@@ -248,7 +252,8 @@ result = await collect_requirements(
 # 新的7个原子化工具（Agent-Skill层编排）
 session = await create_requirement_session_tool(mode="basic")
 question = await get_static_question_tool(mode="basic", step_index=0)
-answer = await ctx.elicit(question["prompt"])
+# answer 由 Agent-Skill 层通过用户交互获取
+answer = "<由用户提供的答案>"
 await update_requirement_answer_tool(
     session_id=session["session_id"],
     question_key=question["key"],
@@ -295,7 +300,8 @@ async def create_new_skill_complete_workflow():
     answers = {}
     for i in range(10):
         question = await get_static_question_tool(mode="complete", step_index=i)
-        answer = await ctx.elicit(question["prompt"])
+        # answer 由 Agent-Skill 层通过用户交互获取
+        answer = "<由用户提供的答案>"
 
         # 验证答案
         if question.get("validation"):
