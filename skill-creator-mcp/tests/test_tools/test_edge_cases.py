@@ -310,15 +310,15 @@ async def test_analyze_skill_with_file_not_directory(temp_dir: Path):
 
     from skill_creator_mcp.server import mcp
 
-    # 获取 analyze_skill 工具（FastMCP 3.0+ 使用公开 API）
+    # 获取 analyze_skill_tool 工具（FastMCP 3.0+ 使用公开 API）
     tools = await mcp.list_tools()
-    analyze_skill_tool = None
+    analyze_skill_tool_obj = None
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
-            analyze_skill_tool = tool
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
+            analyze_skill_tool_obj = tool
             break
 
-    assert analyze_skill_tool is not None, "analyze_skill tool not found"
+    assert analyze_skill_tool_obj is not None, "analyze_skill_tool tool not found"
 
     # 创建一个文件而非目录
     test_file = temp_dir / "not_a_dir.md"
@@ -329,7 +329,7 @@ async def test_analyze_skill_with_file_not_directory(temp_dir: Path):
     ctx.log = MagicMock()
 
     # 调用 analyze_skill，传入文件路径
-    result = await analyze_skill_tool.fn(
+    result = await analyze_skill_tool_obj.fn(
         ctx=ctx,
         skill_path=str(test_file),
         analyze_structure=False,
@@ -350,15 +350,15 @@ async def test_analyze_skill_with_valid_empty_directory(temp_dir: Path):
 
     from skill_creator_mcp.server import mcp
 
-    # 获取 analyze_skill 工具（FastMCP 3.0+ 使用公开 API）
+    # 获取 analyze_skill_tool 工具（FastMCP 3.0+ 使用公开 API）
     tools = await mcp.list_tools()
-    analyze_skill_tool = None
+    analyze_skill_tool_obj = None
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
-            analyze_skill_tool = tool
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
+            analyze_skill_tool_obj = tool
             break
 
-    assert analyze_skill_tool is not None, "analyze_skill tool not found"
+    assert analyze_skill_tool_obj is not None, "analyze_skill_tool tool not found"
 
     # 创建一个有效的空目录
     src_dir = temp_dir / "test_skill"
@@ -369,7 +369,7 @@ async def test_analyze_skill_with_valid_empty_directory(temp_dir: Path):
     ctx.log = MagicMock()
 
     # 调用 analyze_skill
-    result = await analyze_skill_tool.fn(
+    result = await analyze_skill_tool_obj.fn(
         ctx=ctx,
         skill_path=str(src_dir),
         analyze_structure=False,

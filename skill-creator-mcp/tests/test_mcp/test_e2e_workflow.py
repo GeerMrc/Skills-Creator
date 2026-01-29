@@ -24,11 +24,11 @@ async def test_e2e_complete_workflow(temp_dir):
     tools = await mcp.list_tools()
     for tool in tools:
         if hasattr(tool, "name"):
-            if tool.name == "init_skill":
+            if tool.name == "init_skill_tool":
                 init_skill_tool = tool
-            elif tool.name == "analyze_skill":
+            elif tool.name == "analyze_skill_tool":
                 analyze_skill_tool = tool
-            elif tool.name == "refactor_skill":
+            elif tool.name == "refactor_skill_tool":
                 refactor_skill_tool = tool
             elif tool.name == "package_skill":
                 package_skill_tool = tool
@@ -111,9 +111,9 @@ async def test_e2e_workflow_with_validation(temp_dir):
     tools = await mcp.list_tools()
     for tool in tools:
         if hasattr(tool, "name"):
-            if tool.name == "init_skill":
+            if tool.name == "init_skill_tool":
                 init_skill_tool = tool
-            elif tool.name == "analyze_skill":
+            elif tool.name == "analyze_skill_tool":
                 analyze_skill_tool = tool
             elif tool.name == "package_skill":
                 package_skill_tool = tool
@@ -166,9 +166,9 @@ async def test_e2e_error_recovery(temp_dir):
     tools = await mcp.list_tools()
     for tool in tools:
         if hasattr(tool, "name"):
-            if tool.name == "init_skill":
+            if tool.name == "init_skill_tool":
                 init_skill_tool = tool
-            elif tool.name == "analyze_skill":
+            elif tool.name == "analyze_skill_tool":
                 analyze_skill_tool = tool
 
     ctx = MagicMock()
@@ -216,11 +216,11 @@ async def test_e2e_iterative_refinement(temp_dir):
     tools = await mcp.list_tools()
     for tool in tools:
         if hasattr(tool, "name"):
-            if tool.name == "init_skill":
+            if tool.name == "init_skill_tool":
                 init_skill_tool = tool
-            elif tool.name == "refactor_skill":
+            elif tool.name == "refactor_skill_tool":
                 refactor_skill_tool = tool
-            elif tool.name == "analyze_skill":
+            elif tool.name == "analyze_skill_tool":
                 analyze_skill_tool = tool
 
     ctx = MagicMock()
@@ -282,9 +282,9 @@ async def test_e2e_multiple_skills(temp_dir):
     tools = await mcp.list_tools()
     for tool in tools:
         if hasattr(tool, "name"):
-            if tool.name == "init_skill":
+            if tool.name == "init_skill_tool":
                 init_skill_tool = tool
-            elif tool.name == "analyze_skill":
+            elif tool.name == "analyze_skill_tool":
                 analyze_skill_tool = tool
 
     ctx = MagicMock()
@@ -332,7 +332,7 @@ async def test_e2e_package_formats(temp_dir):
     tools = await mcp.list_tools()
     for tool in tools:
         if hasattr(tool, "name"):
-            if tool.name == "init_skill":
+            if tool.name == "init_skill_tool":
                 init_skill_tool = tool
             elif tool.name == "package_skill":
                 package_skill_tool = tool

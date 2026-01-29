@@ -289,6 +289,63 @@ async def validate_skill(
         return {"success": False, "error_type": "internal_error", **result.model_dump()}
 
 
+async def _perform_analysis(
+    skill_dir: Path,
+    analyze_structure: bool,
+    analyze_complexity: bool,
+    analyze_quality: bool,
+) -> tuple[Any, Any, Any]:
+    """
+    执行完整的技能分析（公共逻辑）.
+
+    这个函数被 analyze_skill 和 refactor_skill 共同使用，
+    避免代码重复。
+
+    Args:
+        skill_dir: 技能目录路径
+        analyze_structure: 是否分析代码结构
+        analyze_complexity: 是否分析代码复杂度
+        analyze_quality: 是否分析代码质量
+
+    Returns:
+        包含 (structure, complexity, quality) 的元组
+    """
+    from ..models.skill_config import (
+        ComplexityMetrics,
+        QualityScore,
+        StructureAnalysis,
+    )
+
+    # 1. 结构分析（异步）
+    if analyze_structure:
+        structure = await _analyze_structure(skill_dir)
+    else:
+        structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
+
+    # 2. 复杂度分析（异步）
+    if analyze_complexity:
+        complexity = await _analyze_complexity(skill_dir)
+    else:
+        complexity = ComplexityMetrics(
+            cyclomatic_complexity=None,
+            maintainability_index=None,
+            code_duplication=None,
+        )
+
+    # 3. 质量分析（异步）
+    if analyze_quality:
+        quality = await _analyze_quality(skill_dir)
+    else:
+        quality = QualityScore(
+            overall_score=0.0,
+            structure_score=0.0,
+            documentation_score=0.0,
+            test_coverage_score=0.0,
+        )
+
+    return structure, complexity, quality
+
+
 async def analyze_skill(
     ctx: Context,
     skill_path: str,
@@ -312,9 +369,6 @@ async def analyze_skill(
     from ..models.skill_config import (
         AnalyzeResult,
         AnalyzeSkillInput,
-        ComplexityMetrics,
-        QualityScore,
-        StructureAnalysis,
     )
 
     try:
@@ -345,35 +399,15 @@ async def analyze_skill(
                 "error_type": "path_error",
             }
 
-        # 1. 结构分析（异步）
-        if input_data.analyze_structure:
-            structure = await _analyze_structure(skill_dir)
-        else:
-            structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
+        # 使用公共分析函数执行分析
+        structure, complexity, quality = await _perform_analysis(
+            skill_dir,
+            input_data.analyze_structure,
+            input_data.analyze_complexity,
+            input_data.analyze_quality,
+        )
 
-        # 2. 复杂度分析（异步）
-        if input_data.analyze_complexity:
-            complexity = await _analyze_complexity(skill_dir)
-        else:
-            complexity = ComplexityMetrics(
-                cyclomatic_complexity=None,
-                maintainability_index=None,
-                code_duplication=None,
-            )
-
-        # 3. 质量分析（异步）
-        if input_data.analyze_quality:
-            quality = await _analyze_quality(skill_dir)
-        else:
-            # 如果不分析质量，使用默认值
-            quality = QualityScore(
-                overall_score=0.0,
-                structure_score=0.0,
-                documentation_score=0.0,
-                test_coverage_score=0.0,
-            )
-
-        # 4. 生成改进建议
+        # 生成改进建议
         suggestions = _generate_suggestions(structure, complexity, quality)
 
         # 创建 AnalyzeResult 模型实例
@@ -425,11 +459,8 @@ async def refactor_skill(
         包含重构建议的字典
     """
     from ..models.skill_config import (
-        ComplexityMetrics,
-        QualityScore,
         RefactorResult,
         RefactorSkillInput,
-        StructureAnalysis,
     )
 
     try:
@@ -461,34 +492,15 @@ async def refactor_skill(
                 "error_type": "path_error",
             }
 
-        # 1. 结构分析（异步）
-        if input_data.analyze_structure:
-            structure = await _analyze_structure(skill_dir)
-        else:
-            structure = StructureAnalysis(total_files=0, total_lines=0, file_breakdown={})
+        # 使用公共分析函数执行分析
+        structure, complexity, quality = await _perform_analysis(
+            skill_dir,
+            input_data.analyze_structure,
+            input_data.analyze_complexity,
+            input_data.analyze_quality,
+        )
 
-        # 2. 复杂度分析（异步）
-        if input_data.analyze_complexity:
-            complexity = await _analyze_complexity(skill_dir)
-        else:
-            complexity = ComplexityMetrics(
-                cyclomatic_complexity=None,
-                maintainability_index=None,
-                code_duplication=None,
-            )
-
-        # 3. 质量分析（异步）
-        if input_data.analyze_quality:
-            quality = await _analyze_quality(skill_dir)
-        else:
-            quality = QualityScore(
-                overall_score=0.0,
-                structure_score=0.0,
-                documentation_score=0.0,
-                test_coverage_score=0.0,
-            )
-
-        # 4. 生成重构建议
+        # 生成重构建议
         suggestions = generate_refactor_suggestions(
             skill_dir, structure, complexity, quality, input_data.focus
         )

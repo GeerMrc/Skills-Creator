@@ -14,7 +14,7 @@ async def test_validate_skill_mcp_valid_skill(temp_dir):
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 
@@ -63,7 +63,7 @@ async def test_validate_skill_mcp_directory_not_exists():
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 
@@ -92,7 +92,7 @@ async def test_validate_skill_mcp_path_not_directory(temp_dir):
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 
@@ -125,7 +125,7 @@ async def test_validate_skill_mcp_check_structure_false(temp_dir):
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 
@@ -167,7 +167,7 @@ async def test_validate_skill_mcp_check_content_false(temp_dir):
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 
@@ -206,7 +206,7 @@ async def test_validate_skill_mcp_with_template_type(temp_dir):
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 
@@ -255,7 +255,7 @@ async def test_validate_skill_mcp_missing_template_files(temp_dir):
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 
@@ -303,7 +303,7 @@ async def test_validate_skill_mcp_internal_error(temp_dir):
     validate_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "validate_skill":
+        if hasattr(tool, "name") and tool.name == "validate_skill_tool":
             validate_skill_tool = tool
             break
 

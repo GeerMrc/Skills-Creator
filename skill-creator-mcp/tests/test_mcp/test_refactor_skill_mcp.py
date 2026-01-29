@@ -14,7 +14,7 @@ async def test_refactor_skill_mcp_basic(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -69,7 +69,7 @@ async def test_refactor_skill_mcp_with_focus(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -108,7 +108,7 @@ async def test_refactor_skill_mcp_no_analysis(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -148,7 +148,7 @@ async def test_refactor_skill_mcp_directory_not_exists(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -175,7 +175,7 @@ async def test_refactor_skill_mcp_path_not_directory(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -206,7 +206,7 @@ async def test_refactor_skill_mcp_internal_error(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -235,7 +235,7 @@ async def test_refactor_skill_mcp_with_complex_skill(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -287,7 +287,7 @@ async def test_refactor_skill_mcp_generates_report(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 
@@ -324,7 +324,7 @@ async def test_refactor_skill_mcp_effort_estimate(temp_dir):
     refactor_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "refactor_skill":
+        if hasattr(tool, "name") and tool.name == "refactor_skill_tool":
             refactor_skill_tool = tool
             break
 

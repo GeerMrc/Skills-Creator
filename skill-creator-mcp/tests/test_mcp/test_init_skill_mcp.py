@@ -15,7 +15,7 @@ async def test_init_skill_mcp_tool_minimal(temp_dir):
     init_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "init_skill":
+        if hasattr(tool, "name") and tool.name == "init_skill_tool":
             init_skill_tool = tool
             break
 
@@ -52,7 +52,7 @@ async def test_init_skill_mcp_tool_invalid_name(temp_dir):
     init_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "init_skill":
+        if hasattr(tool, "name") and tool.name == "init_skill_tool":
             init_skill_tool = tool
             break
 
@@ -82,7 +82,7 @@ async def test_init_skill_mcp_tool_invalid_template(temp_dir):
     init_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "init_skill":
+        if hasattr(tool, "name") and tool.name == "init_skill_tool":
             init_skill_tool = tool
             break
 
@@ -112,7 +112,7 @@ async def test_init_skill_mcp_tool_with_all_options(temp_dir):
     init_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "init_skill":
+        if hasattr(tool, "name") and tool.name == "init_skill_tool":
             init_skill_tool = tool
             break
 
@@ -150,7 +150,7 @@ async def test_init_skill_mcp_tool_internal_error(temp_dir):
     init_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "init_skill":
+        if hasattr(tool, "name") and tool.name == "init_skill_tool":
             init_skill_tool = tool
             break
 

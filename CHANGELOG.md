@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 创建 `tests/test_utils/test_requirement_collection/` 目录
   - 新增 61 个单元测试用例
   - 覆盖率: 0% → 98%（88 行代码）
-  - 总测试数量: 533 → 601（599通过，2跳过）
+  - 总测试数量: 533 → 615（613通过，2跳过）
 
 ### Added - Requirement Collection Unit Tests (2026-01-28)
 

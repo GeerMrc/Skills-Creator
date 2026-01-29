@@ -14,7 +14,7 @@ async def test_analyze_skill_mcp_basic(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -75,7 +75,7 @@ async def test_analyze_skill_mcp_analyze_structure_false(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -113,7 +113,7 @@ async def test_analyze_skill_mcp_analyze_complexity_false(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -151,7 +151,7 @@ async def test_analyze_skill_mcp_analyze_quality_false(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -190,7 +190,7 @@ async def test_analyze_skill_mcp_all_false(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -229,7 +229,7 @@ async def test_analyze_skill_mcp_directory_not_exists(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -257,7 +257,7 @@ async def test_analyze_skill_mcp_internal_error(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -285,7 +285,7 @@ async def test_analyze_skill_mcp_with_python_files(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 
@@ -336,7 +336,7 @@ async def test_analyze_skill_mcp_empty_directory(temp_dir):
     analyze_skill_tool = None
     tools = await mcp.list_tools()
     for tool in tools:
-        if hasattr(tool, "name") and tool.name == "analyze_skill":
+        if hasattr(tool, "name") and tool.name == "analyze_skill_tool":
             analyze_skill_tool = tool
             break
 

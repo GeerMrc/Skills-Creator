@@ -337,11 +337,107 @@ async def metrics_endpoint(request: Any) -> dict[str, Any]:
 
 
 # 技能工具（skill_tools.py）
-# 直接使用 @mcp.tool() 装饰器注册工具
-mcp.add_tool(init_skill)
-mcp.add_tool(validate_skill)
-mcp.add_tool(analyze_skill)
-mcp.add_tool(refactor_skill)
+# 使用 @mcp.tool() 装饰器注册工具
+@mcp.tool()
+async def init_skill_tool(
+    ctx: Context,
+    name: str,
+    template: str = "minimal",
+    output_dir: str | None = None,
+    with_scripts: bool = False,
+    with_examples: bool = False,
+) -> dict[str, Any]:
+    """
+    初始化新的 Agent-Skill.
+
+    创建符合规范的 Agent-Skill 项目目录结构和模板文件。
+
+    Args:
+        ctx: MCP 上下文
+        name: 技能名称（小写字母、数字、连字符，1-64字符）
+        template: 模板类型（minimal/tool-based/workflow-based/analyzer-based）
+        output_dir: 输出目录路径（可选）
+        with_scripts: 是否包含示例脚本
+        with_examples: 是否包含使用示例
+
+    Returns:
+        包含初始化结果的字典
+    """
+    return await init_skill(ctx, name, template, output_dir, with_scripts, with_examples)
+
+
+@mcp.tool()
+async def validate_skill_tool(
+    ctx: Context,
+    skill_path: str,
+    check_structure: bool = True,
+    check_content: bool = True,
+) -> dict[str, Any]:
+    """
+    验证 Agent-Skill 的结构和内容.
+
+    检查技能目录是否符合 Agent-Skill 规范。
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: 技能目录路径
+        check_structure: 是否检查目录结构
+        check_content: 是否检查内容格式
+
+    Returns:
+        包含验证结果的字典
+    """
+    return await validate_skill(ctx, skill_path, check_structure, check_content)
+
+
+@mcp.tool()
+async def analyze_skill_tool(
+    ctx: Context,
+    skill_path: str,
+    analyze_structure: bool = True,
+    analyze_complexity: bool = True,
+    analyze_quality: bool = True,
+) -> dict[str, Any]:
+    """
+    分析 Agent-Skill 的代码质量和复杂度.
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: 技能目录路径
+        analyze_structure: 是否分析代码结构
+        analyze_complexity: 是否分析代码复杂度
+        analyze_quality: 是否分析代码质量
+
+    Returns:
+        包含分析结果的字典
+    """
+    return await analyze_skill(ctx, skill_path, analyze_structure, analyze_complexity, analyze_quality)
+
+
+@mcp.tool()
+async def refactor_skill_tool(
+    ctx: Context,
+    skill_path: str,
+    focus: list[str] | None = None,
+    analyze_structure: bool = True,
+    analyze_complexity: bool = True,
+    analyze_quality: bool = True,
+) -> dict[str, Any]:
+    """
+    生成 Agent-Skill 的重构建议.
+
+    Args:
+        ctx: MCP 上下文
+        skill_path: 技能目录路径
+        focus: 重点关注领域（可选）
+        analyze_structure: 是否分析代码结构
+        analyze_complexity: 是否分析代码复杂度
+        analyze_quality: 是否分析代码质量
+
+    Returns:
+        包含重构建议的字典
+    """
+    return await refactor_skill(ctx, skill_path, focus, analyze_structure, analyze_complexity, analyze_quality)
 
 
 # 打包工具（package_tools.py）
@@ -734,7 +830,7 @@ async def is_healthy_tool(ctx: Context) -> dict[str, Any]:
 # ==================== MCP Resources ====================
 
 
-@mcp.resource("http://skills/schema/templates")
+@mcp.resource("http://skills/schema/templates", mime_type="text/markdown")
 def list_templates_resource() -> str:
     """列出所有可用的技能模板."""
     templates = list_templates()
@@ -745,7 +841,7 @@ def list_templates_resource() -> str:
     return result
 
 
-@mcp.resource("http://skills/schema/templates/{type}")
+@mcp.resource("http://skills/schema/templates/{type}", mime_type="text/markdown")
 def get_template_resource(type: str) -> str:
     """获取指定类型的技能模板内容."""
     from .resources.templates import TemplateType
@@ -758,13 +854,13 @@ def get_template_resource(type: str) -> str:
     return get_template_content(TemplateType(type))  # type: ignore
 
 
-@mcp.resource("http://skills/schema/best-practices")
+@mcp.resource("http://skills/schema/best-practices", mime_type="text/markdown")
 def best_practices_resource() -> str:
     """获取 Agent-Skills 开发最佳实践."""
     return get_best_practices()
 
 
-@mcp.resource("http://skills/schema/validation-rules")
+@mcp.resource("http://skills/schema/validation-rules", mime_type="text/markdown")
 def validation_rules_resource() -> str:
     """获取 Agent-Skills 验证规则."""
     return get_validation_rules()
