@@ -5,6 +5,16 @@ All notable changes to the skill-creator-mcp project will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- 文档数据不一致（CLAUDE.md工具数量从18改为13，测试数量从615/586改为588）
+- 文档数据不一致（README.md测试数量从586改为588）
+- 打包工具推荐方式更新（从package_agent_skill改为package_skill）
+- Phase 0工具说明位置优化（从特性章节移到开发章节）
+- 清理server.py重复导入（time模块）
+- 添加文档一致性验证脚本
+
 ## [0.3.3] - 2026-01-28
 
 ### Added

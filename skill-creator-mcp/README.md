@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-586%20passed-success](#)
+[![Tests](https://img.shields.io/badge/tests-588%20passed-success](#)
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen](#)
 
 Agent-Skills 开发与质量保证 MCP Server。
@@ -76,16 +76,6 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 - ✅ **package_skill** - 统一打包工具（支持通用和Agent-Skill标准两种模式）
 - ⚠️ **package_agent_skill** - Agent-Skill标准打包（已弃用，请使用package_skill）
-
-### Phase 0 验证工具（5个）
-
-> **注意**：Phase 0工具已迁移到开发工具脚本（`scripts/dev-tools.py`），仅供开发者使用，不作为MCP工具暴露。
-
-- ✅ **check_client_capabilities** - 检测 MCP 客户端能力支持情况
-- ✅ **test_llm_sampling** - 测试 LLM Sampling 能力
-- ✅ **test_user_elicitation** - 测试用户征询能力
-- ✅ **test_conversation_loop** - 测试对话循环和状态管理能力
-- ✅ **test_requirement_completeness** - 测试需求完整性判断能力
 
 ### 技能模板
 
@@ -486,6 +476,27 @@ uv run mypy src/
 
 # 启动服务器
 uv run python -m skill_creator_mcp
+```
+
+### 开发工具（仅供开发者使用）
+
+#### Phase 0 验证工具（5个）
+
+> **注意**：Phase 0工具已迁移到开发工具脚本（`scripts/dev-tools.py`），仅供开发者使用，不作为MCP工具暴露。
+
+- ✅ **check_client_capabilities** - 检测 MCP 客户端能力支持情况
+- ✅ **test_llm_sampling** - 测试 LLM Sampling 能力
+- ✅ **test_user_elicitation** - 测试用户征询能力
+- ✅ **test_conversation_loop** - 测试对话循环和状态管理能力
+- ✅ **test_requirement_completeness** - 测试需求完整性判断能力
+
+运行开发工具：
+```bash
+# 查看所有可用工具
+uv run python scripts/dev-tools.py --help
+
+# 运行特定工具
+uv run python scripts/dev-tools.py check_client_capabilities
 ```
 
 ## 许可证

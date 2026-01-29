@@ -35,7 +35,7 @@
 
 - **当前版本**: v0.3.3
 - **开发环境**: conda base Python 环境
-- **测试覆盖率**: 95% (615个测试用例)
+- **测试覆盖率**: 95% (588个测试用例)
 - **技术栈**: FastMCP SDK + Pydantic 2.0+ + pytest
 
 ### 1.2 技术架构
@@ -53,7 +53,7 @@
 │                 │                         │
 │  ┌──────────────▼────────────────────┐  │
 │  │  MCP Server (skill-creator-mcp)   │  │
-│  │  - 18 Tools (5类)                  │  │
+│  │  - 13 Tools (3类)                  │  │
 │  │  - 4 Resources (只读数据)          │  │
 │  │  - 3 Prompts (可重用模板)          │  │
 │  └───────────────────────────────────┘  │
@@ -76,7 +76,7 @@
 │   │   ├── utils/              # 工具函数
 │   │   ├── prompts/            # Prompt 模板
 │   │   └── resources/          # 资源内容
-│   ├── tests/                  # 测试套件 (95% 覆盖率, 586个测试)
+│   ├── tests/                  # 测试套件 (95% 覆盖率, 588个测试)
 │   ├── pyproject.toml          # 项目配置
 │   └── README.md
 ├── docs/                       # 项目文档
@@ -961,16 +961,17 @@ skill-creator-v0.3.1.zip
 
 ### 7.4 打包命令示例
 
-**使用 package_agent_skill（推荐）**:
+**使用 package_skill（推荐）**:
 ```python
-from skill_creator_mcp.utils.packagers import package_agent_skill
+from skill_creator_mcp.utils.packagers import package_skill
 
-result = package_agent_skill(
+result = package_skill(
     skill_path="/path/to/skill-creator",
     output_dir="/output",
     version="0.3.1",
-    package_format="zip",
+    format="zip",
     include_tests=False,
+    strict=True,
     validate_before_package=True
 )
 
@@ -980,14 +981,17 @@ result = package_agent_skill(
 **使用 MCP 工具**:
 ```python
 # 在 Claude Code 中调用 MCP 工具
-await package_agent_skill(
+await package_skill(
     ctx,
     skill_path="/path/to/skill-creator",
     output_dir="/output",
     version="0.3.1",
-    format="zip"
+    format="zip",
+    strict=True
 )
 ```
+
+> **注意**: `package_agent_skill` 已弃用，请使用统一的 `package_skill` 工具并设置 `strict=True` 参数。
 
 ### 7.5 验证包质量
 
@@ -1021,7 +1025,7 @@ cd /tmp/test-skill/skill-creator
 
 ### 7.6 发布流程
 
-1. **打包**: 使用 `package_agent_skill()` 创建标准包
+1. **打包**: 使用 `package_skill(strict=True)` 创建标准包
 2. **验证**: 检查包结构和质量指标
 3. **测试**: 在新环境中解压并验证
 4. **发布**: 上传到 GitHub Releases 或其他分发平台

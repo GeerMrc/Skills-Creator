@@ -88,8 +88,6 @@ async def app_lifespan(server: FastMCP) -> Any:
     Yields:
         AppContext: 应用上下文对象
     """
-    import time
-
     from .utils.cache import MemoryCache
 
     # 启动时初始化
