@@ -12,7 +12,7 @@ from zipfile import ZipFile
 
 import pytest
 
-from skill_creator_mcp.utils.packagers import package_agent_skill
+from skill_creator_mcp.utils.packagers import package_skill
 
 # ==================== 辅助函数 ====================
 
@@ -187,7 +187,7 @@ def test_packaged_skill_integrity(temp_dir: Path):
     skill_path = Path(__file__).parent.parent.parent.parent / 'skill-creator'
 
     # 打包
-    result = package_agent_skill(
+    result = package_skill(
         skill_path=str(skill_path),
         output_dir=str(temp_dir),
         version="0.3.3",
@@ -277,7 +277,7 @@ def test_full_packaging_workflow(temp_dir: Path):
     skill_path = Path(__file__).parent.parent.parent.parent / 'skill-creator'
 
     # 1. 打包
-    result = package_agent_skill(
+    result = package_skill(
         skill_path=str(skill_path),
         output_dir=str(temp_dir),
         version="0.3.3",

@@ -2,10 +2,9 @@
 
 包含打包 Agent-Skill 的 MCP 工具函数。
 
-合并后的统一打包工具，支持通用和Agent-Skill标准两种模式。
+统一的打包工具，支持通用和Agent-Skill标准两种模式。
 """
 
-import warnings
 from typing import Any
 
 from fastmcp import Context, FastMCP
@@ -57,9 +56,14 @@ async def package_skill(
     from ..config import get_config
     from ..models.skill_config import PackageSkillInput
     from ..utils.packagers import (
-        package_agent_skill as package_agent_skill_impl,
+        _collect_agent_skill_files,
+        _create_tar_package,
+        _create_zip_package,
     )
-    from ..utils.packagers import package_skill as package_skill_impl
+    from ..utils.packagers import (
+        package_skill as package_skill_impl,
+    )
+    from ..utils.path_helpers import normalize_path
 
     try:
         # 优先级：工具参数 > 环境变量 > 默认值
@@ -78,27 +82,77 @@ async def package_skill(
                     "error_type": "validation_error",
                 }
 
-            from ..models.skill_config import PackageAgentSkillInput
 
-            agent_skill_input_data = PackageAgentSkillInput.model_validate(
-                {
-                    "skill_path": skill_path,
-                    "output_dir": output_dir,
-                    "version": version,
-                    "format": format,
-                    "include_tests": include_tests,
-                    "validate_before_package": validate_before_package,
+            from ..models.skill_config import PackageResult
+
+            # 规范化路径
+            skill_dir = normalize_path(skill_path)
+            out_dir = normalize_path(output_dir)
+
+            # 检查技能目录是否存在
+            if not skill_dir.exists():
+                return {
+                    "success": False,
+                    "error": f"技能目录不存在: {skill_dir}",
+                    "error_type": "path_error",
                 }
-            )
 
-            result = package_agent_skill_impl(
-                skill_path=agent_skill_input_data.skill_path,
-                output_dir=agent_skill_input_data.output_dir,
-                version=agent_skill_input_data.version,
-                package_format=agent_skill_input_data.format,
-                include_tests=agent_skill_input_data.include_tests,
-                validate_before_package=agent_skill_input_data.validate_before_package,
-            )
+            # 确定包文件名（带版本号）
+            skill_name = skill_dir.name
+            base_name = f"{skill_name}-v{version}"
+
+            if format == "tar.gz":
+                package_filename = f"{base_name}.tar.gz"
+            elif format == "tar.bz2":
+                package_filename = f"{base_name}.tar.bz2"
+            else:  # zip
+                package_filename = f"{base_name}.zip"
+
+            package_path = out_dir / package_filename
+
+            # 收集要打包的文件（使用 Agent-Skill 专用函数）
+            try:
+                files_to_package = _collect_agent_skill_files(skill_dir, include_tests)
+            except ValueError as e:
+                return {
+                    "success": False,
+                    "error": str(e),
+                    "error_type": "validation_error",
+                }
+
+            # 执行打包
+            try:
+                if format == "zip":
+                    _create_zip_package(skill_dir, files_to_package, package_path)
+                elif format in ("tar.gz", "tar.bz2"):
+                    _create_tar_package(skill_dir, files_to_package, package_path, format)
+                else:
+                    return {
+                        "success": False,
+                        "error": f"不支持的打包格式: {format}",
+                        "error_type": "format_error",
+                    }
+
+                # 获取包大小
+                package_size = package_path.stat().st_size if package_path.exists() else None
+
+                result = PackageResult(
+                    success=True,
+                    skill_path=str(skill_dir),
+                    package_path=str(package_path),
+                    format=format,
+                    files_included=len(files_to_package),
+                    package_size=package_size,
+                    validation_passed=None,
+                    validation_errors=[],
+                )
+            except Exception as e:
+                result = PackageResult(
+                    success=False,
+                    skill_path=str(skill_dir),
+                    error=f"打包过程出错: {e}",
+                    error_type="internal_error",
+                )
         else:
             # 通用打包模式
             input_data = PackageSkillInput.model_validate(
@@ -157,72 +211,4 @@ async def package_skill(
         }
 
 
-async def package_agent_skill(
-    ctx: Context,
-    mcp: FastMCP,
-    skill_path: str,
-    output_dir: str | None = None,
-    version: str | None = None,
-    format: str = "zip",
-    include_tests: bool = False,
-    validate_before_package: bool = True,
-) -> dict[str, Any]:
-    """
-    打包 Agent-Skill 为标准分发格式 (已弃用).
-
-    .. deprecated::
-        此函数已弃用，请使用 package_skill 并设置 strict=True 和 version 参数。
-
-    这是专门用于打包标准 Agent-Skill 的函数。
-    与 package_skill 的区别：
-    - 使用更严格的排除模式
-    - 支持版本号参数，生成标准化包名
-    - 默认不包含测试文件
-    - 确保符合 Agent-Skill 规范
-
-    Args:
-        ctx: MCP 上下文
-        mcp: FastMCP 实例
-        skill_path: Agent-Skill 目录路径
-        output_dir: 输出目录路径（可选，优先级：参数 > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值）
-        version: 版本号（可选，格式如 "0.3.1"）
-        format: 打包格式（zip/tar.gz/tar.bz2）
-        include_tests: 是否包含测试文件（默认 False）
-        validate_before_package: 打包前是否验证
-
-    Returns:
-        包含打包结果的字典
-
-    Examples:
-        >>> result = await package_agent_skill(
-        ...     ctx,
-        ...     mcp,
-        ...     skill_path="/path/to/skill-creator",
-        ...     output_dir="/output",
-        ...     version="0.3.1",
-        ...     format="zip"
-        ... )
-        >>> # 生成: skill-creator-v0.3.1.zip
-    """
-    # 发出弃用警告
-    warnings.warn(
-        "package_agent_skill 已弃用，请使用 package_skill 并设置 strict=True 和 version 参数。",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    # 委托给新的统一接口
-    return await package_skill(
-        ctx=ctx,
-        mcp=mcp,
-        skill_path=skill_path,
-        output_dir=output_dir,
-        version=version,
-        format=format,
-        include_tests=include_tests,
-        strict=True,
-        validate_before_package=validate_before_package,
-    )
-
-
-__all__ = ["package_skill", "package_agent_skill"]
+__all__ = ["package_skill"]

@@ -72,10 +72,11 @@ Agent-Skills 开发与质量保证 MCP Server。
 - ✅ **validate_answer_format** - 验证答案格式
 - ✅ **check_requirement_completeness** - 检查需求完整性（使用LLM）
 
-### 打包工具（2个）
+### 打包工具（1个）
 
 - ✅ **package_skill** - 统一打包工具（支持通用和Agent-Skill标准两种模式）
-- ⚠️ **package_agent_skill** - Agent-Skill标准打包（已弃用，请使用package_skill）
+  - `strict=False` (默认): 通用打包模式
+  - `strict=True`: Agent-Skill 标准打包模式，需要 `version` 参数
 
 ### 技能模板
 
@@ -436,27 +437,6 @@ result = await package_skill(
     strict=True
 )
 # 生成: skill-v0.3.1.zip
-```
-
-**迁移指南：**
-
-如果您之前使用 `package_agent_skill`，请迁移到新的统一API：
-
-```python
-# 旧API（已弃用）
-await package_agent_skill(
-    ctx, mcp,
-    skill_path="/path/to/skill",
-    version="0.3.1"
-)
-
-# 新API（推荐）
-await package_skill(
-    ctx, mcp,
-    skill_path="/path/to/skill",
-    version="0.3.1",
-    strict=True
-)
 ```
 
 ## 开发

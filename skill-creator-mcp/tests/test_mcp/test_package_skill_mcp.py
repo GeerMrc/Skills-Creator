@@ -1,6 +1,5 @@
 """测试 FastMCP 包装的 package_skill 工具."""
 
-import warnings
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -445,53 +444,3 @@ async def test_package_skill_mcp_with_size_info(temp_dir):
         # 检查包大小信息
         assert result["package_size"] is not None
         assert result["package_size"] > 0
-
-
-@pytest.mark.asyncio
-async def test_package_agent_skill_mcp_deprecated_warning(temp_dir):
-    """测试 package_agent_skill 发出弃用警告."""
-    # 获取 package_agent_skill 工具
-    package_agent_skill_tool = None
-    tools = await mcp.list_tools()
-    for tool in tools:
-        if hasattr(tool, "name") and tool.name == "package_agent_skill":
-            package_agent_skill_tool = tool
-            break
-
-    assert package_agent_skill_tool is not None, "package_agent_skill not found in MCP server"
-
-    # 创建技能目录
-    skill_dir = temp_dir / "test-deprecated"
-    skill_dir.mkdir()
-    (skill_dir / "SKILL.md").write_text("---\nname: test\ndescription: Test\n---\n# Test")
-    for dir_name in ["references", "examples", "scripts", ".claude"]:
-        (skill_dir / dir_name).mkdir()
-
-    output_dir = temp_dir / "output"
-    output_dir.mkdir()
-
-    # 创建模拟的 MCP Context
-    ctx = MagicMock()
-    ctx.log = MagicMock()
-
-    # 调用工具应该触发 DeprecationWarning
-    if hasattr(package_agent_skill_tool, "fn"):
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            result = await package_agent_skill_tool.fn(
-                ctx,
-                skill_path=str(skill_dir),
-                output_dir=str(output_dir),
-                version="0.3.1",
-                format="zip",
-                include_tests=False,
-                validate_before_package=False,
-            )
-
-            # 验证弃用警告
-            assert len(w) > 0
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "package_agent_skill 已弃用" in str(w[0].message)
-
-        # 验证功能仍然正常工作
-        assert result["success"] is True

@@ -5,6 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2026-01-29
+
+### Removed
+
+**代码清理**:
+- 移除 `package_agent_skill` 工具（已弃用）
+  - 删除 server.py 中的工具注册和实现
+  - 删除 tools/package_tools.py 中的包装函数
+  - 删除 utils/packagers.py 中的实现函数
+  - 删除相关测试用例（10个）
+
+- 移除3个未使用的工具函数：
+  - `generate_package_manifest` (43行，未被调用)
+  - `_format_size` (15行，仅被上述无用函数调用)
+  - `_is_project_root` (18行，未被使用)
+
+- 移除相关测试用例（11个）
+
+### Changed
+
+**文档更新**:
+- 更新 MCP_TOOLS.md：工具数量从18个改为12个
+  - 删除"批量操作（2个）"章节
+  - 删除"健康检查（3个）"章节
+  - 删除 `package_agent_skill` 引用
+  - 更新打包工具章节，说明 `package_skill` 的 strict 模式
+
+- 更新 skill-creator/SKILL.md：
+  - 删除 `package_agent_skill` 引用
+  - 删除批量操作和健康检查工具引用
+  - 更新工具数量为12个
+
+- 更新 skill-creator-mcp/README.md：
+  - 删除 `package_agent_skill` 弃用说明
+  - 删除迁移指南章节
+
+- 更新 config.py 注释：
+  - 移除 `package_agent_skill` 环境变量说明
+
+**测试数量**: 586 → 566 (-20个测试)
+
+### Fixed
+
+- 修复 strict 模式下 `package_skill` 的实现
+  - 直接在 tools/package_tools.py 中实现 Agent-Skill 标准打包逻辑
+  - 不再依赖已删除的 `package_agent_skill_impl` 函数
+
+---
+
 ## [Unreleased]
 
 ### Changed - MCP Server 核心定位优化 (2026-01-29)

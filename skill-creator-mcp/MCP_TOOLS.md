@@ -1,6 +1,6 @@
 # MCP Server 工具清单
 
-> **版本**: v0.3.3
+> **版本**: v0.3.4
 > **更新日期**: 2026-01-29
 > **项目**: skill-creator-mcp
 
@@ -8,7 +8,7 @@
 
 ## 概述
 
-skill-creator-mcp 提供 **18个工具**，按5类功能分组，用于 Agent-Skills 的开发、验证、分析和打包。
+skill-creator-mcp 提供 **12个工具**，按3类功能分组，用于 Agent-Skills 的开发、验证、分析和打包。
 
 ---
 
@@ -45,39 +45,17 @@ skill-creator-mcp 提供 **18个工具**，按5类功能分组，用于 Agent-Sk
 
 ---
 
-### 3. 打包工具（2个）
+### 3. 打包工具（1个）
 
 用于 Agent-Skill 的打包和分发。
 
-| 工具名称 | 功能 | 区别 |
+| 工具名称 | 功能 | 模式 |
 |---------|------|------|
-| `package_skill` | 通用打包工具 | 包含测试文件 |
-| `package_agent_skill` | 标准打包工具（推荐） | 排除测试文件，符合规范 |
+| `package_skill` | 统一打包工具 | 支持 strict 模式生成标准化包名 |
 
----
-
-### 4. 批量操作（2个）
-
-用于批量处理多个 Agent-Skill。
-
-| 工具名称 | 功能 |
-|---------|------|
-| `batch_validate_skills_tool` | 批量验证多个技能 |
-| `batch_analyze_skills_tool` | 批量分析多个技能 |
-
-**特性**: 支持并发控制（默认最多5个并发），显示进度条。
-
----
-
-### 5. 健康检查（3个）
-
-用于系统状态监控和诊断。
-
-| 工具名称 | 功能 |
-|---------|------|
-| `health_check_tool` | 执行完整健康检查 |
-| `quick_status_tool` | 获取快速状态摘要 |
-| `is_healthy_tool` | 快速检查系统是否健康 |
+**package_skill 参数**:
+- `strict=False` (默认): 通用打包模式
+- `strict=True`: Agent-Skill 标准打包模式，需要 `version` 参数
 
 ---
 
@@ -86,11 +64,9 @@ skill-creator-mcp 提供 **18个工具**，按5类功能分组，用于 Agent-Sk
 ```
 技能工具:      4
 需求收集工具:  7
-打包工具:      2
-批量操作:      2
-健康检查:      3
+打包工具:      1
 ───────────────────
-总计:         18
+总计:         12
 ```
 
 ---
@@ -103,7 +79,7 @@ skill-creator-mcp 提供 **18个工具**，按5类功能分组，用于 Agent-Sk
 2. **收集需求**: 使用7个需求收集工具收集用户需求
 3. **验证技能**: 使用 `validate_skill` 检查质量
 4. **分析质量**: 使用 `analyze_skill` 获取详细分析
-5. **打包分发**: 使用 `package_agent_skill` 生成发布包
+5. **打包分发**: 使用 `package_skill` 生成发布包
 
 ### 工作流示例
 
@@ -121,8 +97,8 @@ validation = await validate_skill(skill_path="...")
 # 4. 分析质量
 analysis = await analyze_skill(skill_path="...")
 
-# 5. 打包
-await package_agent_skill(skill_path="...", version="0.1.0")
+# 5. 打包（标准模式，带版本号）
+await package_skill(skill_path="...", version="0.1.0", strict=True)
 ```
 
 ---

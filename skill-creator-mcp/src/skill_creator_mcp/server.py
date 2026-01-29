@@ -28,9 +28,6 @@ from .resources import (
 
 # 工具模块导入
 from .tools.package_tools import (
-    package_agent_skill as package_agent_skill_impl,
-)
-from .tools.package_tools import (
     package_skill as package_skill_impl,
 )
 from .tools.requirement_question_tools import (
@@ -169,19 +166,6 @@ mcp = FastMCP(
     - strict (bool): 是否使用Agent-Skill标准打包模式（默认：False）
     - validate_before_package (bool): 打包前是否验证（默认：True）
 
-    ### package_agent_skill
-    打包 Agent-Skill 为标准分发格式（已弃用）。
-
-    .. deprecated::
-        请使用 package_skill 并设置 strict=True 和 version 参数。
-
-    参数：
-    - skill_path (str): Agent-Skill 目录路径
-    - output_dir (str): 输出目录路径（默认：当前目录）
-    - version (str): 版本号（可选，格式如 "0.3.1"）
-    - format (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
-    - include_tests (bool): 是否包含测试文件（默认：False）
-    - validate_before_package (bool): 打包前是否验证（默认：True）
     """,
     lifespan=app_lifespan,
 )
@@ -464,44 +448,6 @@ async def package_skill(
         包含打包结果的字典
     """
     return await package_skill_impl(ctx, mcp, skill_path, output_dir, version, format, include_tests, strict, validate_before_package)
-
-
-@mcp.tool()
-async def package_agent_skill(
-    ctx: Context,
-    skill_path: str,
-    output_dir: str | None = None,
-    version: str | None = None,
-    format: str = "zip",
-    include_tests: bool = False,
-    validate_before_package: bool = True,
-) -> dict[str, Any]:
-    """
-    打包 Agent-Skill 为标准分发格式 (已弃用).
-
-    .. deprecated::
-        此函数已弃用，请使用 package_skill 并设置 strict=True 和 version 参数。
-
-    这是专门用于打包标准 Agent-Skill 的函数。
-    与 package_skill 的区别：
-    - 使用更严格的排除模式
-    - 支持版本号参数，生成标准化包名
-    - 默认不包含测试文件
-    - 确保符合 Agent-Skill 规范
-
-    Args:
-        ctx: MCP 上下文
-        skill_path: Agent-Skill 目录路径
-        output_dir: 输出目录路径（可选，优先级：参数 > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值）
-        version: 版本号（可选，格式如 "0.3.1"）
-        format: 打包格式（zip/tar.gz/tar.bz2）
-        include_tests: 是否包含测试文件（默认 False）
-        validate_before_package: 打包前是否验证
-
-    Returns:
-        包含打包结果的字典
-    """
-    return await package_agent_skill_impl(ctx, mcp, skill_path, output_dir, version, format, include_tests, validate_before_package)
 
 
 # ==================== 需求收集原子工具 ====================

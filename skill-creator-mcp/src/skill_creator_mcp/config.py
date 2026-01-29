@@ -7,7 +7,7 @@
     SKILL_CREATOR_LOG_FORMAT: 日志格式 (default/simple/detailed)，默认 default
     SKILL_CREATOR_LOG_FILE: 日志文件路径（可选），默认输出到 stderr
     SKILL_CREATOR_OUTPUT_DIR: 输出目录
-        - 由 init_skill, package_skill, package_agent_skill 使用
+        - 由 init_skill, package_skill 使用
         - 优先级：工具参数 > 环境变量 > 默认值
         - 默认值：~/skills（自动创建）
         - 推荐：设置为绝对路径如 ~/.claude/skills

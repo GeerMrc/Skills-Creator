@@ -103,17 +103,13 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 **技能工具 (4)**: init_skill | validate_skill | analyze_skill | refactor_skill
 
-**打包工具 (2)**: package_skill | package_agent_skill
+**打包工具 (1)**: package_skill（支持 strict 模式生成标准化包名）
 
-**批量操作 (2)**: batch_validate_skills_tool | batch_analyze_skills_tool
-
-**健康检查 (3)**: health_check_tool | quick_status_tool | is_healthy_tool
-
-> 注：工具分类统计：7个需求收集原子工具 + 4个技能工具 + 2个打包工具 + 2个批量操作工具 + 3个健康检查工具 = 18个工具
+> 注：工具分类统计：7个需求收集原子工具 + 4个技能工具 + 1个打包工具 = 12个工具
 
 **资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
 
-**Prompts (3)**: create-skill | validate-skill | refactor-skill
+**Prompts (3)**: create-skill | validate-skill | refactor_skill
 
 ## 详细文档
 
