@@ -6,6 +6,10 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 
 > **示例代码**：查看 [MCP 使用示例](../examples/mcp-usage-examples.md) 获取完整的代码示例和用法。
 
+> **高级用法**：查看 [MCP 高级用法](mcp-advanced-usage.md) 了解错误处理、性能优化和调试技巧。
+
+---
+
 ## MCP Server 配置
 
 ### Claude Code 配置
@@ -38,8 +42,6 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 
 ### 环境变量配置
 
-可通过环境变量自定义行为：
-
 | 环境变量 | 说明 | 默认值 | 工具支持 |
 |---------|------|--------|----------|
 | `SKILL_CREATOR_LOG_LEVEL` | 日志级别 | INFO | - |
@@ -53,37 +55,21 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 
 **配置优先级**:
 ```
-工具参数 output_dir="xxx" > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值 "~/skills"
+工具参数 output_dir > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值 "~/skills"
 ```
 
 **推荐做法**:
-
-1. **设置环境变量统一管理输出目录** (推荐):
+1. 设置环境变量统一管理输出目录（推荐）:
    ```bash
-   # 添加到 ~/.bashrc 或 ~/.zshrc
    export SKILL_CREATOR_OUTPUT_DIR=~/my-skills
    ```
 
-2. **使用绝对路径避免歧义**:
+2. 使用绝对路径避免歧义:
    ```python
    init_skill(name="test", output_dir="~/project")
    ```
 
-3. **使用 `~` 简化路径**:
-   ```python
-   init_skill(name="test", output_dir="~/my-skills")
-   ```
-
-**路径验证**:
-- 路径不存在时自动创建
-- 验证路径是否为目录（文件路径会报错）
-- 验证路径是否可写
-- 支持 `~` 展开为用户主目录
-- 相对路径自动转换为绝对路径
-
 ### 验证连接
-
-启动 Claude Code 后，MCP Server 会自动连接。验证方法：
 
 **方法 1：MCP Inspector**
 ```bash
@@ -92,6 +78,8 @@ npx @modelcontextprotocol/inspector /path/to/skill-creator-mcp/src/skill_creator
 
 **方法 2：检查工具可用性**
 在 Claude Code 对话中尝试调用 MCP 工具。
+
+---
 
 ## MCP 工具
 
@@ -128,18 +116,22 @@ MCP Server 提供 **12个工具**，按功能划分为3类：
 
 ---
 
-### init_skill
+### 工具参数说明
+
+#### init_skill
 
 **功能**：创建符合规范的技能目录结构
 
 **参数**：
 - `name` (string): 技能名称，使用 kebab-case
 - `template` (string): 模板类型 (minimal/tool-based/workflow-based/analyzer-based)
-- `path` (string, 可选): 创建路径，默认当前目录
+- `output_dir` (string, 可选): 输出目录路径
+- `with_examples` (bool, 可选): 是否包含示例（默认 False）
+- `with_scripts` (bool, 可选): 是否包含脚本（默认 False）
 
 **返回**：创建的文件列表
 
-### validate_skill
+#### validate_skill
 
 **功能**：检查技能是否符合最佳实践
 
@@ -150,22 +142,19 @@ MCP Server 提供 **12个工具**，按功能划分为3类：
 
 **返回**：验证报告，包含问题列表和建议
 
-### analyze_skill
+#### analyze_skill
 
 **功能**：分析技能的 token 效率和结构质量
 
 **参数**：
 - `skill_path` (string): 技能目录路径
+- `analyze_structure` (bool, 可选): 是否分析结构（默认 True）
+- `analyze_complexity` (bool, 可选): 是否分析复杂度（默认 True）
+- `analyze_quality` (bool, 可选): 是否分析质量（默认 True）
 
-**返回**：分析报告，包含指标和改进建议
+**返回**：分析报告
 
-**报告内容**：
-- Token 效率评分
-- 文件大小统计
-- 反模式识别
-- 优化建议
-
-### refactor_skill
+#### refactor_skill
 
 **功能**：基于最佳实践生成重构建议
 
@@ -175,18 +164,22 @@ MCP Server 提供 **12个工具**，按功能划分为3类：
 
 **返回**：重构建议报告
 
-### package_skill
+#### package_skill
 
 **功能**：打包 Agent-Skill 为分发格式
 
 **参数**：
 - `skill_path` (string): 技能目录路径
-- `output_dir` (string, 可选): 输出目录路径（默认：当前目录）
-- `format` (string, 可选): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
-- `include_tests` (bool, 可选): 是否包含测试文件（默认：True）
-- `validate_before_package` (bool, 可选): 打包前是否验证（默认：True）
+- `output_dir` (string, 可选): 输出目录路径
+- `version` (string, 可选): 版本号（仅在 strict=True 时使用）
+- `format` (string, 可选): 打包格式（zip/tar.gz/tar.bz2）
+- `include_tests` (bool, 可选): 是否包含测试文件（默认 False）
+- `strict` (bool, 可选): 是否使用标准打包模式（默认 False）
+- `validate_before_package` (bool, 可选): 打包前是否验证（默认 True）
 
 **返回**：打包结果
+
+---
 
 ## MCP 资源
 
@@ -206,6 +199,8 @@ MCP Server 提供 **12个工具**，按功能划分为3类：
 - `workflow-based` - 工作流型模板
 - `analyzer-based` - 分析型模板
 
+---
+
 ## MCP Prompts
 
 ### 可用 Prompts
@@ -216,23 +211,7 @@ MCP Server 提供 **12个工具**，按功能划分为3类：
 | `validate-skill` | 指导 AI 验证技能质量 |
 | `refactor-skill` | 指导 AI 生成重构建议 |
 
-### create-skill Prompt
-
-**参数**：
-- `name` - 技能名称
-- `template` - 模板类型
-
-### validate-skill Prompt
-
-**参数**：
-- `skill_path` - 技能路径
-- `template` - 模板类型（可选）
-
-### refactor-skill Prompt
-
-**参数**：
-- `skill_path` - 技能路径
-- `focus` - 重点关注领域（可选）
+---
 
 ## 工作流集成
 
@@ -267,132 +246,13 @@ Claude：[调用 validate_skill 工具]
 Claude：[调用 analyze_skill 工具]
 ```
 
-## 错误处理
-
-### 常见错误及解决
-
-| 错误 | 原因 | 解决方案 |
-|------|------|----------|
-| `Tool 'init_skill' not found` | MCP Server 未连接 | 检查配置，确保 MCP Server 已启动 |
-| `Skill path not found` | 技能路径不存在 | 确认路径正确，使用绝对路径 |
-| `Unknown template type` | 模板类型无效 | 使用有效模板：minimal/tool-based/workflow-based/analyzer-based |
-
-### 故障排除
-
-**检查 MCP Server 状态**：
-```bash
-# 启动服务器测试
-uv run python -m skill_creator_mcp
-
-# 使用 Inspector 检查
-npx @modelcontextprotocol/inspector ./skill-creator-mcp/src/skill_creator_mcp
-```
-
-**查看日志**：
-MCP Server 日志输出到 stderr，可在 Claude Code 日志中查看。
-
-**重启 MCP Server**：
-如果遇到连接问题，重启 Claude Code 会自动重连 MCP Server。
-
-## 高级用法
-
-### 批量验证
-
-验证多个技能的脚本模式：
-```python
-skills = ["skill1", "skill2", "skill3"]
-for skill in skills:
-    result = validate_skill(skill_path=f"./skills/{skill}")
-    print(f"{skill}: {result['score']}/100")
-```
-
-### 并发操作
-
-独立操作可以并发执行：
-```python
-import asyncio
-
-results = await asyncio.gather(
-    validate_skill(skill_path="./skill1"),
-    validate_skill(skill_path="./skill2"),
-    validate_skill(skill_path="./skill3")
-)
-```
-
-### 缓存资源
-
-频繁访问的资源可以缓存：
-```python
-# 首次读取
-best_practices = await session.read_resource("skill://best-practices")
-
-# 后续使用缓存内容
-cached_practices = best_practices.contents[0].text
-```
-
-## 扩展 MCP 集成
-
-Skill-Creator 支持与其他 MCP 服务器集成，扩展能力边界。
-
-### GitHub MCP 集成
-
-GitHub MCP 提供 GitHub 操作能力，实现需求跟踪、Git 工作流自动化和问题跟踪。
-
-**主要功能**：
-- 需求自动跟踪（Issue 创建）
-- Git 工作流自动化（分支、PR 创建）
-- 验证失败自动创建 Issue
-
-> **详见**：[GitHub MCP 集成指南](mcp-github-integration.md)
-
-### Thinking MCP 集成
-
-Thinking MCP 提供思考记录能力，实现代码分析思考过程记录、决策逻辑追溯和思考会话导出。
-
-**主要功能**：
-- 代码分析思考过程记录
-- 决策逻辑追溯
-- 思考会话导出（Markdown/HTML/JSON）
-
-> **详见**：[Thinking MCP 集成指南](mcp-thinking-integration.md)
-
-### 集成工作流
-
-**完整流程**（结合所有 MCP）：
-
-```
-1. create_requirement_session    # 创建需求收集会话
-   → get_static_question         # 获取静态问题
-   → update_requirement_answer   # 更新答案
-   → check_requirement_completeness  # 检查完整性
-   → create_issue (GitHub)       # 创建需求跟踪 Issue
-
-2. init_skill                    # 初始化技能
-   → create_branch (GitHub)      # 自动创建 feature 分支
-
-3. 开发技能内容
-
-4. validate_skill                # 验证技能
-   → create_issue (GitHub)       # 失败则自动创建 Issue
-
-5. analyze_skill                 # 分析技能
-   → sequential_thinking (Thinking)  # 记录分析思考
-   → export_session (Thinking)   # 导出思考文档
-
-6. create_pull_request (GitHub)  # 创建 PR
-```
+---
 
 ## 相关文档
 
 ### 核心文档
 - **[MCP 使用示例](../examples/mcp-usage-examples.md)** - 完整代码示例
+- **[MCP 高级用法](mcp-advanced-usage.md)** - 错误处理、性能优化、调试
 - **[最佳实践 - 核心](best-practices-core.md)** - 开发规范
 - **[最佳实践 - 高级](best-practices-advanced.md)** - Token 优化和高级技巧
 - **[验证规范](validation.md)** - 验证规则
-- **[验证实施指南](validation-guide.md)** - 等级划分和 CI/CD 集成
-
-### 集成示例
-- **[GitHub 需求跟踪](../examples/github-requirement-tracking.md)** - 需求 Issue 自动创建
-- **[Git 自动化](../examples/github-automation.md)** - 分支和 PR 自动化
-- **[Thinking 分析](../examples/thinking-analysis.md)** - 思考过程记录
-- **[Thinking 导出](../examples/thinking-export.md)** - 思考会话导出
