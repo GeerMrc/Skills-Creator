@@ -50,34 +50,17 @@
 
 ### 示例对话
 
-
-
 ```python
-# 开始
+# 基础模式使用示例
 session = await create_requirement_session_tool(mode="basic")
-# → {"session_id": "uuid-123", "total_steps": 5, "status": "in_progress"}
-
-# 获取第一个问题
-question = await get_static_question_tool(mode="basic", step_index=0)
-# → {"question": "请输入技能名称", "key": "skill_name", ...}
-
-# 回答
-answer = await ctx.elicit(question["prompt"])
-await update_requirement_answer_tool(
-    session_id=session["session_id"],
-    question_key=question["key"],
-    answer=answer
-)
-
-# 继续获取下一个问题
-question = await get_static_question_tool(mode="basic", step_index=1)
-# → "请简要描述技能的主要功能"
-
-# → "请列出使用场景"
-
-# → "请选择模板类型"
-
-# → "是否有额外需求？"
+for i in range(session["total_steps"]):
+    question = await get_static_question_tool(mode="basic", step_index=i)
+    answer = await ctx.elicit(question["prompt"])
+    await update_requirement_answer_tool(
+        session_id=session["session_id"],
+        question_key=question["key"],
+        answer=answer
+    )
 ```
 
 ---
@@ -112,27 +95,10 @@ question = await get_static_question_tool(mode="basic", step_index=1)
 
 ### 示例对话
 
-
-
 ```python
-# 步骤 6-10 的对话
-
-
-# → "谁是目标用户？"
-
-
-# → "使用什么技术栈？"
-
-
-# → "需要哪些外部依赖？"
-
-
-# → "有什么测试要求？"
-
-
-# → "需要什么级别的文档？"
-
-
+# 完整模式使用示例（同基础模式，但 total_steps=10）
+session = await create_requirement_session_tool(mode="complete")
+# ... 后续流程同基础模式
 ```
 
 ---
@@ -162,34 +128,32 @@ AI 引导的创意发散，探索技能可能性。
 
 ### 示例对话
 
-
-
 ```python
-# 开始头脑风暴
+# 头脑风暴模式使用示例
 session = await create_requirement_session_tool(mode="brainstorm")
+conversation_history = []
 
-# AI: "你想解决什么问题？"
-# User: "处理 PDF 文档很麻烦..."
+for i in range(5):  # 默认5轮对话
+    # 生成动态问题
+    question = await generate_dynamic_question_tool(
+        mode="brainstorm",
+        answers=session["answers"],
+        conversation_history=conversation_history
+    )
 
-# 更新答案并生成下一个问题
-await update_requirement_answer_tool(
-    session_id=session["session_id"],
-    question_key="user_input",
-    answer="处理 PDF 文档很麻烦..."
-)
+    # 收集用户回答
+    answer = await ctx.elicit(question["question"])
+    await update_requirement_answer_tool(
+        session_id=session["session_id"],
+        question_key=question["question_key"],
+        answer=answer
+    )
 
-# 获取AI生成的下一个问题
-next_q = await generate_dynamic_question_tool(
-    mode="brainstorm",
-    answers=session["answers"],
-    conversation_history=[...]
-)
-
-# AI: "有哪些具体场景？"
-# User: "提取表格、批量转换、OCR识别..."
-
-# 继续收集...
-# → AI 总结收集到的想法
+    # 更新对话历史
+    conversation_history.append({
+        "question": question["question"],
+        "answer": answer
+    })
 ```
 
 ### 注意事项
@@ -227,28 +191,26 @@ next_q = await generate_dynamic_question_tool(
 
 ### 示例对话
 
-
-
 ```python
-# 开始渐进式收集
+# 渐进式模式使用示例
 session = await create_requirement_session_tool(mode="progressive")
 
-# 获取核心问题
-question = await generate_dynamic_question_tool(
-    mode="progressive",
-    answers={}
-)
+while True:
+    # 根据已收集信息生成针对性问题
+    question = await generate_dynamic_question_tool(
+        mode="progressive",
+        answers=session["answers"]
+    )
 
-# → "技能名称是什么？"
+    if not question.get("question"):
+        break  # 没有更多问题
 
-# → "主要功能是什么？"
-
-# 可选问题
-# → "目标用户是谁？" (可跳过)
-
-# → "有什么特殊需求？" (可跳过)
-
-# → 快速完成，后续可补充
+    answer = await ctx.elicit(question["question"])
+    await update_requirement_answer_tool(
+        session_id=session["session_id"],
+        question_key=question["question_key"],
+        answer=answer
+    )
 ```
 
 ### 与基础模式的区别
@@ -295,10 +257,9 @@ for i in range(session["total_steps"]):
 
 **后台行为**（Agent-Skill 自动处理）：
 1. Agent-Skill 自动调用 `ctx.elicit()`
-2. 逐个显示问题等待输入
-3. 验证失败时自动重试（通过 `validate_answer_format_tool`）
-4. 每步后自动保存会话状态
-5. 收集完成后返回结果
+2. 验证失败时自动重试（通过 `validate_answer_format_tool`）
+3. 每步后自动保存会话状态
+4. 收集完成后返回结果
 
 ### 与传统模式的区别
 
@@ -314,61 +275,8 @@ for i in range(session["total_steps"]):
 
 ### 使用示例
 
-
-
 ```python
-# Agent-Skill 模式（推荐）
-# skill-creator Agent-Skill 自动处理 elicit 调用
-
-# 手动实现示例：
-session = await create_requirement_session_tool(mode="basic")
-for i in range(session["total_steps"]):
-    question = await get_static_question_tool(mode="basic", step_index=i)
-
-    # Agent-Skill 自动调用 elicit
-    answer = await ctx.elicit(question["prompt"])
-
-    # 用户可以随时取消
-    if answer is None:
-        # → 返回 cancelled 状态，已收集信息不会丢失
-        break
-
-    await update_requirement_answer_tool(
-        session_id=session["session_id"],
-        question_key=question["key"],
-        answer=answer
-)
-
-# 4. 返回完整结果
-```
-
-### 错误处理
-
-
-
-```python
-# 验证失败时
-# 使用 validate_answer_format_tool 验证
-
-question = await get_static_question_tool(mode="basic", step_index=0)
-answer = await ctx.elicit(question["prompt"])
-
-# 验证答案格式
-if question.get("validation"):
-    validation_result = await validate_answer_format_tool(
-        answer=answer,
-        validation=question["validation"]
-    )
-
-    if not validation_result["valid"]:
-        # 1. 显示错误提示
-        help_text = validation_result.get("help_text", "输入格式不正确")
-
-        # 2. 重新请求输入
-        answer = await ctx.elicit(f"{help_text}\n\n{question['prompt']}")
-
-        # 3. 最多重试 3 次（由调用方控制）
-        # 4. 仍失败则返回错误
+# 详见 [需求收集 API 示例](requirement-collection-api-examples.md)
 ```
 
 ### 注意事项
@@ -388,16 +296,12 @@ if question.get("validation"):
 
 ### 决策树
 
-
-
 ```
-是否需要自动收集？
-├─ 是 → Elicit 模式 (use_elicit=True)
-└─ 否 → 需求明确度？
-    ├─ 非常明确 → Basic 模式
-    ├─ 需要细节 → Complete 模式
-    ├─ 只有想法 → Brainstorm 模式
-    └─ 快速原型 → Progressive 模式
+需求明确度？
+├─ 非常明确 → Basic 模式
+├─ 需要细节 → Complete 模式
+├─ 只有想法 → Brainstorm 模式
+└─ 快速原型 → Progressive 模式
 ```
 
 ### 对比总结

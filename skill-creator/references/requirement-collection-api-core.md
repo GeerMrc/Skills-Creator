@@ -104,14 +104,6 @@ check_requirement_completeness_tool(
 
 ## 参数说明
 
-### action
-
-**类型**: `string`
-**默认值**: `"start"`
-**可选值**: `start` | `next` | `previous` | `status` | `complete`
-
-执行的动作类型，详见 [Action 类型](#action-类型)。
-
 ### mode
 
 **类型**: `string`
@@ -123,23 +115,9 @@ check_requirement_completeness_tool(
 ### session_id
 
 **类型**: `string`
-**默认值**: 自动生成 (格式: `req_YYYYMMDD_xxxxxx`)
+**默认值**: 自动生成 (格式: `uuid-xxxx`)
 
 会话唯一标识符，用于恢复中断的会话。
-
-### user_input
-
-**类型**: `string`
-**默认值**: `None`
-
-用户输入，用于 `next` 和 `complete` 动作（当 `use_elicit=False` 时）。
-
-### use_elicit
-
-**类型**: `boolean`
-**默认值**: `False`
-
-是否使用 `ctx.elicit()` 自动收集输入。
 
 ---
 
@@ -181,65 +159,6 @@ check_requirement_completeness_tool(
     "error_type": str,            # 错误类型
 }
 ```
-
----
-
-## Action 类型
-
-### start
-
-开始新的需求收集会话。
-
-**请求**:
-```json
-{
-  "action": "start",
-  "mode": "basic"
-}
-```
-
-**响应**: 返回第一个步骤的问题。
-
----
-
-### next
-
-进入下一步，需要提供 `user_input`。
-
-**行为**:
-1. 验证当前步骤的输入
-2. 保存答案到会话状态
-3. 返回下一步的问题
-
----
-
-### previous
-
-返回上一步，允许修改之前的答案。
-
-**行为**:
-1. 回退一步
-2. 清除当前步骤的答案
-3. 返回上一步的问题
-
----
-
-### status
-
-查询当前会话状态。
-
-**响应**: 返回当前进度、已收集答案、完成状态。
-
----
-
-### complete
-
-完成收集并生成最终报告。
-
-**行为**:
-1. 使用 LLM 检查需求完整性
-2. 返回缺失信息列表
-3. 提供补充建议
 
 ---
 
@@ -296,7 +215,6 @@ check_requirement_completeness_tool(
 
 | 错误 | 原因 | 解决方案 |
 |------|------|----------|
-| `Invalid action` | Action 类型无效 | 使用有效的 action：start/next/previous/status/complete |
 | `Session not found` | 会话 ID 不存在 | 检查 session_id 是否正确，或使用 start 创建新会话 |
 | `Validation failed` | 输入不符合验证规则 | 根据 help_text 修正输入 |
 | `Empty required field` | 必填字段为空 | 提供非空输入 |
