@@ -21,7 +21,7 @@
 ### 1.2 标准包结构
 
 ```
-skill-creator-v0.3.1.zip
+skill-creator-v0.3.4.zip
 └── skill-creator/
     ├── SKILL.md              # 必需 - 技能入口文件
     ├── examples/             # 可选 - 使用示例
@@ -142,13 +142,13 @@ MCP Server 应该单独打包：
 
 ```bash
 # 列出包内容（前30行）
-unzip -l skill-creator-v0.3.1.zip | head -30
+unzip -l skill-creator-v0.3.4.zip | head -30
 
 # 统计文件数量
-unzip -l skill-creator-v0.3.1.zip | tail -1
+unzip -l skill-creator-v0.3.4.zip | tail -1
 
 # 检查包大小
-ls -lh skill-creator-v0.3.1.zip
+ls -lh skill-creator-v0.3.4.zip
 ```
 
 ### 4.2 质量检查清单
