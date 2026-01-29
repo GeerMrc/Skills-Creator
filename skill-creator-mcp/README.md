@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-615%20passed-success](#)
+[![Tests](https://img.shields.io/badge/tests-586%20passed-success](#)
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen](#)
 
 Agent-Skills 开发与质量保证 MCP Server。
@@ -36,8 +36,8 @@ Agent-Skills 开发与质量保证 MCP Server。
 - ✅ **ErrorHandlingMiddleware** - 错误处理（可选）
 
 ### HTTP端点
-- ✅ **/health** - HTTP健康检查端点
-- ✅ **/metrics** - 性能指标端点
+- ✅ **/health** - HTTP健康检查端点（用于健康监控）
+- ✅ **/metrics** - 性能指标端点（用于性能监控）
 
 ### SSE传输协议
 - ✅ 支持Server-Sent Events (SSE)远程部署
@@ -55,14 +55,12 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 ## 特性
 
-### 核心开发工具（6个）
+### 核心开发工具（4个）
 
 - ✅ **init_skill** - 初始化新的 Agent-Skill 项目（支持 4 种模板）
 - ✅ **validate_skill** - 验证技能结构和内容规范
 - ✅ **analyze_skill** - 分析代码质量和复杂度
 - ✅ **refactor_skill** - 重构建议生成（P0/P1/P2 优先级）
-- ✅ **package_skill** - 打包发布工具（zip/tar.gz/tar.bz2）
-- ✅ **package_agent_skill** - Agent-Skill 标准打包（推荐，支持版本号）
 
 ### 需求收集原子工具（7个）
 
@@ -74,16 +72,10 @@ Agent-Skills 开发与质量保证 MCP Server。
 - ✅ **validate_answer_format** - 验证答案格式
 - ✅ **check_requirement_completeness** - 检查需求完整性（使用LLM）
 
-### 批量操作（2个）
+### 打包工具（2个）
 
-- ✅ **batch_validate_skills** - 批量验证多个 Agent-Skill
-- ✅ **batch_analyze_skills** - 批量分析多个 Agent-Skill
-
-### 健康检查（3个）
-
-- ✅ **health_check** - 完整健康检查
-- ✅ **quick_status** - 快速状态摘要
-- ✅ **is_healthy** - 快速健康检查
+- ✅ **package_skill** - 统一打包工具（支持通用和Agent-Skill标准两种模式）
+- ⚠️ **package_agent_skill** - Agent-Skill标准打包（已弃用，请使用package_skill）
 
 ### Phase 0 验证工具（5个）
 
@@ -421,26 +413,61 @@ vim .env
 }
 ```
 
-### 打包工具对比
+### 打包工具说明
 
-MCP Server 提供两个打包工具，满足不同使用场景：
+**package_skill** - 统一打包工具
 
-| 工具 | 使用场景 | 特点 | 推荐度 |
-|------|----------|------|--------|
-| **package_skill** | 通用打包 | • 灵活的排除选项<br>• 默认包含测试文件<br>• 支持多种格式 | ⭐⭐⭐ |
-| **package_agent_skill** | 标准打包（推荐） | • 支持版本号参数<br>• 严格排除模式<br>• 默认不含测试<br>• 生成标准化包名 | ⭐⭐⭐⭐⭐ |
+支持两种模式：
+- **通用模式** (`strict=False`，默认): 灵活的排除选项，适用于通用打包场景
+- **标准模式** (`strict=True`): Agent-Skill标准打包模式，需要`version`参数，生成标准化包名
 
-**快速选择指南**:
+**参数：**
+- `skill_path` (str): 技能目录路径
+- `output_dir` (str): 输出目录路径（可选）
+- `version` (str): 版本号（可选，仅在strict=True时需要）
+- `format` (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
+- `include_tests` (bool): 是否包含测试文件（默认：False）
+- `strict` (bool): 是否使用Agent-Skill标准打包模式（默认：False）
+- `validate_before_package` (bool): 打包前是否验证（默认：True）
 
+**使用示例：**
+
+```python
+# 通用打包模式
+result = await package_skill(
+    skill_path="/path/to/skill",
+    format="zip"
+)
+
+# Agent-Skill标准打包模式（带版本号）
+result = await package_skill(
+    skill_path="/path/to/skill",
+    version="0.3.1",
+    strict=True
+)
+# 生成: skill-v0.3.1.zip
 ```
-是否需要标准化的包名（如 skill-creator-v0.3.1.zip）？
-├─ 是 → 使用 package_agent_skill（推荐）
-└─ 否 → 是否需要包含测试文件？
-    ├─ 是 → 使用 package_skill
-    └─ 否 → 使用 package_agent_skill（默认不含测试）
-```
 
-**推荐使用**: `package_agent_skill` - 符合 Agent-Skills 规范，生成标准包格式
+**迁移指南：**
+
+如果您之前使用 `package_agent_skill`，请迁移到新的统一API：
+
+```python
+# 旧API（已弃用）
+await package_agent_skill(
+    ctx, mcp,
+    skill_path="/path/to/skill",
+    version="0.3.1"
+)
+
+# 新API（推荐）
+await package_skill(
+    ctx, mcp,
+    skill_path="/path/to/skill",
+    version="0.3.1",
+    strict=True
+)
+```
 
 ## 开发
 

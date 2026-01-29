@@ -26,18 +26,7 @@ from .resources import (
     list_templates,
 )
 
-# 新工具模块导入（Phase 2.2 重构）
-from .tools.batch_tools import (
-    batch_analyze_skills_tool as batch_analyze_skills_tool_impl,
-)
-from .tools.batch_tools import (
-    batch_validate_skills_tool as batch_validate_skills_tool_impl,
-)
-from .tools.health_check import (
-    get_quick_status,
-    health_check,
-    is_healthy,
-)
+# 工具模块导入
 from .tools.package_tools import (
     package_agent_skill as package_agent_skill_impl,
 )
@@ -169,21 +158,24 @@ mcp = FastMCP(
     ### package_skill
     打包 Agent-Skill 为分发格式。
 
+    统一打包工具，支持两种模式：
+    - strict=False (默认): 通用打包模式
+    - strict=True: Agent-Skill标准打包模式（需要version参数）
+
     参数：
     - skill_path (str): 技能目录路径
     - output_dir (str): 输出目录路径（默认：当前目录）
+    - version (str): 版本号（可选，仅在strict=True时使用）
     - format (str): 打包格式（zip/tar.gz/tar.bz2，默认：zip）
-    - include_tests (bool): 是否包含测试文件（默认：True）
+    - include_tests (bool): 是否包含测试文件（默认：False）
+    - strict (bool): 是否使用Agent-Skill标准打包模式（默认：False）
     - validate_before_package (bool): 打包前是否验证（默认：True）
 
     ### package_agent_skill
-    打包 Agent-Skill 为标准分发格式（推荐使用）。
+    打包 Agent-Skill 为标准分发格式（已弃用）。
 
-    与 package_skill 的区别：
-    - 使用更严格的排除模式
-    - 支持版本号参数，生成标准化包名
-    - 默认不包含测试文件
-    - 确保符合 Agent-Skill 规范
+    .. deprecated::
+        请使用 package_skill 并设置 strict=True 和 version 参数。
 
     参数：
     - skill_path (str): Agent-Skill 目录路径
@@ -447,27 +439,33 @@ async def package_skill(
     ctx: Context,
     skill_path: str,
     output_dir: str | None = None,
+    version: str | None = None,
     format: str = "zip",
-    include_tests: bool = True,
+    include_tests: bool = False,
+    strict: bool = False,
     validate_before_package: bool = True,
 ) -> dict[str, Any]:
     """
     打包 Agent-Skill 为分发格式.
 
-    创建包含技能文件的压缩包，支持 zip、tar.gz 和 tar.bz2 格式。
+    这是统一的打包工具，支持两种模式：
+    - strict=False (默认): 通用打包模式，使用灵活排除模式
+    - strict=True: Agent-Skill标准打包模式，使用严格排除模式，支持version参数
 
     Args:
         ctx: MCP 上下文
         skill_path: 技能目录路径
         output_dir: 输出目录路径（可选，优先级：参数 > 环境变量 SKILL_CREATOR_OUTPUT_DIR > 默认值）
+        version: 版本号（可选，格式如 "0.3.1"，仅在strict=True时使用）
         format: 打包格式（zip/tar.gz/tar.bz2）
-        include_tests: 是否包含测试文件
+        include_tests: 是否包含测试文件（默认 False）
+        strict: 是否使用Agent-Skill标准打包模式（默认 False）
         validate_before_package: 打包前是否验证
 
     Returns:
         包含打包结果的字典
     """
-    return await package_skill_impl(ctx, mcp, skill_path, output_dir, format, include_tests, validate_before_package)
+    return await package_skill_impl(ctx, mcp, skill_path, output_dir, version, format, include_tests, strict, validate_before_package)
 
 
 @mcp.tool()
@@ -481,7 +479,10 @@ async def package_agent_skill(
     validate_before_package: bool = True,
 ) -> dict[str, Any]:
     """
-    打包 Agent-Skill 为标准分发格式.
+    打包 Agent-Skill 为标准分发格式 (已弃用).
+
+    .. deprecated::
+        此函数已弃用，请使用 package_skill 并设置 strict=True 和 version 参数。
 
     这是专门用于打包标准 Agent-Skill 的函数。
     与 package_skill 的区别：
@@ -670,161 +671,7 @@ async def check_requirement_completeness_tool(
     return await check_requirement_completeness(ctx, answers, prompt_template)
 
 
-# ============================================================================
-# 注意：Phase 0 验证工具已迁移到开发工具脚本
-# ============================================================================
-# 以下5个Phase 0验证工具仅在开发环境有用，已从MCP工具中移除：
-# - check_client_capabilities
-# - test_llm_sampling
-# - test_user_elicitation
-# - test_conversation_loop
-# - test_requirement_completeness
-#
-# 这些工具的实现代码保留在 src/skill_creator_mcp/tools/phase0_tools.py
-# 相关测试保留在 tests/test_utils/test_testing.py
-# 开发者可以通过以下方式使用：
-#   python -m scripts.dev-tools <command> [args]
-#
-# 迁移原因：
-# - 这些工具仅在开发环境（场景A）有用
-# - 在打包分发（场景B）和远程使用（场景C）中，用户不需要这些功能
-# - 减少生产环境工具复杂度
-#
-# 相关计划：.claude/plans/immutable-twirling-harbor.md (全面审核审计与优化计划)
-# ============================================================================
-
-# 批量操作工具（batch_tools.py）
-@mcp.tool()
-async def batch_validate_skills_tool(
-    ctx: Context,
-    skill_paths: list[str],
-    check_structure: bool = True,
-    check_content: bool = True,
-    concurrent_limit: int = 5,
-) -> dict[str, Any]:
-    """批量验证多个Agent-Skill.
-
-    并发验证多个技能的结构和内容，提高验证效率。
-
-    Args:
-        ctx: MCP 上下文
-        skill_paths: 技能目录路径列表
-        check_structure: 是否检查目录结构（默认 True）
-        check_content: 是否检查内容格式（默认 True）
-        concurrent_limit: 并发限制（默认 5）
-
-    Returns:
-        包含批量验证结果的字典，包括每个技能的验证结果和汇总信息
-    """
-    return await batch_validate_skills_tool_impl(ctx, mcp, skill_paths, check_structure, check_content, concurrent_limit)
-
-
-@mcp.tool()
-async def batch_analyze_skills_tool(
-    ctx: Context,
-    skill_paths: list[str],
-    analyze_structure: bool = True,
-    analyze_complexity: bool = True,
-    analyze_quality: bool = True,
-    concurrent_limit: int = 5,
-) -> dict[str, Any]:
-    """批量分析多个Agent-Skill.
-
-    并发分析多个技能的代码质量、复杂度和结构。
-
-    Args:
-        ctx: MCP 上下文
-        skill_paths: 技能目录路径列表
-        analyze_structure: 是否分析代码结构（默认 True）
-        analyze_complexity: 是否分析代码复杂度（默认 True）
-        analyze_quality: 是否分析代码质量（默认 True）
-        concurrent_limit: 并发限制（默认 5）
-
-    Returns:
-        包含批量分析结果的字典，包括每个技能的分析结果和汇总信息
-    """
-    return await batch_analyze_skills_tool_impl(ctx, mcp, skill_paths, analyze_structure, analyze_complexity, analyze_quality, concurrent_limit)
-
-
-# ==================== 健康检查工具 ====================
-
-
-@mcp.tool()
-async def health_check_tool(ctx: Context) -> dict[str, Any]:
-    """执行完整健康检查.
-
-    返回系统健康状态、系统指标、缓存指标和性能指标。
-
-    Args:
-        ctx: MCP 上下文
-
-    Returns:
-        包含完整健康检查结果的字典
-    """
-    try:
-        result = health_check()
-        return {
-            "success": True,
-            **result.model_dump(),
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": f"健康检查出错: {e}",
-            "error_type": "internal_error",
-        }
-
-
-@mcp.tool()
-async def quick_status_tool(ctx: Context) -> dict[str, Any]:
-    """获取快速状态摘要.
-
-    返回简化的系统状态信息字符串。
-
-    Args:
-        ctx: MCP 上下文
-
-    Returns:
-        包含状态摘要字符串的字典
-    """
-    try:
-        status = get_quick_status()
-        return {
-            "success": True,
-            "status": status,
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": f"获取状态出错: {e}",
-            "error_type": "internal_error",
-        }
-
-
-@mcp.tool()
-async def is_healthy_tool(ctx: Context) -> dict[str, Any]:
-    """快速检查系统是否健康.
-
-    返回布尔值表示系统健康状态。
-
-    Args:
-        ctx: MCP 上下文
-
-    Returns:
-        包含健康状态布尔值的字典
-    """
-    try:
-        healthy = is_healthy()
-        return {
-            "success": True,
-            "healthy": healthy,
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": f"健康检查出错: {e}",
-            "error_type": "internal_error",
-        }
+# ==================== MCP Resources ====================
 
 
 # ==================== MCP Resources ====================

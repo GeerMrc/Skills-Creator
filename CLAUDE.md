@@ -76,7 +76,7 @@
 │   │   ├── utils/              # 工具函数
 │   │   ├── prompts/            # Prompt 模板
 │   │   └── resources/          # 资源内容
-│   ├── tests/                  # 测试套件 (95% 覆盖率, 615个测试)
+│   ├── tests/                  # 测试套件 (95% 覆盖率, 586个测试)
 │   ├── pyproject.toml          # 项目配置
 │   └── README.md
 ├── docs/                       # 项目文档
@@ -107,22 +107,19 @@
 
 ### 1.5 MCP工具分类标准
 
-MCP Server提供18个工具，按功能划分为5类：
+MCP Server提供13个工具，按功能划分为3类：
 
 | 类别 | 工具数量 | 工具列表 |
 |------|----------|----------|
 | **技能工具** | 4 | init_skill, validate_skill, analyze_skill, refactor_skill |
-| **打包工具** | 2 | package_skill, package_agent_skill |
 | **需求收集原子工具** | 7 | create_requirement_session, get_requirement_session, update_requirement_answer, get_static_question, generate_dynamic_question, validate_answer_format, check_requirement_completeness |
-| **批量操作** | 2 | batch_validate_skills, batch_analyze_skills |
-| **健康检查** | 3 | health_check, quick_status, is_healthy |
+| **打包工具** | 2 | package_skill (统一接口), package_agent_skill (已弃用) |
 
-**总计**: 4 + 2 + 7 + 2 + 3 = 18个工具
-
-**注意**: Phase 0验证工具（5个）已迁移到开发工具脚本（`skill-creator-mcp/scripts/dev-tools.py`），不作为MCP工具暴露。
+**总计**: 4 + 7 + 2 = 13个工具（1个别名，实际12个实现）
 
 **注意**:
-- 需求收集原子工具（7个）替代了旧的`collect_requirements`单一工具，符合ADR 001原子化原则
+- Phase 0验证工具（5个）已迁移到开发工具脚本（`skill-creator-mcp/scripts/dev-tools.py`），不作为MCP工具暴露
+- `package_agent_skill` 已弃用，请使用统一的 `package_skill` 工具并设置 `strict=True` 参数
 - MCP Server还提供4个Resources和3个Prompts，但这些不计入工具数量
 
 ---

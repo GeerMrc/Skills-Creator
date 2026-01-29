@@ -7,7 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed - MCP Server 全面优化 (2026-01-29)
+### Changed - MCP Server 核心定位优化 (2026-01-29)
+
+**Breaking Changes**:
+- ✅ **移除健康检查工具（3个）**: `health_check`, `quick_status`, `is_healthy`
+  - 原因：运维监控功能，不直接服务于Agent-Skills开发
+  - HTTP端点 `/health` 和 `/metrics` 仍保留用于健康监控
+  - 受影响文件：`src/skill_creator_mcp/tools/health_check.py`, `server.py`, `tests/test_tools/test_health_check.py`
+
+- ✅ **移除批量操作工具（2个）**: `batch_validate_skills`, `batch_analyze_skills`
+  - 原因：过度功能，用户可逐个调用单个工具
+  - 简化API，专注核心功能
+  - 受影响文件：`src/skill_creator_mcp/tools/batch_tools.py`, `server.py`, `tests/test_tools/test_batch_operations.py`
+
+- ✅ **合并打包工具（2→1）**: `package_skill` 和 `package_agent_skill` 合并为统一接口
+  - `package_skill` 新增参数：`version`（可选），`strict`（新增，默认False）
+  - `strict=False`: 通用打包模式（默认）
+  - `strict=True`: Agent-Skill标准打包模式，需要`version`参数
+  - `package_agent_skill` 标记为deprecated，保留向后兼容性
+  - 受影响文件：`src/skill_creator_mcp/tools/package_tools.py`, `server.py`, `tests/test_mcp/test_package_skill_mcp.py`
+
+- ✅ **移除psutil依赖**: 健康检查工具移除后不再需要
+  - 受影响文件：`pyproject.toml`
+
+**Migration Guide**:
+
+```python
+# 旧API（已移除）
+await health_check(ctx)
+await quick_status(ctx)
+await is_healthy(ctx)
+
+# 新API（使用HTTP端点）
+# GET /health
+# GET /metrics
+```
+
+```python
+# 旧API（已移除）
+await batch_validate_skills(ctx, mcp, skill_paths=[...])
+await batch_analyze_skills(ctx, mcp, skill_paths=[...])
+
+# 新API（逐个调用）
+for skill_path in skill_paths:
+    await validate_skill(ctx, skill_path=skill_path)
+    await analyze_skill(ctx, skill_path=skill_path)
+```
+
+```python
+# 旧API（已弃用）
+await package_agent_skill(ctx, mcp, skill_path="/path", version="0.3.1")
+
+# 新API（推荐）
+await package_skill(ctx, mcp, skill_path="/path", version="0.3.1", strict=True)
+```
+
+**Impact Summary**:
+- MCP工具总数: 18 → 13 (-28%)
+- 测试数量: 627 → 586 (-77个测试)
+- 代码行数: ~6,575 → ~5,293行 (-1,282行)
+- 外部依赖: 移除 psutil
+- 核心定位符合度: ~75% → 100%
+
+### Changed - MCP Server 全面优化 (2026-01-28)
 
 **P0任务（代码质量与一致性）**:
 - **P0-1**: 消除analyze_skill和refactor_skill重复代码
