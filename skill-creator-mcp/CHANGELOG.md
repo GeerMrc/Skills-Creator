@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-01-29
+
 ### Fixed
 - 文档数据不一致（CLAUDE.md工具数量从18改为13，测试数量从615/586改为588）
 - 文档数据不一致（README.md测试数量从586改为588）
@@ -14,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Phase 0工具说明位置优化（从特性章节移到开发章节）
 - 清理server.py重复导入（time模块）
 - 添加文档一致性验证脚本
+- 代码质量全面清理与优化：
+  - 工具数量统一为12个（删除已移除工具的文档引用）
+  - 测试数量统一为568个（更新所有README徽章）
+  - 版本号统一为v0.3.4
+  - 清理~160行未使用代码
+  - 删除PackageAgentSkillInput类（40行）
+  - 删除validation_helpers.py模块（92行）
 
 ## [0.3.3] - 2026-01-28
 

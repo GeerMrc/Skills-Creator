@@ -230,37 +230,26 @@ which python3
 
 ## 验证安装
 
-运行健康检查：
+运行测试验证安装：
 
 ```bash
-# 使用 MCP 工具（在 Claude Code 中）
-health_check_tool()
-
-# 或直接运行测试
 cd skill-creator-mcp
-uv run pytest tests/test_tools/test_health_check.py -v
+uv run pytest --collect-only -q
 ```
 
-预期输出：
-```
-✅ 系统状态: 正常
-✅ 缓存状态: 已启用
-✅ 性能指标: 良好
-```
+预期输出应该显示测试收集成功。
 
 ---
 
 ## 可用工具列表
 
-### 核心工具（18个）
+### 核心工具（12个）
 
 | 类别 | 工具数量 | 工具列表 |
 |------|----------|----------|
 | **技能工具** | 4个 | init_skill, validate_skill, analyze_skill, refactor_skill |
-| **打包工具** | 2个 | package_skill, package_agent_skill |
-| **需求收集** | 7个 | 会话管理、问题获取、验证工具 |
-| **批量操作** | 2个 | batch_validate_skills, batch_analyze_skills |
-| **健康检查** | 3个 | health_check, quick_status, is_healthy |
+| **打包工具** | 1个 | package_skill |
+| **需求收集原子工具** | 7个 | create_requirement_session, get_requirement_session, update_requirement_answer, get_static_question, generate_dynamic_question, validate_answer_format, check_requirement_completeness |
 
 ---
 

@@ -497,47 +497,6 @@ class PackageSkillInput(OutputDirMixin):
         return cast("PackageSkillInput", self._ensure_output_dir_validated())
 
 
-class PackageAgentSkillInput(OutputDirMixin):
-    """打包 Agent-Skill 输入参数模型（标准分发格式）."""
-
-    skill_path: str = Field(
-        ...,
-        description="Agent-Skill 目录路径",
-    )
-    output_dir: str = Field(
-        default="",
-        description="输出目录路径（默认使用 SKILL_CREATOR_OUTPUT_DIR 环境变量）",
-    )
-    version: str | None = Field(
-        default=None,
-        description="版本号（可选，格式如 '0.3.1'）",
-    )
-    format: Literal["zip", "tar.gz", "tar.bz2"] = Field(
-        default="zip",
-        description="打包格式",
-    )
-    include_tests: bool = Field(
-        default=False,
-        description="是否包含测试文件",
-    )
-    validate_before_package: bool = Field(
-        default=True,
-        description="打包前是否验证",
-    )
-
-    @field_validator("output_dir", mode="before")
-    @classmethod
-    def _apply_output_dir_default(cls, v: Any) -> str:
-        """应用默认输出目录."""
-        return cls._apply_default_output_dir(v)
-
-    @model_validator(mode="after")
-    def validate_output_dir_model(self) -> "PackageAgentSkillInput":
-        """验证 output_dir 字段（模型级别验证，确保默认值也被处理）."""
-        # 调用 Mixin 的验证方法，使用 cast 确保返回类型正确
-        return cast("PackageAgentSkillInput", self._ensure_output_dir_validated())
-
-
 class PackageResult(BaseModel):
     """打包结果模型."""
 

@@ -473,9 +473,8 @@ claude mcp list
 - `analyze_skill` - 分析代码质量和复杂度
 - `refactor_skill` - 生成重构建议
 
-**打包工具（2个）**：
-- `package_skill` - 通用打包工具
-- `package_agent_skill` - Agent-Skill标准打包工具
+**打包工具（1个）**：
+- `package_skill` - 通用打包工具（支持strict模式进行Agent-Skill标准打包）
 
 **需求收集原子工具（7个）**：
 - `create_requirement_session` - 创建需求收集会话
@@ -486,16 +485,7 @@ claude mcp list
 - `validate_answer_format` - 验证答案格式
 - `check_requirement_completeness` - 检查完整性
 
-**批量操作（2个）**：
-- `batch_validate_skills_tool` - 批量验证多个技能
-- `batch_analyze_skills_tool` - 批量分析多个技能
-
-**健康检查（3个）**：
-- `health_check_tool` - 完整健康检查
-- `quick_status_tool` - 快速状态摘要
-- `is_healthy_tool` - 快速健康检查
-
-**Phase 0验证工具（5个）**：
+**Phase 0验证工具（5个）**（已迁移到开发工具脚本，不作为MCP工具暴露）：
 - `check_client_capabilities` - 检测客户端能力
 - `test_llm_sampling` - 测试 LLM Sampling
 - `test_user_elicitation` - 测试用户征询

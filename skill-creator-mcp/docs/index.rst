@@ -39,16 +39,9 @@ Features
 * **validate_answer_format** - Validate answer format
 * **check_requirement_completeness** - Check completeness
 
-**Batch Operations (2)**:
+**Packaging Tools (1)**:
 
-* **batch_validate_skills** - Batch validate multiple skills
-* **batch_analyze_skills** - Batch analyze multiple skills
-
-**Health Check (3)**:
-
-* **health_check** - Complete health check
-* **quick_status** - Quick status summary
-* **is_healthy** - Quick health check
+* **package_skill** - Package Agent-Skill for distribution (supports strict mode)
 
 Installation
 ------------

@@ -1,6 +1,6 @@
 """Skill Creator MCP Server."""
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 
 from .config import get_config, reload_config
 from .logging_config import setup_logging

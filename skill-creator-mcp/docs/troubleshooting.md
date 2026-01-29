@@ -280,15 +280,6 @@ claude mcp add skill-creator stdio python -m skill_creator_mcp \
   --env SKILL_CREATOR_TIMEOUT_SECONDS=60
 ```
 
-### 问题：批量操作缓慢
-
-**解决方案**：
-```bash
-# 调整并发限制
-# 使用 batch_validate_skills_tool 或 batch_analyze_skills_tool
-# 设置合理的 concurrent_limit 参数
-```
-
 ---
 
 ## 调试技巧

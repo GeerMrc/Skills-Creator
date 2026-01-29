@@ -25,11 +25,10 @@ Skill Lifecycle Tools (4)
 .. autofunction:: skill_creator_mcp.server.analyze_skill
 .. autofunction:: skill_creator_mcp.server.refactor_skill
 
-Packaging Tools (2)
+Packaging Tools (1)
 ~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: skill_creator_mcp.server.package_skill
-.. autofunction:: skill_creator_mcp.server.package_agent_skill
 
 Requirement Collection Tools (7)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,19 +40,6 @@ Requirement Collection Tools (7)
 .. autofunction:: skill_creator_mcp.server.generate_dynamic_question_tool
 .. autofunction:: skill_creator_mcp.server.validate_answer_format_tool
 .. autofunction:: skill_creator_mcp.server.check_requirement_completeness_tool
-
-Batch Operations (2)
-~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: skill_creator_mcp.server.batch_validate_skills_tool
-.. autofunction:: skill_creator_mcp.server.batch_analyze_skills_tool
-
-Health Check Tools (3)
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: skill_creator_mcp.server.health_check_tool
-.. autofunction:: skill_creator_mcp.server.quick_status_tool
-.. autofunction:: skill_creator_mcp.server.is_healthy_tool
 
 Data Models
 ------------

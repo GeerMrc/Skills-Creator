@@ -364,29 +364,19 @@ pip install skill-creator-mcp
 3. `analyze_skill` - 分析代码质量和复杂度
 4. `refactor_skill` - 生成重构建议
 
-**打包工具（2个）**：
-5. `package_skill` - 通用打包工具
-6. `package_agent_skill` - Agent-Skill标准打包工具
+**打包工具（1个）**：
+5. `package_skill` - 通用打包工具（支持strict模式进行Agent-Skill标准打包）
 
 **需求收集原子工具（7个）**：
-7. `create_requirement_session` - 创建需求收集会话
-8. `get_requirement_session` - 获取会话状态
-9. `update_requirement_answer` - 更新答案
-10. `get_static_question` - 获取静态问题
-11. `generate_dynamic_question` - 生成动态问题
-12. `validate_answer_format` - 验证答案格式
-13. `check_requirement_completeness` - 检查完整性
+6. `create_requirement_session` - 创建需求收集会话
+7. `get_requirement_session` - 获取会话状态
+8. `update_requirement_answer` - 更新答案
+9. `get_static_question` - 获取静态问题
+10. `generate_dynamic_question` - 生成动态问题
+11. `validate_answer_format` - 验证答案格式
+12. `check_requirement_completeness` - 检查完整性
 
-**批量操作（2个）**：
-14. `batch_validate_skills` - 批量验证多个技能
-15. `batch_analyze_skills` - 批量分析多个技能
-
-**健康检查（3个）**：
-16. `health_check` - 完整健康检查
-17. `quick_status` - 快速状态摘要
-18. `is_healthy` - 快速健康检查
-
-**总计**: 18个工具
+**总计**: 12个工具
 
 ### 常见问题
 

@@ -134,27 +134,11 @@ claude mcp list
 | `analyze_skill` | 分析代码质量和复杂度 |
 | `refactor_skill` | 生成重构建议 |
 
-### 打包工具（2个）
+### 打包工具（1个）
 
 | 工具 | 描述 |
 |------|------|
-| `package_skill` | 打包发布工具 |
-| `package_agent_skill` | 标准打包工具（推荐） |
-
-### 批量操作（2个）
-
-| 工具 | 描述 |
-|------|------|
-| `batch_validate_skills_tool` | 批量验证多个 Agent-Skill |
-| `batch_analyze_skills_tool` | 批量分析多个 Agent-Skill |
-
-### 健康检查（3个）
-
-| 工具 | 描述 |
-|------|------|
-| `health_check_tool` | 完整健康检查 |
-| `quick_status_tool` | 快速状态摘要 |
-| `is_healthy_tool` | 快速健康检查 |
+| `package_skill` | 打包发布工具（支持strict模式进行Agent-Skill标准打包） |
 
 ### 开发工具（不作为MCP工具暴露）
 
@@ -176,9 +160,9 @@ claude mcp list
 
 | 指标 | 数值 |
 |------|------|
-| 当前版本 | v0.3.3 |
-| MCP 工具数量 | 18 个核心工具（不含开发工具） |
-| 测试覆盖率 | 96% (601 个测试用例) |
+| 当前版本 | v0.3.4 |
+| MCP 工具数量 | 12 个核心工具（不含开发工具） |
+| 测试覆盖率 | 95% (568 个测试用例) |
 | 支持的模板 | 4 种（minimal/tool-based/workflow-based/analyzer-based） |
 
 ---
