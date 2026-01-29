@@ -97,13 +97,36 @@ npx @modelcontextprotocol/inspector /path/to/skill-creator-mcp/src/skill_creator
 
 ### 可用工具列表
 
+MCP Server 提供 **12个工具**，按功能划分为3类：
+
+#### 技能工具（4个）
+
 | 工具 | 功能 |
 |------|------|
 | `init_skill` | 初始化新技能结构 |
 | `validate_skill` | 验证技能规范 |
 | `analyze_skill` | 分析技能质量 |
 | `refactor_skill` | 生成重构建议 |
+
+#### 需求收集原子工具（7个）
+
+| 工具 | 功能 |
+|------|------|
+| `create_requirement_session` | 创建需求收集会话 |
+| `get_requirement_session` | 获取会话状态 |
+| `update_requirement_answer` | 更新需求答案 |
+| `get_static_question` | 获取静态问题（basic/complete模式） |
+| `generate_dynamic_question` | 生成动态问题（brainstorm/progressive模式） |
+| `validate_answer_format` | 验证答案格式 |
+| `check_requirement_completeness` | 检查需求完整性 |
+
+#### 打包工具（1个）
+
+| 工具 | 功能 |
+|------|------|
 | `package_skill` | 打包技能为分发格式 |
+
+---
 
 ### init_skill
 

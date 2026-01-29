@@ -284,7 +284,7 @@ async def health_check_endpoint(request: Any) -> dict[str, Any]:
     return {
         "status": "healthy",
         "service": "skill-creator-mcp",
-        "version": "0.3.3",
+        "version": "0.3.4",
     }
 
 
