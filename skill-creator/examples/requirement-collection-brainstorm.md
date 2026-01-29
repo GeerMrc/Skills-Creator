@@ -21,12 +21,15 @@
 ### 启动 Brainstorm 模式
 
 ```python
-await collect_requirements(
+# 创建brainstorm模式会话
+session_result = await create_requirement_session_tool(
     ctx=ctx,
-    action="start",
-    mode="brainstorm",
-    session_id="doc-analyzer-brainstorm"
+    mode="brainstorm"
 )
+session_id = session_result["session_id"]
+
+# 初始化对话历史
+conversation_history = []
 ```
 
 **LLM 生成第一个问题**：
@@ -48,11 +51,16 @@ await collect_requirements(
 ### 完成头脑风暴
 
 ```python
-await collect_requirements(
+# 获取会话状态
+session_status = await get_requirement_session_tool(
     ctx=ctx,
-    action="complete",
-    mode="brainstorm",
-    session_id="doc-analyzer-brainstorm"
+    session_id=session_id
+)
+
+# 检查完整性
+completeness = await check_requirement_completeness_tool(
+    ctx=ctx,
+    answers=session_status["answers"]
 )
 ```
 
@@ -98,17 +106,17 @@ await collect_requirements(
 
 ```python
 # 开始正式的需求收集
-await collect_requirements(
+formal_session = await create_requirement_session_tool(
     ctx=ctx,
-    action="start",
-    mode="complete",
-    session_id="doc-analyzer-formal"
+    mode="complete"
 )
+formal_session_id = formal_session["session_id"]
 
-# 第一个问题：技能名称
+# 逐步回答问题（通过Agent-Skill工作流自动处理）
+# 问题1：技能名称
 → "doc-decision-tracker"
 
-# 第二个问题：主要功能
+# 问题2：主要功能
 → "提取、关联和可视化技术决策及其演变过程"
 ...
 ```

@@ -191,22 +191,57 @@ Elicit 模式需要客户端支持 `ctx.elicit()` API：
 ### 检查 Elicit 支持
 
 ```python
-# 检查客户端能力
-capabilities = await check_client_capabilities()
+# 注意：根据新的架构设计，需求收集通过Agent-Skill工作流编排
+# 以下展示如何使用7个原子化MCP工具
 
-if capabilities["supports_elicitation"]:
-    # 使用 Elicit 模式
-    result = await collect_requirements(
-        action="start",
-        mode="basic",
-        use_elicit=True
+# 步骤1：创建需求收集会话
+session_result = await create_requirement_session_tool(
+    ctx=ctx,
+    mode="basic"
+)
+session_id = session_result["session_id"]
+
+# 步骤2：获取第一个问题
+question = await get_static_question_tool(
+    ctx=ctx,
+    mode="basic",
+    step_index=0
+)
+
+# 步骤3：循环收集用户输入（通过Agent-Skill工作流编排）
+# Elicit模式下，Agent-Skill会自动调用ctx.elicit()收集所有输入
+# 这里展示的是手动模式，实际使用时通过skill-creator Agent-Skill调用
+
+# 步骤4：验证每个答案
+for step_index in range(5):  # basic模式有5个步骤
+    question = await get_static_question_tool(ctx=ctx, mode="basic", step_index=step_index)
+    user_input = await ctx.elicit(question["prompt"])  # 自动获取用户输入
+
+    # 验证输入格式
+    validation = question.get("validation", {})
+    is_valid = await validate_answer_format_tool(
+        ctx=ctx,
+        answer=user_input,
+        validation=validation
     )
-else:
-    # 回退到传统模式
-    result = await collect_requirements(
-        action="start",
-        mode="basic"
+
+    if not is_valid["valid"]:
+        # 处理验证错误
+        continue
+
+    # 保存答案
+    await update_requirement_answer_tool(
+        ctx=ctx,
+        session_id=session_id,
+        question_key=question["key"],
+        answer=user_input
     )
+
+# 步骤5：检查完整性
+completeness = await check_requirement_completeness_tool(
+    ctx=ctx,
+    answers=collected_answers
+)
 ```
 
 ---

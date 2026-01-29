@@ -1,10 +1,8 @@
 # 需求澄清基础指南
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+> **架构说明**：需求收集功能基于 **7个原子化MCP工具 + Agent-Skill工作流编排** 的混合架构（符合ADR 001）。本文档展示概念和用法，实际使用通过skill-creator Agent-Skill调用。
 
 ## 概述
-
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
 
 Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP工具 + Agent-Skill工作流编排** 的混合架构。
 
@@ -17,11 +15,11 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ## 核心概念
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 ### 7个原子化工具
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 需求收集功能由7个独立的MCP工具提供：
 
@@ -37,7 +35,7 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ### 会话状态管理
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 通过 `create_requirement_session_tool` 和 `get_requirement_session_tool` 管理会话状态：
 
@@ -47,7 +45,7 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ### AI 驱动引导
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 使用 LLM 动态生成问题和引导对话：
 
@@ -57,7 +55,7 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ### 输入验证
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 实时验证用户输入：
 
@@ -67,7 +65,7 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ## 收集模式概览
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 需求收集功能支持 4 种收集模式 + 1 种自动化模式：
 
@@ -81,7 +79,7 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ### 基础模式 (basic)
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 5 步快速收集核心信息：
 1. 技能名称
@@ -92,7 +90,7 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ### 完整模式 (complete)
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 10 步全面收集技术细节：
 - 包含基础模式的 5 步
@@ -100,7 +98,7 @@ Skill-Creator 提供 AI 驱动的需求澄清功能，基于 **7个原子化MCP�
 
 ### 头脑风暴模式 (brainstorm)
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 AI 引导的创意发散：
 - 开放性问题引导思考
@@ -109,7 +107,7 @@ AI 引导的创意发散：
 
 ### 渐进式模式 (progressive)
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 快速开始，后续完善：
 - 核心信息优先
@@ -118,7 +116,7 @@ AI 引导的创意发散：
 
 ### Elicit 自动模式
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 设置 `use_elicit=True` 后，AI 自动调用 `ctx.elicit()` 逐个收集输入：
 
@@ -138,16 +136,16 @@ AI 引导的创意发散：
 
 ## 快速开始
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 ### 基础用法
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 ```python
 # 1. 开始收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="start",
     mode="basic"
@@ -155,7 +153,7 @@ result = await collect_requirements(
 
 # 2. 逐个回答问题
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="next",
     session_id=result["session_id"],
@@ -164,7 +162,7 @@ result = await collect_requirements(
 
 # 3. 完成收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="complete",
     session_id=result["session_id"]
@@ -173,12 +171,12 @@ result = await collect_requirements(
 
 ### Elicit 自动模式
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 ```python
 # 一步完成所有收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="start",
     mode="basic",
@@ -188,7 +186,7 @@ result = await collect_requirements(
 
 ## 相关文档
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 - **[需求收集模式详解](requirement-collection-modes.md)** - 各种模式的详细说明和对比
 - **[需求收集 API 参考](requirement-collection-api.md)** - API 文档索引

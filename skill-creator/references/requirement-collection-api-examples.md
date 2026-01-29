@@ -1,8 +1,8 @@
 # 需求收集 API 使用示例
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+> **架构说明**：需求收集基于 **7个原子化MCP工具 + Agent-Skill工作流编排** 的混合架构（符合ADR 001）。本文档展示使用场景和最佳实践，实际使用通过skill-creator Agent-Skill调用。
 
-本文档展示 `collect_requirements` 工具的实际使用场景和最佳实践。
+本文档展示需求收集工具的实际使用场景和最佳实践。
 
 > **相关文档**：
 > - [API 核心参考](requirement-collection-api-core.md) - 完整 API 文档
@@ -12,7 +12,7 @@
 
 ## 目录
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 - [场景 1：快速创建技能](#场景-1快速创建技能)
 - [场景 2：中断后恢复](#场景-2中断后恢复)
@@ -23,25 +23,25 @@
 
 ## 场景 1：快速创建技能
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 使用基础模式快速收集创建技能所需的核心信息。
 
 ```python
 # 1. 开始基础模式收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="start",
     mode="basic"
 )
 # 返回: 第一个步骤的问题（技能名称）
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 # 2. 逐个回答问题（5个步骤）
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="next",
     session_id=result["session_id"],
@@ -50,11 +50,11 @@ result = await collect_requirements(
 
 # ... 继续回答其他步骤 ...
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 # 3. 完成收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="complete",
     session_id=result["session_id"]
@@ -62,7 +62,7 @@ result = await collect_requirements(
 
 # 4. 使用收集的信息初始化技能
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 await init_skill(
     name=result["answers"]["skill_name"],
     template=result["answers"]["template_type"]
@@ -78,29 +78,29 @@ await init_skill(
 
 ## 场景 2：中断后恢复
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 会话状态自动保存，可以随时恢复中断的收集过程。
 
 ```python
 # 用户在第 3 步中断...
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 # 恢复会话（查询当前状态）
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="status",
     session_id="previous_session_id"
 )
 # 返回: 当前进度（60%）和已收集答案
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 # 从第 3 步继续
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="next",
     session_id="previous_session_id",
@@ -117,25 +117,25 @@ result = await collect_requirements(
 
 ## 场景 3：修改之前答案
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 使用 `previous` 动作返回上一步，修改之前的输入。
 
 ```python
 # 用户想修改第 2 步的答案
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="previous",
     session_id="current_session_id"
 )
 # 返回: 上一个问题（第 2 步）
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 # 重新输入第 2 步的答案
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(
     action="next",
     session_id="current_session_id",
@@ -152,11 +152,11 @@ result = await collect_requirements(
 
 ## 最佳实践
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 ### 1. 选择合适的模式
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 根据需求明确度选择合适的收集模式：
 
@@ -169,25 +169,25 @@ result = await collect_requirements(
 
 ### 2. 提供清晰的用户输入
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 确保 `user_input` 简洁明确：
 
 ```python
 # 好的输入
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 user_input="pdf-parser"
 
 # 不好的输入
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 user_input="嗯，我想做一个解析 PDF 的工具，名字叫 pdf-parser 吧..."
 ```
 
 ### 3. 利用完整性检查
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 完成收集后检查 `is_complete` 和 `missing_info`：
 
@@ -202,23 +202,23 @@ if not result["is_complete"]:
 
 ### 4. 保存会话 ID
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 会话 ID 是恢复会话的唯一标识：
 
 ```python
 # 保存会话 ID 以便后续使用
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 session_id = result["session_id"]
 # 可以保存到文件、数据库或传递给用户
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 ```
 
 ### 5. 处理验证错误
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 捕获验证错误并提供友好提示：
 
@@ -231,19 +231,19 @@ if not result["success"]:
 
 ### 6. 渐进式信息收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 对于复杂技能，建议使用 `progressive` 模式快速开始：
 
 ```python
 # 第一步：快速收集核心信息
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(action="start", mode="progressive")
 
 # 第二步：创建基础技能
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 await init_skill(
     name=result["answers"]["skill_name"],
     template="minimal"
@@ -251,30 +251,30 @@ await init_skill(
 
 # 第三步：后续逐步完善功能
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 ```
 
 ---
 
 ## 完整工作流示例
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 ### 基础模式完整流程
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 ```python
 # 步骤 1：开始收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(action="start", mode="basic")
 session_id = result["session_id"]
 print(f"开始收集：{result['current_step']['title']}")
 
 # 步骤 2-5：逐个回答
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 questions_answers = {
     "skill_name": "docker-helper",
     "skill_function": "简化 Docker 容器管理",
@@ -293,7 +293,7 @@ for step in range(5):
 
 # 步骤 6：完成收集
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 result = await collect_requirements(action="complete", session_id=session_id)
 
 if result["is_complete"]:
@@ -311,7 +311,7 @@ else:
 
 ## 相关文档
 
-> **⚠️ 架构更新**：以下示例使用旧API展示概念。实际使用请通过Agent-Skill工作流调用7个原子化MCP工具。
+
 
 - **[API 核心参考](requirement-collection-api-core.md)** - 完整 API 文档
 - **[需求澄清基础指南](requirement-collection-basics.md)** - 核心概念和快速开始
