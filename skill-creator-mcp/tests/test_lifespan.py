@@ -1,7 +1,6 @@
 """测试MCP Server生命周期管理."""
 
-import time
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 from fastmcp import FastMCP
@@ -109,15 +108,15 @@ class TestMCPServerWithLifespan:
         """测试MCP服务器启动时初始化上下文."""
         # 模拟服务器启动
         # 注意：FastMCP可能在内部使用lifespan，这里验证配置正确
-        
+
         # 验证生命周期函数可以被调用
         mock_server = MagicMock(spec=FastMCP)
-        
+
         async with app_lifespan(mock_server) as context:
             # 验证上下文正常初始化
             assert context.startup_time > 0
             assert context.request_count == 0
-            
+
             # 模拟一些操作
             context.increment_request_count()
             assert context.request_count == 1

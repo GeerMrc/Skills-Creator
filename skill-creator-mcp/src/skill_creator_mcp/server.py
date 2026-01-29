@@ -4,60 +4,16 @@
 分析和重构 Agent-Skills。
 """
 
+import logging
 import time
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from fastmcp import Context, FastMCP
 
-
-@dataclass
-class AppContext:
-    """应用生命周期上下文.
-
-    用于在MCP Server生命周期中共享状态和资源。
-    """
-    cache: dict[str, Any] = field(default_factory=dict)
-    startup_time: float = 0.0
-    request_count: int = 0
-
-    def increment_request_count(self) -> int:
-        """增加请求计数."""
-        self.request_count += 1
-        return self.request_count
-
-
-@asynccontextmanager
-async def app_lifespan(server: FastMCP):
-    """应用生命周期管理钩子.
-
-    在MCP Server启动和关闭时执行初始化和清理操作。
-
-    Args:
-        server: FastMCP服务器实例
-
-    Yields:
-        AppContext: 应用上下文对象
-    """
-    import time
-    from .utils.cache import MemoryCache
-
-    # 启动时初始化
-    cache_instance = MemoryCache()
-    context = AppContext(
-        cache=cache_instance,
-        startup_time=time.time(),
-        request_count=0,
-    )
-
-    # 初始化资源
-    yield context
-
-    # 关闭时清理
-    # 注意：cache由生命周期管理，会自动清理
-    pass
-
+# 导入提示和资源
 from .prompts import (
     get_create_skill_prompt,
     get_refactor_skill_prompt,
@@ -113,6 +69,54 @@ from .tools.skill_tools import (
 # Phase 0 验证工具已迁移到开发工具脚本
 # 保留在 .tools.phase0_tools 模块中供开发工具使用
 # 但不注册为MCP工具
+
+
+@dataclass
+class AppContext:
+    """应用生命周期上下文.
+
+    用于在MCP Server生命周期中共享状态和资源。
+    """
+    cache: Any = field(default_factory=dict)
+    startup_time: float = 0.0
+    request_count: int = 0
+
+    def increment_request_count(self) -> int:
+        """增加请求计数."""
+        self.request_count += 1
+        return self.request_count
+
+
+@asynccontextmanager
+async def app_lifespan(server: FastMCP) -> Any:
+    """应用生命周期管理钩子.
+
+    在MCP Server启动和关闭时执行初始化和清理操作。
+
+    Args:
+        server: FastMCP服务器实例
+
+    Yields:
+        AppContext: 应用上下文对象
+    """
+    import time
+
+    from .utils.cache import MemoryCache
+
+    # 启动时初始化
+    cache_instance = MemoryCache()
+    context = AppContext(
+        cache=cache_instance,
+        startup_time=time.time(),
+        request_count=0,
+    )
+
+    # 初始化资源
+    yield context
+
+    # 关闭时清理
+    # 注意：cache由生命周期管理，会自动清理
+    pass
 
 
 # 创建 MCP Server
@@ -201,8 +205,8 @@ class LoggingMiddleware:
     记录MCP工具的调用信息。
     """
 
-    def __init__(self):
-        self._logger = None
+    def __init__(self) -> None:
+        self._logger: logging.Logger | None = None
 
     async def __call__(self, context: Any, call_next: Callable) -> Any:
         """处理请求."""
@@ -252,7 +256,7 @@ class TimingMiddleware:
     记录工具执行时间并收集性能统计。
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._timings: dict[str, list[float]] = {}
 
     async def __call__(self, context: Any, call_next: Callable) -> Any:
@@ -285,13 +289,13 @@ class TimingMiddleware:
 
 # 注册中间件
 _timing_middleware = TimingMiddleware()
-mcp.add_middleware(_timing_middleware)
+mcp.add_middleware(_timing_middleware)  # type: ignore[arg-type]
 
 
 # ==================== HTTP路由 ====================
 
 
-@mcp.custom_route("/health", methods=["GET"])
+@mcp.custom_route("/health", methods=["GET"])  # type: ignore[arg-type]
 async def health_check_endpoint(request: Any) -> dict[str, Any]:
     """HTTP健康检查端点.
 
@@ -310,7 +314,7 @@ async def health_check_endpoint(request: Any) -> dict[str, Any]:
     }
 
 
-@mcp.custom_route("/metrics", methods=["GET"])
+@mcp.custom_route("/metrics", methods=["GET"])  # type: ignore[arg-type]
 async def metrics_endpoint(request: Any) -> dict[str, Any]:
     """性能指标端点.
 
