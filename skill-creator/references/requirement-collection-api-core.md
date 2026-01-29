@@ -305,7 +305,7 @@ check_requirement_completeness_tool(
 
 **检查会话状态**:
 ```python
-result = await collect_requirements(action="status", session_id="...")
+result = await get_requirement_session_tool(session_id="...")
 print(result["answers"])
 print(result["progress"])
 ```
@@ -313,7 +313,7 @@ print(result["progress"])
 **重新开始收集**:
 ```python
 # 使用新的 session_id 或不指定（自动生成）
-result = await collect_requirements(action="start", mode="basic")
+result = await create_requirement_session_tool(mode="basic")
 ```
 
 ---

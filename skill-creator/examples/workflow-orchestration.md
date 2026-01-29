@@ -1,7 +1,8 @@
 # 工作流编排示例
 
-> **文档版本**: v1.0
+> **文档版本**: v1.1
 > **创建日期**: 2026-01-27
+> **更新日期**: 2026-01-29
 > **适用场景**: Agent-Skill与MCP工具协同工作
 
 ---
@@ -47,18 +48,31 @@
 async def create_skill_workflow(skill_name: str):
     """技能创建标准工作流."""
 
-    # 步骤1: 收集需求
-    # 通过Agent-Skill工作流调用
-        ctx,
-        action="start",
-        mode="basic"
-    )
+    # 步骤1: 收集需求（使用7个原子化工具）
+    # 1.1 创建会话
+    session = await create_requirement_session_tool(mode="basic")
+    session_id = session["session_id"]
+
+    # 1.2 获取并回答问题
+    answers = {}
+    for i in range(5):  # basic模式有5个问题
+        question = await get_static_question_tool(mode="basic", step_index=i)
+        answer = await ctx.elicit(question["prompt"])  # Agent-Skill层交互
+        answers[question["key"]] = answer
+        await update_requirement_answer_tool(
+            session_id=session_id,
+            question_key=question["key"],
+            answer=answer
+        )
+
+    # 1.3 检查完整性
+    completeness = await check_requirement_completeness_tool(answers=answers)
 
     # 步骤2: 初始化技能
     init_result = await init_skill(
         ctx,
-        name=requirements["skill_name"],
-        template=requirements["template_type"]
+        name=answers["skill_name"],
+        template=answers.get("template_type", "minimal")
     )
 
     # 步骤3: 验证技能
@@ -151,65 +165,103 @@ async def batch_analysis_workflow(skill_paths: list[str]):
 
 ---
 
-## 3. 与collect_requirements的对比
+## 3. 需求收集工作流（7个原子化工具）
 
-### 3.1 理想MCP工具用法
+### 3.1 架构说明
 
-**特征**: 单次调用，返回简单结果
+需求收集功能已重构为**7个原子化MCP工具**，符合ADR 001架构原则：
+
+| 工具 | 职责 | 类别 |
+|------|------|------|
+| `create_requirement_session_tool` | 创建会话 | 会话管理 |
+| `get_requirement_session_tool` | 获取会话状态 | 会话管理 |
+| `update_requirement_answer_tool` | 更新答案 | 会话管理 |
+| `get_static_question_tool` | 获取预定义问题 | 问题获取 |
+| `generate_dynamic_question_tool` | 生成动态问题 | 问题获取 |
+| `validate_answer_format_tool` | 验证答案格式 | 验证工具 |
+| `check_requirement_completeness_tool` | 检查完整性 | 验证工具 |
+
+### 3.2 正确的工作流用法
+
+**特征**: Agent-Skill层编排，多次调用MCP工具
 
 ```python
-# 理想：Agent-Skill层编排
-async def collect_requirements_ideal():
-    """理想的需求收集流程."""
+# 正确：Agent-Skill层编排
+async def collect_requirements_workflow():
+    """正确的需求收集流程."""
 
-    # Agent-Skill层循环
-    while not completed:
-        # 1. 获取下一个问题
-        question = await mcp.requirement_get_next_question(session_id)
+    # 1. 创建会话
+    session = await create_requirement_session_tool(mode="basic")
+    session_id = session["session_id"]
 
-        # 2. 获取用户输入（Agent-Skill层的elicit）
-        answer = await ctx.elicit(question.prompt)
+    # 2. Agent-Skill层循环收集答案
+    answers = {}
+    for i in range(5):  # basic模式5个问题
+        # 获取问题
+        question = await get_static_question_tool(mode="basic", step_index=i)
 
-        # 3. 验证答案
-        is_valid = await mcp.requirement_validate_answer(session_id, answer)
+        # 获取用户输入（Agent-Skill层的elicit）
+        answer = await ctx.elicit(question["prompt"])
 
-        # 4. 保存答案
-        if is_valid:
-            await mcp.requirement_save_answer(session_id, question.key, answer)
+        # 验证答案
+        if question.get("validation"):
+            is_valid = await validate_answer_format_tool(
+                answer=answer,
+                validation=question["validation"]
+            )
+            if not is_valid["valid"]:
+                continue  # 重新输入
 
-    # 完成收集
-    return await mcp.requirement_complete_session(session_id)
+        # 保存答案
+        await update_requirement_answer_tool(
+            session_id=session_id,
+            question_key=question["key"],
+            answer=answer
+        )
+        answers[question["key"]] = answer
+
+    # 3. 检查完整性
+    completeness = await check_requirement_completeness_tool(answers=answers)
+
+    return {
+        "success": True,
+        "answers": answers,
+        "is_complete": completeness["is_complete"]
+    }
 ```
 
-### 3.2 collect_requirements的特殊性
+### 3.3 迁移指南
 
-**原因**: 需要使用 `ctx.elicit()` API（MCP Server级别）
-
-**详细说明**: 参见 [需求收集架构文档](../references/requirement-collection-architecture.md)
-
-**实际用法**:
-
+**旧代码（已弃用）**:
 ```python
-# 实际：MCP层包含循环（因为需要ctx.elicit）
-result = await mcp.collect_requirements(
+# 旧的单个工具（包含循环逻辑）
+result = await collect_requirements(
     ctx,
     action="start",
     mode="basic",
-    use_elicit=True  # 自动完成整个循环
+    use_elicit=True
 )
-
-# 一次调用完成所有收集
-answers = result["answers"]
 ```
 
-**对比**:
+**新代码（推荐）**:
+```python
+# 新的7个原子化工具（Agent-Skill层编排）
+session = await create_requirement_session_tool(mode="basic")
+question = await get_static_question_tool(mode="basic", step_index=0)
+answer = await ctx.elicit(question["prompt"])
+await update_requirement_answer_tool(
+    session_id=session["session_id"],
+    question_key=question["key"],
+    answer=answer
+)
+# ... 继续其他步骤
+```
 
-| 维度 | 理想MCP工具 | collect_requirements |
-|------|------------|---------------------|
-| 循环逻辑位置 | Agent-Skill层 | MCP层 |
-| 调用次数 | 多次 | 一次 |
-| 原因 | 架构原则 | elicit API限制 |
-| 可复用性 | 高 | 中等 |
+**主要变化**：
+1. 单个工具拆分为7个原子化工具
+2. 循环逻辑从MCP层移到Agent-Skill层
+3. 更灵活的验证和错误处理
+4. 更好的可测试性和可复用性
 
 ---
 
@@ -218,7 +270,6 @@ answers = result["answers"]
 ### 4.1 场景描述
 
 用户想要创建一个新的Agent-Skill，需要：
-
 1. 收集需求（技能名称、功能、模板类型等）
 2. 初始化技能结构
 3. 验证技能质量
@@ -236,30 +287,55 @@ async def create_new_skill_complete_workflow():
     # ==================== 阶段1: 需求收集 ====================
     print("📋 阶段1: 收集需求...")
 
-    # 使用 collect_requirements（特殊情况：MCP包含循环）
-    requirements = await mcp.collect_requirements(
-        ctx,
-        action="start",
-        mode="complete",
-        use_elicit=True
-    )
+    # 1.1 创建会话
+    session = await create_requirement_session_tool(mode="complete")
+    session_id = session["session_id"]
 
-    if not requirements["success"]:
+    # 1.2 获取并回答问题（complete模式10个问题）
+    answers = {}
+    for i in range(10):
+        question = await get_static_question_tool(mode="complete", step_index=i)
+        answer = await ctx.elicit(question["prompt"])
+
+        # 验证答案
+        if question.get("validation"):
+            validation = await validate_answer_format_tool(
+                answer=answer,
+                validation=question["validation"]
+            )
+            if not validation["valid"]:
+                print(f"验证失败：{validation['error']}")
+                continue
+
+        # 保存答案
+        await update_requirement_answer_tool(
+            session_id=session_id,
+            question_key=question["key"],
+            answer=answer
+        )
+        answers[question["key"]] = answer
+        print(f"进度：{(i + 1) * 10}%")
+
+    # 1.3 检查完整性
+    completeness = await check_requirement_completeness_tool(answers=answers)
+
+    if not completeness["is_complete"]:
+        print("需求不完整：", completeness["missing_info"])
         return {
             "success": False,
             "stage": "requirements",
-            "error": requirements["error"]
+            "error": "需求不完整"
         }
 
-    print(f"✓ 需求收集完成: {requirements['answers']['skill_name']}")
+    print(f"✓ 需求收集完成: {answers['skill_name']}")
 
     # ==================== 阶段2: 初始化技能 ====================
     print("📦 阶段2: 初始化技能...")
 
-    init_result = await mcp.init_skill(
+    init_result = await init_skill(
         ctx,
-        name=requirements["answers"]["skill_name"],
-        template=requirements["answers"]["template_type"],
+        name=answers["skill_name"],
+        template=answers.get("template_type", "minimal"),
         with_examples=True,
         with_scripts=True
     )
@@ -277,7 +353,7 @@ async def create_new_skill_complete_workflow():
     # ==================== 阶段3: 验证技能 ====================
     print("🔍 阶段3: 验证技能...")
 
-    validation = await mcp.validate_skill(
+    validation = await validate_skill(
         ctx,
         skill_path=skill_path,
         check_structure=True,
@@ -297,7 +373,7 @@ async def create_new_skill_complete_workflow():
     # ==================== 阶段4: 分析质量 ====================
     print("📊 阶段4: 分析质量...")
 
-    analysis = await mcp.analyze_skill(
+    analysis = await analyze_skill(
         ctx,
         skill_path=skill_path,
         analyze_structure=True,
@@ -313,7 +389,7 @@ async def create_new_skill_complete_workflow():
     if quality_score < 80:
         print("💡 阶段5: 生成重构建议...")
 
-        refactor_result = await mcp.refactor_skill(
+        refactor_result = await refactor_skill(
             ctx,
             skill_path=skill_path,
             focus=["structure", "documentation"]
@@ -326,7 +402,7 @@ async def create_new_skill_complete_workflow():
     return {
         "success": True,
         "skill_path": skill_path,
-        "requirements": requirements["answers"],
+        "requirements": answers,
         "validation": {
             "valid": validation["valid"],
             "structure_valid": validation["structure_valid"],
@@ -443,7 +519,8 @@ class ToolState:
 
 ### 6.1 架构文档
 
-- [需求收集架构文档](../references/requirement-collection-architecture.md) - 详解 `collect_requirements` 的特殊性
+- [需求收集API核心参考](../references/requirement-collection-api-core.md) - 7个原子化工具的完整API
+- [需求收集API示例](../references/requirement-collection-api-examples.md) - 实际使用场景和最佳实践
 
 ### 6.2 MCP集成
 
@@ -456,4 +533,4 @@ class ToolState:
 ---
 
 **文档维护**: 随着项目演进，持续更新工作流示例。
-**最后更新**: 2026-01-27
+**最后更新**: 2026-01-29

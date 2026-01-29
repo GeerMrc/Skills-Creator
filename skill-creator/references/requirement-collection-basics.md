@@ -1,5 +1,30 @@
 # 需求澄清基础指南
 
+> **重要迁移说明（2026-01-29）**：
+>
+> 本文档中部分代码示例使用旧的 `collect_requirements` 工具（已弃用）。
+>
+> **新架构（推荐）**：需求收集功能已重构为 **7个原子化MCP工具 + Agent-Skill工作流编排**。
+>
+> **旧代码示例（仅用于理解概念）**：
+> ```python
+> # 旧的单个工具（已弃用）
+> result = await collect_requirements(action="start", mode="basic")
+> ```
+>
+> **新代码（推荐）**：
+> ```python
+> # 使用7个原子化工具
+> session = await create_requirement_session_tool(mode="basic")
+> question = await get_static_question_tool(mode="basic", step_index=0)
+> answer = await ctx.elicit(question["prompt"])
+> await update_requirement_answer_tool(session_id=session["session_id"], ...)
+> ```
+>
+> **详见**：[需求收集 API 核心](requirement-collection-api-core.md) | [API 使用示例](requirement-collection-api-examples.md)
+
+---
+
 > **架构说明**：需求收集功能基于 **7个原子化MCP工具 + Agent-Skill工作流编排** 的混合架构（符合ADR 001）。本文档展示概念和用法，实际使用通过skill-creator Agent-Skill调用。
 
 ## 概述

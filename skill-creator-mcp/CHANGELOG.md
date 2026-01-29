@@ -15,8 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - 架构边界重构：拆分collect_requirements为原子工具
 - 工具数量从16个增加到23个
-- 测试数量从533个增加到601个
-- 测试覆盖率为96%
+- 测试数量从533个增加到615个
+- 测试覆盖率为95%
 
 ### Fixed
 - 函数重复定义问题（check_requirement_completeness）

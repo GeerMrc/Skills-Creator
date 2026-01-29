@@ -1,33 +1,63 @@
 # GitHub 需求跟踪集成示例
 
+> **重要说明（2026-01-29）**：
+>
+> 本文档中的示例使用旧的 `collect_requirements` 工具（已弃用）。
+>
+> **新代码（推荐）**：
+> ```python
+> # 使用7个原子化工具收集需求
+> session = await create_requirement_session_tool(mode="complete")
+> # ... 使用其他工具完成收集
+> ```
+>
+> **详见**：[需求收集 API 核心](../references/requirement-collection-api-core.md)
+
+---
+
 演示如何将需求收集功能与 GitHub MCP 集成，自动创建需求跟踪 Issue。
 
 ## 概述
 
-当使用 `collect_requirements` 收集技能需求后，可以自动创建 GitHub Issue 来跟踪需求，确保需求不会遗失且可追溯。
+当使用 **7个原子化需求收集工具** 收集技能需求后，可以自动创建 GitHub Issue 来跟踪需求，确保需求不会遗失且可追溯。
 
 ## 场景：需求自动跟踪
 
 ### 1. 收集需求
 
 ```python
-# 使用 complete 模式收集完整需求
+# 使用 complete 模式收集完整需求（新API）
 # 通过Agent-Skill工作流调用
-    action="complete",
-    mode="complete"
-)
+session = await create_requirement_session_tool(mode="complete")
+session_id = session["session_id"]
+
+# 获取并回答问题（10步）
+answers = {}
+for i in range(10):
+    question = await get_static_question_tool(mode="complete", step_index=i)
+    answer = await ctx.elicit(question["prompt"])
+    answers[question["key"]] = answer
+    await update_requirement_answer_tool(
+        session_id=session_id,
+        question_key=question["key"],
+        answer=answer
+    )
+
+# 检查完整性
+completeness = await check_requirement_completeness_tool(answers=answers)
 
 # 需求收集完成
-result = {
-    "is_complete": True,
-    "answers": {
-        "skill_name": "pdf-processor",
-        "skill_function": "处理PDF文档，支持提取文本、合并页面",
-        "use_cases": "数据分析师需要批量处理PDF报告",
-        "template_type": "tool-based",
-        "target_users": "数据分析师、研究人员",
-        "tech_stack": "Python, PyPDF2, pdfplumber",
-        "dependencies": "无外部依赖"
+if completeness["is_complete"]:
+    result = {
+        "is_complete": True,
+        "answers": {
+            "skill_name": "pdf-processor",
+            "skill_function": "处理PDF文档，支持提取文本、合并页面",
+            "use_cases": "数据分析师需要批量处理PDF报告",
+            "template_type": "tool-based",
+            "target_users": "数据分析师、研究人员",
+            "tech_stack": "Python, PyPDF2, pdfplumber",
+            "dependencies": "无外部依赖"
     },
     "session_id": "req_2026-01-26T10:30:00"
 }
