@@ -70,7 +70,32 @@ mcp_servers: []
 
 
 def get_create_skill_prompt(name: str, template: str = "minimal") -> str:
-    """获取创建技能的 Prompt 模板.
+    """
+    获取创建技能的 Prompt 模板.
+
+    ## 完整模板内容
+
+    这个Prompt模板指导AI创建符合规范的Agent-Skill，包含：
+
+    1. **任务说明**: 创建指定名称和类型的技能
+    2. **命名规范**: 小写字母、数字、连字符，1-64字符
+    3. **YAML frontmatter**: 必需字段和格式
+    4. **目录结构**: references/, examples/, scripts/, .claude/
+    5. **内容要求**: SKILL.md ≤150行，详细内容在references/
+    6. **模板特定要求**: 根据minimal/tool-based/workflow-based/analyzer-based不同而不同
+
+    ## 参数说明
+    - name: 技能名称（必须符合命名规范）
+    - template: 模板类型（minimal/tool-based/workflow-based/analyzer-based）
+
+    ## 返回值
+    返回完整的Prompt模板字符串，可直接用于LLM生成技能内容
+
+    ## 使用示例
+    ```python
+    prompt = get_create_skill_prompt("my-skill", "tool-based")
+    # 返回包含tool-based模板特定要求的完整Prompt
+    ```
 
     Args:
         name: 技能名称

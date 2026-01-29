@@ -111,7 +111,37 @@ REFACTOR_SKILL_PROMPT: Final = """你是一个专业的 Agent-Skill 重构专家
 
 
 def get_refactor_skill_prompt(skill_path: str, focus_areas: list[str] | None = None) -> str:
-    """获取重构技能的 Prompt 模板.
+    """
+    获取重构技能的 Prompt 模板.
+
+    ## 完整模板内容
+
+    这个Prompt模板指导AI进行全面的Agent-Skill重构分析，包含：
+
+    1. **当前状态分析**: 评估技能功能、结构和质量
+    2. **问题识别**: 检查命名、结构、内容、代码、性能、安全性
+    3. **重构建议**: 分为结构优化、内容优化、代码优化
+    4. **重构原则**: 保持功能不变、渐进式改进、向后兼容、文档同步
+    5. **输出格式**: 结构化的重构分析报告
+
+    ## 参数说明
+    - skill_path: 要重构的技能目录路径
+    - focus_areas: 重点关注领域（可选），如["structure", "documentation"]
+
+    ## 返回值
+    返回完整的重构Prompt，指导AI生成详细的重构建议
+
+    ## 重构原则
+    - **保持功能不变**: 重构不应改变核心功能
+    - **渐进式改进**: 优先修复高优先级问题
+    - **向后兼容**: 尽量保持接口兼容性
+    - **文档同步**: 代码和文档同步更新
+
+    ## 使用示例
+    ```python
+    prompt = get_refactor_skill_prompt("/path/to/skill", ["structure", "testing"])
+    # 返回包含结构化和测试重点的Prompt
+    ```
 
     Args:
         skill_path: 技能目录路径

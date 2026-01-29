@@ -83,7 +83,37 @@ VALIDATE_SKILL_PROMPT: Final = """你是一个专业的 Agent-Skill 质量审核
 
 
 def get_validate_skill_prompt(skill_path: str, template_type: str | None = None) -> str:
-    """获取验证技能的 Prompt 模板.
+    """
+    获取验证技能的 Prompt 模板.
+
+    ## 完整模板内容
+
+    这个Prompt模板指导AI全面验证Agent-Skill的合规性，包含：
+
+    1. **命名验证**: 检查技能名称规范和一致性
+    2. **结构验证**: 验证必需文件和目录存在
+    3. **内容验证**: 检查YAML frontmatter和必需字段
+    4. **模板特定验证**: 根据模板类型检查特定要求
+    5. **质量验证**: 评估SKILL.md长度、清晰度、示例完整性
+    6. **验证标准**: 明确的通过/失败标准
+    7. **输出格式**: 结构化的验证结果报告
+
+    ## 参数说明
+    - skill_path: 要验证的技能目录路径
+    - template_type: 模板类型（可选），用于模板特定验证
+
+    ## 返回值
+    返回完整的验证Prompt，指导AI生成详细的验证报告
+
+    ## 验证标准
+    - **通过**: 所有P0项通过，P1项最多1个警告
+    - **失败**: 任何P0项失败，或超过3个P1项失败
+
+    ## 使用示例
+    ```python
+    prompt = get_validate_skill_prompt("/path/to/skill", "tool-based")
+    # 返回包含tool-based模板特定验证要求的Prompt
+    ```
 
     Args:
         skill_path: 技能目录路径
