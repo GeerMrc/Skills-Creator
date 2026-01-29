@@ -16,13 +16,9 @@ description: |
   - 技能创建
   - 技能初始化
   - 技能验证
-  - 批量验证
   - 技能分析
-  - 批量分析
   - 技能重构
   - 技能模板
-  - 健康检查
-  - 系统监控
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 mcp_servers: ["skill-creator", "GitHub", "Thinking"]
 ---
@@ -35,7 +31,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 核心能力
 
-需求澄清 | 技能初始化 | 规范验证 | 批量操作 | 健康检查 | 结构分析 | 重构建议 | 模板资源 | 最佳实践
+需求澄清 | 技能初始化 | 规范验证 | 结构分析 | 重构建议 | 模板资源 | 最佳实践
 
 ## 快速开始
 
@@ -43,11 +39,9 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 **创建技能**: "创建一个名为 'git-helper' 的技能"
 **验证技能**: "验证 /path/to/skill"
 **分析质量**: "分析 /path/to/skill"
-**批量操作**: "批量验证 /path/to/skill1 /path/to/skill2"
-**健康检查**: "健康检查"
 **打包分发**: "打包 /path/to/skill" 或 "标准打包 /path/to/skill"
 
-> 详见：[批量操作示例](examples/mcp-batch-operations.md) | [健康检查示例](examples/mcp-health-check.md) | [打包规范](references/packaging.md)
+> 详见：[打包规范](references/packaging.md) | [示例文档索引](examples/README.md)
 
 ### 配置选项
 
@@ -86,7 +80,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## MCP 组件
 
-**原子工具 (18)**:
+**原子工具 (12)**:
 
 **会话管理 (3)**:
 - create_requirement_session_tool - 创建需求收集会话
@@ -130,7 +124,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ## 架构说明
 
-Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（18 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
+Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（12 工具 + 4 资源 + 3 Prompts），**Agent-Skill** 负责工作流编排和知识传递。
 
 **职责边界**（符合 ADR 001）：
 - **MCP Server**: 原子操作 + 文件I/O + 数据验证（不包含工作流逻辑、不传递业务知识）

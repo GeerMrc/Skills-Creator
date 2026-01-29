@@ -73,7 +73,7 @@
 > - 交互式输入收集 → 逐步问答模式
 > - LLM 智能分析 → 固定规则检查
 
-详见 [回退机制文档](../references/fallback-mechanism.md)
+详见 [客户端兼容性说明](../../skill-creator-mcp/docs/client-compatibility.md)
 
 ## 相关文档
 

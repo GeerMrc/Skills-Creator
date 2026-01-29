@@ -4,7 +4,7 @@
 - 创建技能 → 验证 → 分析
 - 迭代改进场景
 - 多技能对比场景
-- 需求收集完整流程 (collect_requirements)
+- 需求收集完整流程 (requirement_collection)
 """
 
 import pytest
@@ -22,7 +22,7 @@ from skill_creator_mcp.utils.validators import validate_skill_name, validate_tem
 
 
 @pytest.mark.asyncio
-async def test_collect_requirements_basic_mode_full_workflow():
+async def test_requirement_collection_basic_mode_full_workflow():
     """测试 basic 模式的完整需求收集流程（使用新原子工具）.
 
     使用新的原子工具模拟从开始到完成的完整需求收集对话流程。
@@ -84,7 +84,7 @@ async def test_collect_requirements_basic_mode_full_workflow():
 
 
 @pytest.mark.asyncio
-async def test_collect_requirements_session_state_management():
+async def test_requirement_collection_session_state_management():
     """测试会话状态管理功能（使用新原子工具）.
 
     验证会话状态的保存和恢复逻辑。
@@ -121,7 +121,7 @@ async def test_collect_requirements_session_state_management():
 
 
 @pytest.mark.asyncio
-async def test_collect_requirements_brainstorm_mode_dynamic_generation():
+async def test_requirement_collection_brainstorm_mode_dynamic_generation():
     """测试 brainstorm 模式的动态问题生成逻辑（使用新原子工具）.
 
     验证 LLM 问题生成函数的功能.
@@ -155,7 +155,7 @@ async def test_collect_requirements_brainstorm_mode_dynamic_generation():
 
 
 @pytest.mark.asyncio
-async def test_collect_requirements_progressive_mode_adaptive_questions():
+async def test_requirement_collection_progressive_mode_adaptive_questions():
     """测试 progressive 模式的自适应问题生成逻辑（使用新原子工具）.
 
     验证根据已收集信息生成针对性问题.
@@ -197,7 +197,7 @@ async def test_collect_requirements_progressive_mode_adaptive_questions():
 
 
 @pytest.mark.asyncio
-async def test_collect_requirements_integration_with_init_skill(temp_dir):
+async def test_requirement_collection_integration_with_init_skill(temp_dir):
     """测试需求收集与技能创建的集成.
 
     验证需求收集的结果结构符合 init_skill 的输入要求.

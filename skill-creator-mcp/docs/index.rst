@@ -24,10 +24,9 @@ Features
 * **analyze_skill** - Analyze code quality and complexity
 * **refactor_skill** - Generate refactoring suggestions
 
-**Packaging (2)**:
+**Packaging (1)**:
 
-* **package_skill** - Package skills for distribution
-* **package_agent_skill** - Standard Agent-Skill packaging
+* **package_skill** - Package skills for distribution (supports strict mode)
 
 **Requirement Collection (7)**:
 

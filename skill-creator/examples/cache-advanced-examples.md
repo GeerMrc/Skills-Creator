@@ -47,18 +47,26 @@ async def scheduled_warmup():
 
 ## 批量操作使用缓存
 
+**注意**: 批量工具（batch_validate_skills, batch_analyze_skills）已在 v0.3.4 中移除。
+建议使用循环调用单个工具或使用并发库（如 asyncio）自行实现批量操作。
+
 ```python
+import asyncio
+from typing import list
+
 async def batch_validate_with_cache(skill_paths: list[str]) -> list[dict]:
-    """批量验证时启用缓存优化"""
+    """批量验证时启用缓存优化（手动实现）"""
 
     # 设置批量操作标记
     cache.set("batch:validation:active", True)
 
     try:
-        results = await batch_validate_skills(
-            skill_paths=skill_paths,
-            concurrent_limit=5,
-        )
+        # 手动并发调用 validate_skill
+        tasks = [
+            validate_skill(skill_path=path)
+            for path in skill_paths
+        ]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
         return results
     finally:
         # 清理批量操作标记

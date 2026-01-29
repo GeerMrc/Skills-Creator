@@ -23,7 +23,7 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 ---
 
-## 最新特性（v0.3.3）
+## 最新特性（v0.3.4）
 
 ### 生命周期管理
 - ✅ **AppContext** - 应用生命周期上下文
@@ -49,7 +49,7 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 > 🚧 **项目正在开发中**
 >
-> 当前版本：v0.3.3
+> 当前版本：v0.3.4
 >
 > 这是 Skill-Creator 项目的 MCP Server 组件，提供创建、验证、分析和重构 Agent-Skills 的工具。
 

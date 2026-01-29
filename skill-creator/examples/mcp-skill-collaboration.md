@@ -173,4 +173,4 @@
 
 - **[MCP 集成指南](../references/mcp-integration.md)** - 工具和资源详细说明
 - **[最佳实践 - 核心原则](../references/best-practices-core.md)** - 架构设计原则
-- **[混合架构设计](../references/architecture.md)** - 架构设计原则
+- **[混合架构设计](../../docs/adr/001-hybrid-architecture.md)** - 架构设计原则

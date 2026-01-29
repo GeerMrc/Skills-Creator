@@ -103,9 +103,8 @@ Tool Categories Reference
   - ``analyze_skill`` - Analyze code quality and complexity
   - ``refactor_skill`` - Generate refactoring suggestions
 
-**Packaging Tools** (2):
-  - ``package_skill`` - Package skill for distribution
-  - ``package_agent_skill`` - Standard Agent-Skill packaging
+**Packaging Tools** (1):
+  - ``package_skill`` - Package skill for distribution (supports strict mode for Agent-Skill standard packaging)
 
 **Requirement Collection Tools** (7):
   - ``create_requirement_session`` - Create requirement collection session

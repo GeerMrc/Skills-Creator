@@ -99,47 +99,40 @@ MCP Server 应该单独打包：
 
 ## 三、打包命令
 
-### 3.1 使用 package_agent_skill（推荐）
+### 3.1 使用 package_skill MCP 工具（推荐）
 
-```python
-from skill_creator_mcp.utils.packagers import package_agent_skill
+在 Claude Code 中调用 MCP 工具：
 
-result = package_agent_skill(
-    skill_path="/path/to/skill-creator",
-    output_dir="/output",
-    version="0.3.1",
-    package_format="zip",
-    include_tests=False,
-    validate_before_package=True
-)
-
-if result.success:
-    print(f"包已创建: {result.package_path}")
+```
+使用 package_skill 工具打包 /path/to/skill-creator 到 /output 目录
 ```
 
-**参数说明**:
+**标准打包（Agent-Skill 推荐）**:
+```
+使用 package_skill 标准打包 skill-creator，版本 0.3.4
+```
+
+标准打包特点：
+- 包名格式：`{skill-name}-v{version}.{format}`
+- 严格排除模式（Agent-Skill 规范）
+- 支持版本号
+
+**通用打包（灵活配置）**:
+```
+使用 package_skill 打包 my-project，排除 *.log 和 temp/，输出到 /output
+```
+
+### 3.2 参数说明
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | `skill_path` | str | 必需 | Agent-Skill 目录路径 |
 | `output_dir` | str | "." | 输出目录路径 |
-| `version` | str | None | 版本号（如 "0.3.1"） |
-| `package_format` | str | "zip" | 打包格式 |
+| `format` | str | "zip" | 打包格式 (zip/tar.gz/tar.bz2) |
+| `strict` | bool | False | 是否使用 Agent-Skill 标准打包 |
+| `version` | str | None | 版本号（strict=True 时必需） |
 | `include_tests` | bool | False | 是否包含测试文件 |
-| `validate_before_package` | bool | True | 打包前是否验证 |
-
-### 3.2 使用 MCP 工具
-
-在 Claude Code 中调用 MCP 工具：
-
-```python
-await package_agent_skill(
-    ctx,
-    skill_path="/path/to/skill-creator",
-    version="0.3.1",
-    format="zip"
-)
-```
+| `exclude` | list | [] | 自定义排除模式（strict=False 时） |
 
 ---
 
@@ -178,7 +171,7 @@ ls -lh skill-creator-v0.3.1.zip
 
 **解决**:
 - 检查排除模式
-- 使用 `package_agent_skill()` 而非 `package_skill()`
+- 使用 `strict=True` 标准打包
 - 查看包内容，找出大文件
 
 ### 问题2: 缺少 SKILL.md
@@ -191,7 +184,7 @@ ls -lh skill-creator-v0.3.1.zip
 
 **原因**: 排除模式不正确
 
-**解决**: 使用 `package_agent_skill()` 而非手动打包
+**解决**: 使用 `strict=True` 标准打包或自定义排除模式
 
 ---
 
@@ -206,7 +199,7 @@ uv run ruff check .
 uv run mypy src/
 
 # 2. 打包
-# 使用 package_agent_skill() MCP 工具
+# 使用 package_skill MCP 工具（标准打包使用 strict=True）
 
 # 3. 验证包
 unzip -l skill-creator-v0.x.x.zip | head -30
