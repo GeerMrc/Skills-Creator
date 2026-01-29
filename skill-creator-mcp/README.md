@@ -433,10 +433,10 @@ result = await package_skill(
 # Agent-Skill标准打包模式（带版本号）
 result = await package_skill(
     skill_path="/path/to/skill",
-    version="0.3.1",
+    version="0.3.4",
     strict=True
 )
-# 生成: skill-v0.3.1.zip
+# 生成: skill-v0.3.4.zip
 ```
 
 ## 开发

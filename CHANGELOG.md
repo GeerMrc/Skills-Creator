@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 更新 config.py 注释：
   - 移除 `package_agent_skill` 环境变量说明
 
-**测试数量**: 586 → 566 (-20个测试)
+**测试数量**: 586 → 568 (-18个测试)
 
 ### Fixed
 
