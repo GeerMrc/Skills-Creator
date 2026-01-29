@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed - MCP Server 全面优化 (2026-01-29)
+
+**P0任务（代码质量与一致性）**:
+- **P0-1**: 消除analyze_skill和refactor_skill重复代码
+  - 提取公共函数`_perform_analysis()`消除50+行重复
+  - 代码可维护性提升，减少维护成本
+  - 受影响文件：`src/skill_creator_mcp/tools/skill_tools.py`
+
+- **P0-2**: 统一工具注册方式
+  - 将技能工具从`add_tool()`改为`@mcp.tool()`装饰器
+  - 全部18个工具统一使用装饰器注册
+  - 受影响文件：`src/skill_creator_mcp/server.py`, `tests/`
+
+- **P0-3**: 添加资源MIME类型声明
+  - 为4个资源函数添加`mime_type="text/markdown"`参数
+  - 符合MCP官方最佳实践
+  - 受影响文件：`src/skill_creator_mcp/server.py`
+
+- **P0-4**: 更新测试数量文档
+  - README.md: 613 → 615个测试
+  - CLAUDE.md: 613 → 615个测试（2处）
+  - CHANGELOG.md: 601 → 615个测试
+
+**P1任务（文档与测试）**:
+- **P1-1**: 资源订阅机制评估
+  - 确认静态资源无需订阅机制
+  - 标记为不需要实现
+
+- **P1-2**: 提升Prompt透明度
+  - 为3个Prompt函数添加详细文档字符串
+  - 包含完整模板内容说明和使用示例
+  - 受影响文件：`src/skill_creator_mcp/prompts/*.py`
+
+- **P1-3**: 区分打包工具文档
+  - 在README.md添加package_skill vs package_agent_skill对比
+  - 包含使用场景决策树和推荐度
+  - 受影响文件：`skill-creator-mcp/README.md`
+
+- **P1-4**: 补充server.py测试覆盖
+  - 创建`tests/test_server.py`（12个测试用例）
+  - 测试中间件功能：LoggingMiddleware、ErrorHandlingMiddleware、TimingMiddleware
+  - 覆盖率提升：server.py 78% → 93% (+15%)
+  - 总测试数：613 → 625 (+12)
+
 ### Fixed - Documentation Updates (2026-01-28)
 
 - **P0-001**: 修复文档中的过时引用
