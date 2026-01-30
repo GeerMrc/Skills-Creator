@@ -56,6 +56,14 @@
 | **[需求追踪](github-requirement-tracking.md)** | 使用 GitHub MCP 追踪和管理 Issues | ~260 |
 | **[自动化工作流](github-automation.md)** | GitHub PR/Issue 自动化操作 | ~450 |
 
+### MCP 集成示例
+
+| 示例 | 说明 | 行数 |
+|------|------|------|
+| **[Web Search MCP 集成示例](mcp-integration-example.md)** | 通用 MCP 集成完整流程 | ~260 |
+| **[需求追踪](github-requirement-tracking.md)** | GitHub MCP 需求跟踪实现 | ~260 |
+| **[自动化工作流](github-automation.md)** | GitHub MCP Git 自动化实现 | ~450 |
+
 ---
 
 ## 快速查找
@@ -71,6 +79,7 @@
 | 获取重构建议 | [refactor_skill 示例](mcp-refactor-examples.md) |
 | 打包发布技能 | [package_skill 示例](mcp-package-examples.md) |
 | 看综合工作流 | [MCP 协作](mcp-skill-collaboration.md) |
+| 集成外部 MCP | [Web Search MCP 集成示例](mcp-integration-example.md) |
 
 ---
 

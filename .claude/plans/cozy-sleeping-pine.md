@@ -4,7 +4,7 @@
 
 **计划编号**: cozy-sleeping-pine
 **创建时间**: 2026-01-30
-**状态**: in_progress
+**状态**: completed
 **目标**: 重新定位 `skill-creator/references/` 中 MCP 集成文档，明确"示范案例"定位，添加"扩展方法指南"，让用户能够参考核心示范为自己的 Agent-Skills 集成其他 MCP
 
 ---
@@ -363,11 +363,10 @@ mcp_servers: ["skill-creator", "GitHub", "Thinking"]
 | T-103 | 创建 MCP 集成扩展指南 | P0 | completed | 90分钟 | `references/mcp-integration-guide.md` |
 | T-104 | 更新 SKILL.md 添加 MCP 集成说明 | P1 | completed | 30分钟 | `SKILL.md` |
 | T-105 | 重构 references/README.md | P1 | completed | 20分钟 | `references/README.md` |
-| T-106 | 创建通用 MCP 集成示例 | P2 | pending | 60分钟 | `examples/mcp-integration-example.md` |
-| T-107 | 更新 examples/README.md | P2 | pending | 15分钟 | `examples/README.md` |
+| T-106 | 创建通用 MCP 集成示例 | P2 | completed | 60分钟 | `examples/mcp-integration-example.md` |
+| T-107 | 更新 examples/README.md | P2 | completed | 15分钟 | `examples/README.md` |
 
-**任务完成进度**: 5/7 (71%)
-**下一阶段**: P2 任务（可选）
+**任务完成进度**: 7/7 (100%)
 
 ---
 
