@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 # 添加 skill-creator-mcp 到 Python 路径
-script_dir = Path(__file__).parent.parent
+script_dir = Path(__file__).parent.parent.parent
 mcp_src = script_dir / "skill-creator-mcp" / "src"
 sys.path.insert(0, str(mcp_src))
 
