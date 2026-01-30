@@ -8,9 +8,9 @@
 
 | 文档 | 说明 | 行数 |
 |------|------|------|
-| **[MCP 工具参考](mcp-tools-reference.md)** | MCP 工具完整参考 | ~180 |
-| **[最佳实践 - 核心](best-practices-core.md)** | 基础架构和规范 | ~170 |
-| **[最佳实践 - 高级](best-practices-advanced.md)** | 高级技巧和优化 | ~140 |
+| **[MCP 工具参考](mcp-tools-reference.md)** | MCP 工具完整参考 | ~220 |
+| **[最佳实践 - 核心](best-practices-core.md)** | 基础架构和规范 | ~210 |
+| **[最佳实践 - 高级](best-practices-advanced.md)** | 高级技巧和优化 | ~230 |
 
 ### MCP 集成
 
@@ -18,48 +18,47 @@
 
 | 文档 | 说明 | 定位 | 行数 |
 |------|------|------|------|
-| **[MCP 工具参考](mcp-tools-reference.md)** | skill-creator MCP 的12个工具完整参考 | 核心参考 | ~180 |
-| **[MCP 集成扩展指南](mcp-integration-guide.md)** | 为 Agent-Skills 集成任何 MCP 的通用方法论 | 方法指南 | ~340 |
+| **[MCP 工具参考](mcp-tools-reference.md)** | skill-creator MCP 的12个工具完整参考 | 核心参考 | ~220 |
+| **[MCP 集成扩展指南](mcp-integration-guide.md)** | 为 Agent-Skills 集成任何 MCP 的通用方法论 | 方法指南 | ~230 |
+| **[MCP 高级用法](mcp-advanced-usage.md)** | 高级用法和技巧 | 进阶参考 | ~160 |
 
 **集成示范**：
 
-| 文档 | 说明 | 用途 | 行数 |
-|------|------|------|------|
-| **[GitHub MCP 集成示范](mcp-github-integration.md)** | GitHub MCP 集成最佳实践示范 | Git 自动化、需求跟踪 | ~160 |
-| **[Thinking MCP 集成示范](mcp-thinking-integration.md)** | Thinking MCP 集成最佳实践示范 | 思考记录、决策追溯 | ~230 |
-
-> **使用提示**：参考示范案例了解具体实现，使用扩展指南学习通用方法论。
+> **注意**：MCP 集成示范文档已移动到 [examples/](../examples/README.md) 目录作为高级示例。
 
 ### 验证相关
 
 | 文档 | 说明 | 行数 |
 |------|------|------|
-| **[验证规范](validation.md)** | 命名、结构、内容验证规则 | ~180 |
-| **[验证指南](validation-guide.md)** | 详细验证指南 | ~200 |
+| **[验证规范](validation.md)** | 命名、结构、内容验证规则 | ~255 |
+| **[验证指南](validation-guide.md)** | 详细验证指南 | ~280 |
 
 ### 需求澄清
 
 | 文档 | 说明 | 行数 |
 |------|------|------|
-| **[需求澄清指南](requirement-collection.md)** | 核心概念、模式概览、快速开始 | ~170 |
-| **[需求收集工作流](requirement-workflow.md)** | 实践工作流编排指南 | ~280 |
-| **[需求收集模式](requirement-collection-modes.md)** | 各种模式详细说明 | ~200 |
-| **[API 参考索引](requirement-collection-api.md)** | API 文档索引 | ~60 |
-| **[API 核心参考](requirement-collection-api-core.md)** | 完整 API 技术文档 | ~200 |
-| **[API 使用示例](requirement-collection-api-examples.md)** | 实际使用场景 | ~150 |
-| **[Prompt 模板参考](prompt-templates.md)** | Prompt 模板使用说明 | ~200 |
+| **[需求收集指南](requirement-collection-guide.md)** | 完整指南：核心概念、模式、工作流 | ~300 |
+| **[需求收集 API 参考](requirement-collection-api.md)** | 完整 API 技术文档 | ~245 |
+| **[Prompt 模板参考](prompt-templates.md)** | Prompt 模板使用说明 | ~125 |
+
+### 打包相关
+
+| 文档 | 说明 | 行数 |
+|------|------|------|
+| **[打包规范](packaging.md)** | Agent-Skill 打包规范和标准 | ~240 |
 
 ### 故障排除
 
 | 文档 | 说明 | 行数 |
 |------|------|------|
-| **[故障排除指南](troubleshooting.md)** | 常见问题和解决方案 | ~250 |
+| **[故障排除指南](troubleshooting.md)** | 常见问题和解决方案 | ~210 |
+| **[高级故障排除](troubleshooting-advanced.md)** | 复杂问题诊断 | ~280 |
 
-### 创意发散
+### 架构
 
 | 文档 | 说明 | 行数 |
 |------|------|------|
-| **[头脑风暴技巧](brainstorming-techniques.md)** | AI 引导的创意发散方法 | ~280 |
+| **[混合架构设计](architecture.md)** | MCP + Agent-Skill 混合架构 | ~145 |
 
 ---
 
@@ -72,12 +71,10 @@
 | MCP 工具参数和用法 | [MCP 工具参考](mcp-tools-reference.md) |
 | Agent-Skill 开发规范 | [最佳实践 - 核心](best-practices-core.md) |
 | 如何验证技能 | [验证指南](validation-guide.md) |
-| 需求澄清功能 | [需求澄清指南](requirement-collection.md) → [需求收集工作流](requirement-workflow.md) |
-| API 参数和返回值 | [API 核心参考](requirement-collection-api-core.md) |
-| 实际使用示例 | [API 使用示例](requirement-collection-api-examples.md) |
+| 需求澄清功能 | [需求收集指南](requirement-collection-guide.md) |
+| API 参数和返回值 | [需求收集 API 参考](requirement-collection-api.md) |
 | 高级优化技巧 | [最佳实践 - 高级](best-practices-advanced.md) |
 | 排除连接错误 | [故障排除指南](troubleshooting.md) |
-| 创意发散方法 | [头脑风暴技巧](brainstorming-techniques.md) |
 
 ---
 
@@ -87,15 +84,14 @@
 
 1. [MCP 工具参考](mcp-tools-reference.md) - 了解 MCP 工具和用法
 2. [最佳实践 - 核心](best-practices-core.md) - 学习开发规范
-3. [需求澄清指南](requirement-collection.md) - 核心概念和快速开始
+3. [需求收集指南](requirement-collection-guide.md) - 核心概念和快速开始
 4. [验证指南](validation-guide.md) - 验证创建的技能
 
 ### 进阶用户
 
 1. [最佳实践 - 高级](best-practices-advanced.md) - 优化技巧
-2. [API 核心参考](requirement-collection-api-core.md) - 深入 API
-3. [需求收集模式](requirement-collection-modes.md) - 各种模式对比
-4. [头脑风暴技巧](brainstorming-techniques.md) - 创意发散
+2. [需求收集 API 参考](requirement-collection-api.md) - 深入 API
+3. [MCP 集成扩展指南](mcp-integration-guide.md) - 集成其他 MCP
 
 ---
 
@@ -104,3 +100,4 @@
 - **[SKILL.md](../SKILL.md)** - Agent-Skill 主入口
 - **[Examples](../examples/README.md)** - 使用示例索引
 - **[混合架构设计](architecture.md)** - 架构设计说明
+

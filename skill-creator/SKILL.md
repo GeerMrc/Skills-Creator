@@ -60,7 +60,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 **基础模式（5步）** | **完整模式（10步）** | **动态模式（Brainstorm/Progressive）**
 
-> 详见：[需求收集工作流指南](references/requirement-workflow.md) | [需求澄清指南](references/requirement-collection.md)
+> 详见：[需求收集指南](references/requirement-collection-guide.md)
 
 ## MCP 组件
 
@@ -98,7 +98,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ### 核心文档
 
-- **[需求澄清指南](references/requirement-collection.md)** - AI 对话式需求收集流程详解
+- **[需求收集指南](references/requirement-collection-guide.md)** - AI 对话式需求收集流程详解
 - **[MCP 工具参考](references/mcp-tools-reference.md)** - MCP 工具完整参考和工作流集成
 - **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
 - **[最佳实践 - 高级技巧](references/best-practices-advanced.md)** - Token 优化、脚本黑盒化、反模式
@@ -116,7 +116,7 @@ Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（12 工具
 **需求收集工作流示例**：
 - MCP 提供 7 个原子工具（会话管理、问题获取、验证）
 - Agent-Skill 编排完整收集流程（循环、验证、重试、提供建议）
-- 详见：[需求收集工作流指南](references/requirement-workflow.md)
+- 详见：[需求收集指南](references/requirement-collection-guide.md)
 
 > 详见：[混合架构设计](references/architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
 
@@ -126,8 +126,8 @@ Skill-Creator 支持与外部 MCP Server 集成。
 
 ### 集成示范
 
-- **[GitHub MCP 集成示范](references/mcp-github-integration.md)** - 需求跟踪、Git 自动化
-- **[Thinking MCP 集成示范](references/mcp-thinking-integration.md)** - 思考记录、决策追溯
+- **[GitHub MCP 集成示范](examples/mcp-github-integration-example.md)** - 需求跟踪、Git 自动化
+- **[Thinking MCP 集成示范](examples/mcp-thinking-integration-example.md)** - 思考记录、决策追溯
 
 ### 扩展指南
 

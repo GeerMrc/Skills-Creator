@@ -8,61 +8,53 @@
 
 | 示例 | 说明 | 行数 |
 |------|------|------|
-| **[创建技能](creating-a-skill.md)** | 如何创建新技能 | ~25 |
-| **[验证技能](validating-a-skill.md)** | 如何验证技能 | ~20 |
-| **[分析技能](analyzing-a-skill.md)** | 如何分析技能 | ~20 |
+| **[创建技能](creating-a-skill.md)** | 如何创建新技能 | ~40 |
+| **[验证技能](validating-a-skill.md)** | 如何验证技能 | ~40 |
+| **[分析技能](analyzing-a-skill.md)** | 如何分析技能 | ~30 |
 
 ### 需求澄清示例
 
 | 示例 | 模式 | 步骤 | 行数 |
 |------|------|------|------|
 | **[基础模式](example-basic-mode.md)** | basic | 5 | ~250 |
-| **[完整模式](example-complete-mode.md)** | complete | 10 | ~320 |
-| **[渐进模式](example-progressive-mode.md)** | progressive | 动态 | ~350 |
+| **[完整模式](example-complete-mode.md)** | complete | 10 | ~120 |
+| **[渐进模式](example-progressive-mode.md)** | progressive | 动态 | ~180 |
 
 ### MCP 工具示例
 
 | 示例 | 工具 | 说明 | 行数 |
 |------|------|------|------|
-| **[init_skill 示例](mcp-init-examples.md)** | init_skill | 初始化技能结构 | ~140 |
-| **[validate_skill 示例](mcp-validate-examples.md)** | validate_skill | 验证技能规范 | ~180 |
-| **[analyze_skill 示例](mcp-analyze-examples.md)** | analyze_skill | 分析代码质量 | ~170 |
-| **[refactor_skill 示例](mcp-refactor-examples.md)** | refactor_skill | 生成重构建议 | ~180 |
-| **[package_skill 示例](mcp-package-examples.md)** | package_skill | 打包技能 | ~170 |
-| **[MCP 使用示例](mcp-usage-examples.md)** | 全部工具 | 综合使用示例 | ~210 |
+| **[init_skill 示例](mcp-init-examples.md)** | init_skill | 初始化技能结构 | ~260 |
+| **[validate_skill 示例](mcp-validate-examples.md)** | validate_skill | 验证技能规范 | ~120 |
+| **[analyze_skill 示例](mcp-analyze-examples.md)** | analyze_skill | 分析代码质量 | ~120 |
+| **[refactor_skill 示例](mcp-refactor-examples.md)** | refactor_skill | 生成重构建议 | ~135 |
+| **[package_skill 示例](mcp-package-examples.md)** | package_skill | 打包技能 | ~200 |
+| **[MCP 使用示例](mcp-usage-examples.md)** | 全部工具 | 综合使用示例 | ~300 |
 
 ### 协作示例
 
 | 示例 | 说明 | 行数 |
 |------|------|------|
-| **[MCP 协作](mcp-skill-collaboration.md)** | Agent-Skill 与 MCP 协同工作流 | ~300 |
-| **[Thinking 集成](thinking/README.md)** | Thinking MCP 集成示例索引 | ~80 |
+| **[MCP 协作](mcp-skill-collaboration.md)** | Agent-Skill 与 MCP 协同工作流 | ~180 |
+| **[工作流编排](workflow-orchestration.md)** | 完整工作流编排 | ~260 |
 
-#### Thinking 子目录
+### 高级集成示例
 
-| 示例 | 说明 | 行数 |
-|------|------|------|
-| **[基础分析](thinking/analysis-basic.md)** | analyze_skill + Thinking 基础集成 | ~150 |
-| **[高级分析](thinking/analysis-advanced.md)** | 对比/逆向/假设思考 | ~160 |
-| **[分析工作流](thinking/analysis-workflow.md)** | 思考步骤规划 | ~150 |
-| **[导出格式](thinking/export-formats.md)** | 多格式导出对比 | ~170 |
-| **[导出工作流](thinking/export-workflow.md)** | 批量导出和归档 | ~150 |
-| **[导出自动化](thinking/export-automation.md)** | 自动化和版本控制 | ~140 |
-
-### GitHub MCP 集成示例
+> **注意**：以下示例展示如何为 Agent-Skill 集成外部 MCP，属于可选的高级用法。
 
 | 示例 | 说明 | 行数 |
 |------|------|------|
-| **[需求追踪](github-requirement-tracking.md)** | 使用 GitHub MCP 追踪和管理 Issues | ~260 |
-| **[自动化工作流](github-automation.md)** | GitHub PR/Issue 自动化操作 | ~450 |
+| **[GitHub MCP 集成示范](mcp-github-integration-example.md)** | GitHub MCP 集成最佳实践示范 | ~170 |
+| **[Thinking MCP 集成示范](mcp-thinking-integration-example.md)** | Thinking MCP 集成最佳实践示范 | ~240 |
 
-### MCP 集成示例
+### 打包与 GitHub 集成
 
 | 示例 | 说明 | 行数 |
 |------|------|------|
-| **[Web Search MCP 集成示例](mcp-integration-example.md)** | 通用 MCP 集成完整流程 | ~260 |
-| **[需求追踪](github-requirement-tracking.md)** | GitHub MCP 需求跟踪实现 | ~260 |
-| **[自动化工作流](github-automation.md)** | GitHub MCP Git 自动化实现 | ~450 |
+| **[打包示例](packaging-examples.md)** | 打包基础和高级用法 | ~375 |
+| **[GitHub 集成示例](github-integration.md)** | 需求跟踪、分支自动化、PR 管理 | ~355 |
+| **[需求收集基础](requirement-collection-basic.md)** | 需求收集基础示例 | ~85 |
+| **[需求收集头脑风暴](requirement-collection-brainstorm.md)** | brainstorm/progressive 模式 | ~170 |
 
 ---
 
@@ -77,9 +69,9 @@
 | 验证我的技能 | [validate_skill 示例](mcp-validate-examples.md) |
 | 分析代码质量 | [analyze_skill 示例](mcp-analyze-examples.md) |
 | 获取重构建议 | [refactor_skill 示例](mcp-refactor-examples.md) |
-| 打包发布技能 | [package_skill 示例](mcp-package-examples.md) |
+| 打包发布技能 | [打包示例](packaging-examples.md) |
+| GitHub 集成 | [GitHub 集成示例](github-integration.md) |
 | 看综合工作流 | [MCP 协作](mcp-skill-collaboration.md) |
-| 集成外部 MCP | [Web Search MCP 集成示例](mcp-integration-example.md) |
 
 ---
 
@@ -106,7 +98,7 @@
 
 1. [完整模式](example-complete-mode.md) - 深入需求收集
 2. [analyze_skill 示例](mcp-analyze-examples.md) - 分析代码质量
-3. [refactor_skill 示例](mcp-refactor-examples.md) - 获取重构建议
+3. [GitHub 集成示例](github-integration.md) - Git 工作流自动化
 4. [MCP 协作](mcp-skill-collaboration.md) - 完整工作流
 
 ---
@@ -115,3 +107,4 @@
 
 - **[SKILL.md](../SKILL.md)** - Agent-Skill 主入口
 - **[References](../references/README.md)** - 引用文档索引
+
