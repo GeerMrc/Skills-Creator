@@ -47,7 +47,7 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 | `SKILL_CREATOR_LOG_LEVEL` | 日志级别 | INFO | - |
 | `SKILL_CREATOR_LOG_FORMAT` | 日志格式 | default | - |
 | `SKILL_CREATOR_LOG_FILE` | 日志文件路径 | 无（输出到 stderr） | - |
-| `SKILL_CREATOR_OUTPUT_DIR` | 默认输出目录 | ~/skills（自动创建） | `init_skill`, `package_skill` |
+| `SKILL_CREATOR_OUTPUT_DIR` | 默认输出目录 | ~/skills（自动创建） | `init_skill_tool`, `package_skill` |
 
 ### 路径解析规则
 
@@ -66,7 +66,7 @@ Skill-Creator 采用混合架构：MCP Server 提供工具和资源，Agent-Skil
 
 2. 使用绝对路径避免歧义:
    ```python
-   init_skill(name="test", output_dir="~/project")
+   init_skill_tool(name="test", output_dir="~/project")
    ```
 
 ### 验证连接

@@ -59,17 +59,17 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 当用户说"帮我收集需求"时：
 
 **1. 基础模式（5步）**
-- 调用 `create_requirement_session(mode="basic")` 创建会话
-- 循环调用 `get_static_question()` 获取预定义问题
-- 验证答案：`validate_answer_format()`
-- 保存答案：`update_requirement_answer()`
-- 完成后检查：`check_requirement_completeness()`
+- 调用 `create_requirement_session_tool(mode="basic")` 创建会话
+- 循环调用 `get_static_question_tool()` 获取预定义问题
+- 验证答案：`validate_answer_format_tool()`
+- 保存答案：`update_requirement_answer_tool()`
+- 完成后检查：`check_requirement_completeness_tool()`
 
 **2. 完整模式（10步）**
 - 与基础模式相同，但包含更多问题
 
 **3. 动态模式（Brainstorm/Progressive）**
-- 调用 `generate_dynamic_question()` 使用 LLM 生成问题
+- 调用 `generate_dynamic_question_tool()` 使用 LLM 生成问题
 - 开放式探索（Brainstorm）或自适应提问（Progressive）
 - 结合对话历史和已收集信息
 
