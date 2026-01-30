@@ -12,19 +12,12 @@
 | **[最佳实践 - 核心](best-practices-core.md)** | 基础架构和规范 | ~210 |
 | **[最佳实践 - 高级](best-practices-advanced.md)** | 高级技巧和优化 | ~230 |
 
-### MCP 集成
+### MCP 相关
 
-**核心参考**：
-
-| 文档 | 说明 | 定位 | 行数 |
-|------|------|------|------|
-| **[MCP 工具参考](mcp-tools-reference.md)** | skill-creator MCP 的12个工具完整参考 | 核心参考 | ~220 |
-| **[MCP 集成扩展指南](mcp-integration-guide.md)** | 为 Agent-Skills 集成任何 MCP 的通用方法论 | 方法指南 | ~230 |
-| **[MCP 高级用法](mcp-advanced-usage.md)** | 高级用法和技巧 | 进阶参考 | ~160 |
-
-**集成示范**：
-
-> **注意**：MCP 集成示范文档已移动到 [examples/](../examples/README.md) 目录作为高级示例。
+| 文档 | 说明 | 行数 |
+|------|------|------|
+| **[MCP 工具参考](mcp-tools-reference.md)** | skill-creator MCP 的12个工具完整参考 | ~220 |
+| **[MCP 高级用法](mcp-advanced-usage.md)** | 高级用法和技巧 | ~160 |
 
 ### 验证相关
 
@@ -91,7 +84,7 @@
 
 1. [最佳实践 - 高级](best-practices-advanced.md) - 优化技巧
 2. [需求收集 API 参考](requirement-collection-api.md) - 深入 API
-3. [MCP 集成扩展指南](mcp-integration-guide.md) - 集成其他 MCP
+3. [MCP 高级用法](mcp-advanced-usage.md) - 高级技巧
 
 ---
 

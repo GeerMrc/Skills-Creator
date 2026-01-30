@@ -21,7 +21,7 @@ description: |
   - 技能重构
   - 技能模板
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-mcp_servers: ["skill-creator", "GitHub", "Thinking"]
+mcp_servers: ["skill-creator"]
 ---
 
 # Skill-Creator - Agent-Skills 开发工具
@@ -48,6 +48,8 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 可通过 `SKILL_CREATOR_OUTPUT_DIR` 环境变量统一管理技能输出位置。
 
+> **注意**: Skill-Creator 专注于 Agent-Skills 开发核心功能。外部 MCP（如 GitHub、Thinking）集成属于可选的高级用法，不包含在核心功能中。
+>
 > 详见：[打包规范](references/packaging.md) | [MCP 工具参考](references/mcp-tools-reference.md) | [示例文档索引](examples/README.md)
 
 ## 工作流程
@@ -66,24 +68,13 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 **原子工具 (12)**:
 
-**会话管理 (3)**:
-- create_requirement_session_tool - 创建需求收集会话
-- get_requirement_session_tool - 获取会话状态
-- update_requirement_answer_tool - 更新会话答案
-
-**问题获取 (2)**:
-- get_static_question_tool - 获取静态问题（basic/complete模式）
-- generate_dynamic_question_tool - 生成动态问题（brainstorm/progressive模式）
-
-**验证工具 (2)**:
-- validate_answer_format_tool - 验证答案格式
-- check_requirement_completeness_tool - 检查需求完整性（LLM）
-
-**技能工具 (4)**: init_skill_tool | validate_skill_tool | analyze_skill_tool | refactor_skill_tool
-
-**打包工具 (1)**: package_skill（注意：此工具无 `_tool` 后缀，为历史兼容保留）
-
-> 注：工具分类统计：7个需求收集原子工具 + 4个技能工具 + 1个打包工具 = 12个工具
+| 类别 | 工具 |
+|------|------|
+| 会话管理 (3) | create_requirement_session, get_requirement_session, update_requirement_answer |
+| 问题获取 (2) | get_static_question, generate_dynamic_question |
+| 验证工具 (2) | validate_answer_format, check_requirement_completeness |
+| 技能工具 (4) | init_skill, validate_skill, analyze_skill, refactor_skill |
+| 打包工具 (1) | package_skill |
 
 **资源 (4)**: templates列表 | template内容 | best_practices | validation_rules
 
@@ -119,18 +110,3 @@ Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（12 工具
 - 详见：[需求收集指南](references/requirement-collection-guide.md)
 
 > 详见：[混合架构设计](references/architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
-
-## MCP 集成说明
-
-Skill-Creator 支持与外部 MCP Server 集成。
-
-### 集成示范
-
-- **[GitHub MCP 集成示范](examples/mcp-github-integration-example.md)** - 需求跟踪、Git 自动化
-- **[Thinking MCP 集成示范](examples/mcp-thinking-integration-example.md)** - 思考记录、决策追溯
-
-### 扩展指南
-
-- **[MCP 集成扩展指南](references/mcp-integration-guide.md)** - 通用方法论、决策框架、五步集成流程
-
-> **配置方法**：在 SKILL.md frontmatter 中声明 `mcp_servers: ["skill-creator", "GitHub", "Thinking"]`

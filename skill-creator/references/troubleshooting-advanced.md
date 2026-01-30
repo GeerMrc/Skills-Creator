@@ -1,20 +1,8 @@
 # 高级调试指南
 
-> **架构说明**：需求收集基于 **7个原子化MCP工具 + Agent-Skill工作流编排** 的混合架构（符合ADR 001）。本文档提供深度问题排查方法，实际使用通过skill-creator Agent-Skill调用。
+> **相关文档**：[故障排除指南](troubleshooting.md) - 常见问题快速解决
 
-本文档提供深度问题排查和日志分析的方法。
-
-> **相关文档**：
-> - [故障排除指南](troubleshooting.md) - 常见问题快速解决
-
----
-
-## 目录
-
-- [日志分析](#日志分析)
-- [性能诊断](#性能诊断)
-- [MCP 协议调试](#mcp-协议调试)
-- [会话状态调试](#会话状态调试)
+本文档提供深度问题排查方法。
 
 ---
 
@@ -51,7 +39,7 @@ INFO:skill_creator_mcp.server:MCP Server started successfully
 **回退模式启用**：
 ```
 WARNING:skill_creator_mcp.server:Client capabilities limited
-WARNING:skill_creator_mcp.server:Fallback mode enabled for requirement collection tools
+WARNING:skill_creator_mcp.server:Fallback mode enabled
 ```
 
 **会话创建**：
@@ -69,32 +57,25 @@ INFO:skill_creator_mcp.server:Mode: basic, Steps: 5
 ```python
 import time
 
-# 测量工具执行时间
 start = time.time()
 result = await validate_skill(skill_path="/path/to/skill")
 elapsed = time.time() - start
-
 print(f"验证耗时: {elapsed:.2f}秒")
 ```
 
 ### LLM Sampling 性能
 
 ```python
-# 测试 LLM 调用延迟
 start = time.time()
 result = await ctx.sample(messages="Test")
 elapsed = time.time() - start
-
 print(f"LLM 响应时间: {elapsed:.2f}秒")
 ```
 
 ### 内存使用监控
 
 ```bash
-# 监控 Python 进程内存
 ps aux | grep python
-
-# 使用 memory_profiler
 pip install memory_profiler
 python -m memory_profiler script.py
 ```
@@ -106,7 +87,6 @@ python -m memory_profiler script.py
 ### 检查工具注册
 
 ```python
-# 列出所有已注册的工具
 import skill_creator_mcp
 server = skill_creator_mcp.server
 
@@ -118,7 +98,6 @@ for tool in server._mcp_tools:
 ### 测试工具调用
 
 ```python
-# 直接测试工具（不通过 MCP）
 from skill_creator_mcp.server import validate_skill
 
 result = await validate_skill(skill_path="/path/to/skill")
@@ -128,11 +107,10 @@ print(result)
 ### 资源访问测试
 
 ```python
-# 测试资源是否可访问
 from skill_creator_mcp.server import _get_template_resource
 
 template = await _get_template_resource("minimal")
-print(template[:100])  # 打印前 100 字符
+print(template[:100])
 ```
 
 ---
@@ -142,25 +120,18 @@ print(template[:100])  # 打印前 100 字符
 ### 查看会话内容
 
 ```python
-# 获取原始会话状态
-result = await get_requirement_session_tool(
-    session_id="req_xxx"
-)
-
 import json
+
+result = await get_requirement_session_tool(session_id="req_xxx")
 print(json.dumps(result, indent=2))
 ```
 
 ### 手动恢复会话
 
 ```python
-# 使用保存的 session_id 恢复
 saved_session_id = "req_20260124_123456"
-
-# 获取会话状态
 session = await get_requirement_session_tool(session_id=saved_session_id)
 
-# 更新答案
 result = await update_requirement_answer_tool(
     session_id=saved_session_id,
     question_key="skill_name",
@@ -168,61 +139,40 @@ result = await update_requirement_answer_tool(
 )
 ```
 
-### 清理过期会话
-
-```python
-# 检查会话是否过期
-from datetime import datetime, timedelta
-
-session_time = datetime.fromisoformat(result["started_at"])
-if datetime.now() - session_time > timedelta(hours=24):
-    print("会话已过期，请重新开始")
-```
-
 ---
 
 ## 常见错误模式
 
-### 1. Pydantic 序列化错误
+### Pydantic 序列化错误
 
 ```
 pydantic.seriation.SerializableTypeError: Unable to serialize unknown type
 ```
 
-**原因**：返回值包含不可序列化的对象
-
 **解决方案**：
 ```python
-# 确保返回 dict[str, Any]
 return {"success": True, "data": str(data)}
 ```
 
-### 2. Session State 丢失
+### Session State 丢失
 
 ```
 KeyError: 'session_state'
 ```
 
-**原因**：客户端不支持状态持久化
-
 **解决方案**：
 ```python
-# 手动传递 session_id
 session_id = result["session_id"]
-# 保存并在后续调用中使用
 ```
 
-### 3. LLM Sampling 超时
+### LLM Sampling 超时
 
 ```
 TimeoutError: LLM sampling timed out after 30 seconds
 ```
 
-**原因**：LLM 响应时间过长
-
 **解决方案**：
 ```python
-# 使用回退问题
 fallback_questions = ["备用问题1", "备用问题2"]
 ```
 
@@ -253,7 +203,6 @@ fallback_questions = ["备用问题1", "备用问题2"]
 ### 收集调试信息
 
 ```bash
-# 创建调试报告
 cat <<'EOF' > debug-report.txt
 === 环境信息 ===
 Python: $(python --version)
