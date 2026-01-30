@@ -4,7 +4,7 @@
 
 本文档展示 MCP Server 和 Agent-Skill 如何协同工作，实现完整的 Agent-Skills 开发工作流。
 
-> **相关文档**: [MCP 集成指南](../references/mcp-integration.md) | [混合架构设计](../references/architecture.md)
+> **相关文档**: [MCP 集成指南](../references/mcp-tools-reference.md) | [混合架构设计](../references/architecture.md)
 
 ---
 
@@ -171,6 +171,6 @@
 
 ## 相关文档
 
-- **[MCP 集成指南](../references/mcp-integration.md)** - 工具和资源详细说明
+- **[MCP 集成指南](../references/mcp-tools-reference.md)** - 工具和资源详细说明
 - **[最佳实践 - 核心原则](../references/best-practices-core.md)** - 架构设计原则
 - **[混合架构设计](../references/architecture.md)** - 架构设计说明

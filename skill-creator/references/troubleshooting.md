@@ -5,7 +5,7 @@
 本文档提供 Skill-Creator 使用过程中常见问题的解决方案。
 
 > **相关文档**：
-> - [MCP 集成指南](mcp-integration.md) - MCP 工具配置
+> - [MCP 工具参考](mcp-tools-reference.md) - MCP 工具完整参考
 > - [高级调试指南](troubleshooting-advanced.md) - 深度问题排查
 > - [客户端兼容性说明](requirement-workflow.md#客户端兼容性) - 回退机制说明
 
@@ -57,7 +57,7 @@
 **解决方案**：
 - 使用 skill-creator Agent-Skill 进行工作流编排
 - Agent-Skill 层负责处理用户交互和状态管理
-- 详见 [MCP集成指南](mcp-integration.md)
+- 详见 [MCP集成指南](mcp-tools-reference.md)
 
 ---
 
@@ -193,7 +193,7 @@ cd skill-creator-mcp && grep version pyproject.toml
 ## 相关文档
 
 - **[客户端兼容性说明](requirement-workflow.md#客户端兼容性)** - 回退机制说明
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具配置
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具配置
 - **[验证规范](validation.md)** - 技能验证规则
 - **[高级调试指南](troubleshooting-advanced.md)** - 深度问题排查和日志分析
 

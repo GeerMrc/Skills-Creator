@@ -464,4 +464,4 @@ def generate_session_name(skill_path, analysis_type="analysis"):
 
 - **[analyze_skill 示例](mcp-analyze-examples.md)** - 代码分析详解
 - **[Thinking 导出示例](thinking-export.md)** - 思考会话导出
-- **[MCP 集成指南](../references/mcp-integration.md)** - MCP 工具配置
+- **[MCP 集成指南](../references/mcp-tools-reference.md)** - MCP 工具配置

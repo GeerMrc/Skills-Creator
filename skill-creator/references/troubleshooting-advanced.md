@@ -279,4 +279,4 @@ EOF
 
 **相关文档**：
 - **[故障排除指南](troubleshooting.md)** - 常见问题快速解决
-- **[MCP 集成指南](mcp-integration.md)** - MCP 配置详情
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 配置详情

@@ -85,7 +85,7 @@ description: |
 **大小建议**：每个文件200-300行
 
 **命名规范**：
-- `mcp-integration.md` - MCP 集成指南
+- `mcp-tools-reference.md` - MCP 集成指南
 - `best-practices-core.md` - 最佳实践（核心原则）
 - `best-practices-advanced.md` - 最佳实践（高级技巧）
 - `validation.md` - 验证规范

@@ -275,4 +275,4 @@ def get_grade(score: float) -> str:
 
 - **[验证规范](validation.md)** - 核心验证规则和检查清单
 - **[最佳实践 - 核心](best-practices-core.md)** - 渐进式披露架构和设计原则
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用和资源访问
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具使用和资源访问

@@ -223,4 +223,4 @@ resume_info = await resume_session(session_id=session["id"])
 
 - **[Thinking 分析示例](../examples/thinking-analysis.md)** - 思考过程记录
 - **[Thinking 导出示例](../examples/thinking-export.md)** - 思考会话导出
-- **[MCP 集成指南](mcp-integration.md)** - MCP 基础配置
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 基础配置

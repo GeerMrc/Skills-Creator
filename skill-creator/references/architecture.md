@@ -138,7 +138,7 @@ if completeness["is_complete"]:
 
 ## 相关文档
 
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用说明
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具使用说明
 - **[最佳实践 - 核心](best-practices-core.md)** - 渐进式披露架构
 - **[需求收集工作流](requirement-workflow.md)** - 完整工作流示例
 - **[MCP-Skill 协作示例](../examples/mcp-skill-collaboration.md)** - 实际集成案例

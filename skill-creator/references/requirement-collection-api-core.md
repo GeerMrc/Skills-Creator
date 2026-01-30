@@ -241,4 +241,4 @@ result = await create_requirement_session_tool(mode="basic")
 - **[API 使用示例](requirement-collection-api-examples.md)** - 实际使用场景和最佳实践
 - **[需求澄清基础指南](requirement-collection-basics.md)** - 核心概念和快速开始
 - **[需求收集模式详解](requirement-collection-modes.md)** - 各种模式详细说明
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用和配置
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具使用和配置

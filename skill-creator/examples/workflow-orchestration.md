@@ -247,7 +247,7 @@ class ToolState:
 
 - [需求收集API核心参考](../references/requirement-collection-api-core.md) - 7个原子化工具的完整API
 - [需求收集API示例](../references/requirement-collection-api-examples.md) - 实际使用场景和最佳实践
-- [MCP集成指南](../references/mcp-integration.md) - MCP工具使用和资源访问
+- [MCP集成指南](../references/mcp-tools-reference.md) - MCP工具使用和资源访问
 - [最佳实践 - 核心](../references/best-practices-core.md) - 基础架构和规范
 
 ---

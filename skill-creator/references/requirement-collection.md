@@ -56,7 +56,7 @@ Skill-Creator 提供的需求收集功能基于 **MCP原子化工具 + Agent-Ski
 
 ## 相关文档
 
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用和配置
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具使用和配置
 - **[最佳实践](best-practices-core.md)** - Agent-Skill 开发规范
 - **[验证规范](validation.md)** - 技能验证规则
 

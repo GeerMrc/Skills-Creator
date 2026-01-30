@@ -224,4 +224,4 @@ for i in range(session["total_steps"]):
 - **[API 核心参考](requirement-collection-api-core.md)** - 完整的 API 文档和错误处理
 - **[API 使用示例](requirement-collection-api-examples.md)** - 实际使用场景和最佳实践
 - **[需求收集示例](../examples/requirement-collection-basic.md)** - 完整的代码示例
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用和配置
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具使用和配置

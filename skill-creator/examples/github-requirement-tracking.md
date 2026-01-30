@@ -308,5 +308,5 @@ except GitHubError as e:
 ## 相关文档
 
 - **[collect_requirements 指南](../references/requirement-collection.md)** - 需求收集详解
-- **[MCP 集成指南](../references/mcp-integration.md)** - MCP 工具配置
+- **[MCP 工具参考](../references/mcp-tools-reference.md)** - MCP 工具完整参考
 - **[GitHub 自动化示例](github-automation.md)** - Git 工作流自动化

@@ -73,5 +73,5 @@ API 参考已拆分为两个部分：
 
 - **[需求澄清基础指南](requirement-collection-basics.md)** - 核心概念和快速开始
 - **[需求收集模式详解](requirement-collection-modes.md)** - 各种模式详细说明
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具使用和配置
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具使用和配置
 - **[最佳实践](best-practices-core.md)** - Agent-Skill 开发规范

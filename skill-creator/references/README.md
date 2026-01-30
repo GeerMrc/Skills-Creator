@@ -8,7 +8,7 @@
 
 | 文档 | 说明 | 行数 |
 |------|------|------|
-| **[MCP 集成指南](mcp-integration.md)** | MCP 工具和资源使用说明 | ~200 |
+| **[MCP 工具参考](mcp-tools-reference.md)** | MCP 工具完整参考 | ~180 |
 | **[最佳实践 - 核心](best-practices-core.md)** | 基础架构和规范 | ~170 |
 | **[最佳实践 - 高级](best-practices-advanced.md)** | 高级技巧和优化 | ~140 |
 
@@ -16,7 +16,7 @@
 
 | 文档 | 说明 | 行数 |
 |------|------|------|
-| **[MCP 集成指南](mcp-integration.md)** | MCP 工具和资源使用说明 | ~200 |
+| **[MCP 工具参考](mcp-tools-reference.md)** | MCP 工具完整参考和工作流集成 | ~180 |
 | **[GitHub 集成指南](mcp-github-integration.md)** | 与 GitHub MCP Server 集成示例 | ~150 |
 | **[Thinking MCP 集成指南](mcp-thinking-integration.md)** | 与 Thinking MCP Server 集成示例 | ~150 |
 
@@ -59,7 +59,8 @@
 
 | 需求 | 推荐文档 |
 |------|---------|
-| 如何使用 MCP 工具 | [MCP 集成指南](mcp-integration.md) |
+| MCP 工具参数和用法 | [MCP 工具参考](mcp-tools-reference.md) |
+| MCP Server 配置 | [MCP Server README](../../skill-creator-mcp/README.md) |
 | Agent-Skill 开发规范 | [最佳实践 - 核心](best-practices-core.md) |
 | 如何验证技能 | [验证指南](validation-guide.md) |
 | 需求澄清功能 | [需求澄清指南](requirement-collection.md) |
@@ -75,7 +76,7 @@
 
 ### 初学者
 
-1. [MCP 集成指南](mcp-integration.md) - 了解 MCP 工具基础
+1. [MCP 工具参考](mcp-tools-reference.md) - 了解 MCP 工具和用法
 2. [最佳实践 - 核心](best-practices-core.md) - 学习开发规范
 3. [需求澄清基础](requirement-collection-basics.md) - 快速开始
 4. [验证指南](validation-guide.md) - 验证创建的技能

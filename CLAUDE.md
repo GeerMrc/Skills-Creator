@@ -495,6 +495,49 @@ dd if=/dev/zero of=/dev/sda
 - ✅ 使用环境变量存储敏感信息
 - ✅ 添加 `.env` 到 `.gitignore`
 
+### 3.5 文件完整性保护
+
+**问题背景** (2026-01-30 事件):
+- 23个 `examples/` 文件被损坏 (7MB - 173MB)
+- 损坏原因：文本替换操作出错
+- 修复方法：从 git HEAD 恢复
+
+**预防措施**:
+
+1. **CI/CD 检查**：
+   ```bash
+   # 检查异常大文件（example 文件应 < 1MB）
+   find skill-creator/examples/ -name "*.md" -size +1M
+   ```
+
+2. **开发规范**：
+   - ❌ 避免使用全局替换操作（如 `sed -i` 不加验证）
+   - ✅ 使用 `git diff` 验证修改内容
+   - ✅ 修改前提交当前状态
+
+3. **监控脚本**：
+   ```bash
+   # 检查文件大小异常
+   ls -lh skill-creator/examples/*.md | awk '$5 ~ /M$/ && $5+0 > 1'
+
+   # 检查 git 状态中的可疑修改
+   git status --short | awk '{print $2}' | xargs -I{} ls -lh {}
+   ```
+
+4. **恢复流程**：
+   ```bash
+   # 发现文件损坏后立即恢复
+   git checkout HEAD -- skill-creator/examples/
+
+   # 验证恢复结果
+   ls -lh skill-creator/examples/*.md | head -5
+   ```
+
+**验收标准**:
+- [ ] 所有 example 文件 < 1MB
+- [ ] git status 显示无异常修改
+- [ ] 文件内容正常（无重复文本）
+
 ---
 
 ## 四、文档与计划管理

@@ -4,7 +4,7 @@
 
 本文档介绍 MCP Server 的高级用法，包括错误处理、性能优化、调试技巧和扩展集成。
 
-> **基础配置**：查看 [MCP 集成指南](mcp-integration.md) 了解基础配置和工具列表。
+> **基础配置**：查看 [MCP 集成指南](mcp-tools-reference.md) 了解基础配置和工具列表。
 
 ---
 
@@ -156,5 +156,5 @@ GitHub MCP 提供 GitHub 操作能力，实现需求跟踪、Git 工作流自动
 - **[MCP 协作](../examples/mcp-skill-collaboration.md)** - MCP 与 Agent-Skill 协同
 
 ### 核心文档
-- **[MCP 集成指南](mcp-integration.md)** - 基础配置和工具列表
+- **[MCP 集成指南](mcp-tools-reference.md)** - 基础配置和工具列表
 - **[最佳实践 - 高级](best-practices-advanced.md)** - Token 优化和高级技巧

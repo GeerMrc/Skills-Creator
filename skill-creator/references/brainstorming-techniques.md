@@ -175,4 +175,4 @@ Q: 根据您的描述，这个技能需要处理哪类数据格式？
 
 - **[主文档](requirement-collection.md)** - 需求澄清概述
 - **[示例](../examples/requirement-collection-basic.md)** - 使用示例
-- **[MCP 集成指南](mcp-integration.md)** - MCP 工具配置
+- **[MCP 工具参考](mcp-tools-reference.md)** - MCP 工具完整参考

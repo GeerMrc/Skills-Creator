@@ -460,4 +460,4 @@ async def cleanup_old_exports(archive_dir, keep_months=3):
 
 - **[Thinking 分析示例](thinking-analysis.md)** - 思考记录使用
 - **[analyze_skill 示例](mcp-analyze-examples.md)** - 代码分析详解
-- **[MCP 集成指南](../references/mcp-integration.md)** - MCP 工具配置
+- **[MCP 集成指南](../references/mcp-tools-reference.md)** - MCP 工具配置

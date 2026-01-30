@@ -292,7 +292,7 @@ prompt = await session.get_prompt("refactor-skill", arguments={
 
 ## 相关文档
 
-- **[MCP 集成指南](../references/mcp-integration.md)** - 配置和基础使用
+- **[MCP 集成指南](../references/mcp-tools-reference.md)** - 配置和基础使用
 - **[最佳实践 - 核心](../references/best-practices-core.md)** - 开发规范
 - **[最佳实践 - 高级](../references/best-practices-advanced.md)** - Token 优化和高级技巧
 - **[验证规范](../references/validation.md)** - 验证规则

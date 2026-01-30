@@ -153,4 +153,4 @@ if not validation["is_valid"]:
 
 - **[GitHub 需求跟踪示例](../examples/github-requirement-tracking.md)** - 需求 Issue 自动创建
 - **[Git 自动化示例](../examples/github-automation.md)** - 分支和 PR 自动化
-- **[MCP 集成指南](mcp-integration.md)** - MCP 基础配置
+- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 基础配置

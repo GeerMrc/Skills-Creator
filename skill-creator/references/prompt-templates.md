@@ -121,5 +121,5 @@ result = await check_requirement_completeness_tool(
 ## 相关文档
 
 - [需求收集工作流指南](requirement-workflow.md)
-- [MCP集成指南](mcp-integration.md)
+- [MCP集成指南](mcp-tools-reference.md)
 - [最佳实践 - 核心](best-practices-core.md)

@@ -40,7 +40,7 @@ container-manager/
 ├── examples/
 │   └── tool-usage.md
 └── references/
-    ├── mcp-integration.md
+    ├── mcp-tools-reference.md
     └── tool-reference.md
 ```
 
@@ -255,5 +255,5 @@ for name, template in skills:
 ## 相关文档
 
 - **[validate_skill 示例](mcp-validate-examples.md)** - 验证创建的技能
-- **[MCP 集成指南](../references/mcp-integration.md)** - MCP 工具配置
+- **[MCP 集成指南](../references/mcp-tools-reference.md)** - MCP 工具配置
 - **[最佳实践](../references/best-practices-core.md)** - 开发规范

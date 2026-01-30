@@ -46,7 +46,9 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ### 配置选项
 
-可通过 `SKILL_CREATOR_OUTPUT_DIR` 环境变量统一管理技能输出位置。详见：[MCP 集成指南](references/mcp-integration.md)
+可通过 `SKILL_CREATOR_OUTPUT_DIR` 环境变量统一管理技能输出位置。
+
+> 详见：[打包规范](references/packaging.md) | [MCP 工具参考](references/mcp-tools-reference.md) | [示例文档索引](examples/README.md)
 
 ## 工作流程
 
@@ -116,7 +118,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 ### 核心文档
 
 - **[需求澄清指南](references/requirement-collection.md)** - AI 对话式需求收集流程详解
-- **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
+- **[MCP 工具参考](references/mcp-tools-reference.md)** - MCP 工具完整参考和工作流集成
 - **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
 - **[最佳实践 - 高级技巧](references/best-practices-advanced.md)** - Token 优化、脚本黑盒化、反模式
 - **[验证规范](references/validation.md)** - 命名规则、描述标准、结构检查清单

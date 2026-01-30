@@ -284,4 +284,4 @@ if not validation["valid"]:
 - **[validate_skill 示例](mcp-validate-examples.md)** - 技能验证详解
 - **[analyze_skill 示例](mcp-analyze-examples.md)** - 技能分析详解
 - **[GitHub 需求跟踪](github-requirement-tracking.md)** - 需求跟踪集成
-- **[MCP 集成指南](../references/mcp-integration.md)** - MCP 工具配置
+- **[MCP 集成指南](../references/mcp-tools-reference.md)** - MCP 工具配置
