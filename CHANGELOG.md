@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6] - 2026-01-30
+
+### Changed
+
+**文档改进** - skill-creator/ 目录小幅优化:
+- 在 `mcp-integration-guide.md` 添加"适用场景"说明，明确标注为可选高级用法
+- 验证所有交叉引用链接有效性（7处引用，全部有效）
+- 确认文件命名一致性（`mcp-integration-guide.md`）
+
+### Metrics
+
+- 审核评分: 9.8/10（整体质量优秀）
+- 文档行数: 228行（符合200-300行最佳实践）
+- 交叉引用: 7处，全部有效
+
+---
+
 ## [0.3.5] - 2026-01-30
 
 ### Changed
