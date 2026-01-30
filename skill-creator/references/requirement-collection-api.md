@@ -5,9 +5,9 @@
 > **架构说明**：需求收集功能已重构为7个原子化工具，符合ADR 001架构原则。
 
 > **相关文档**：
-> - [需求澄清基础指南](requirement-collection-basics.md) - 核心概念和快速开始
-> - [需求收集模式详解](requirement-collection-modes.md) - 各种模式详细说明
-> - [API 使用示例](requirement-collection-api-examples.md) - 实际使用场景和最佳实践
+> - [需求收集指南](requirement-collection-guide.md) - 完整指南和快速开始
+> - [需求收集模式详解](requirement-collection-guide.md) - 各种模式详细说明
+> - [API 使用示例](requirement-collection-guide.md) - 实际使用场景和最佳实践
 
 ## 目录
 
@@ -110,7 +110,7 @@ check_requirement_completeness_tool(
 **默认值**: `"basic"`
 **可选值**: `basic` | `complete` | `brainstorm` | `progressive`
 
-收集模式，详见 [需求收集模式详解](requirement-collection-modes.md)。
+收集模式，详见 [需求收集模式详解](requirement-collection-guide.md)。
 
 ### session_id
 
@@ -238,7 +238,7 @@ result = await create_requirement_session_tool(mode="basic")
 
 ## 相关文档
 
-- **[API 使用示例](requirement-collection-api-examples.md)** - 实际使用场景和最佳实践
-- **[需求澄清基础指南](requirement-collection-basics.md)** - 核心概念和快速开始
-- **[需求收集模式详解](requirement-collection-modes.md)** - 各种模式详细说明
+- **[API 使用示例](requirement-collection-guide.md)** - 实际使用场景和最佳实践
+- **[需求收集指南](requirement-collection-guide.md)** - 完整指南和快速开始
+- **[需求收集模式详解](requirement-collection-guide.md)** - 各种模式详细说明
 - **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具使用和配置

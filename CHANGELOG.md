@@ -5,6 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.5] - 2026-01-30
+
+### Changed
+
+**内容优化** - 精简和整合文档，聚焦核心定位:
+- 删除偏离定位的内容 (~2100 行，-27%):
+  - 删除 `examples/thinking/` 子目录（3个文件，~970行）- 外部工具教程偏离定位
+  - 删除 `examples/mcp-integration-example.md` (~260行) - 通用教程偏离定位
+  - 删除 `references/brainstorming-techniques.md` (178行) - 通用方法论偏离定位
+  - 删除 `examples/mcp-init-examples.md`, `examples/mcp-validate-examples.md` - 已合并
+
+- 合并重复文档:
+  - 合并需求收集文档（7→2文件）:
+    - 创建 `requirement-collection-guide.md` (~300行) - 完整需求收集指南
+    - 保留 `requirement-collection-api.md` - API参考（更新失效链接）
+  - 合并打包示例（2→1文件）:
+    - 创建 `examples/packaging-examples.md` (374行)
+  - 合并GitHub集成示例（2→1文件）:
+    - 创建 `examples/github-integration.md` (353行)
+
+- 移动MCP集成演示到 `examples/`:
+  - `mcp-github-integration-example.md` - GitHub集成演示
+  - `mcp-thinking-integration-example.md` - Thinking集成演示
+
+### Fixed
+
+- 修复内容优化后的失效链接:
+  - 更新 `SKILL.md` 链接指向新文件名
+  - 更新 `examples/README.md` 行数统计和文件引用
+  - 更新 `references/README.md` 行数统计
+  - 修复 `requirement-collection-api.md` 内部链接
+  - 修复 `mcp-integration-guide.md` 跨目录链接
+
+- 修复测试用例:
+  - 更新 `test_github_mcp.py` 使用 `github-integration.md`
+  - 更新 `test_thinking_mcp.py` 使用 `mcp-thinking-integration-example.md`
+  - 修复 `test_thinking_mcp.py` 路径错误 (`SKILL_MD` → `SKILL.md`)
+
+### Metrics
+
+- 核心定位对齐度: 60-95% → 75-95%+
+- 文档行数减少: ~2100行 (-27%)
+- 测试通过率: 562 passed (97% 覆盖率)
+- 代码质量检查: ruff 0错误, mypy 0错误
+
+---
+
 ## [0.3.4] - 2026-01-29
 
 ### Changed

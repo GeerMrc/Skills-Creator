@@ -4,6 +4,9 @@
 1. SKILL.md 中的 mcp_servers 配置
 2. Thinking 示例文档的存在性和有效性
 3. 交叉引用链接的有效性
+
+注意：2026-01-30 内容优化后，thinking/ 示例子目录已被删除（偏离定位）。
+现在的 Thinking 示例位于 examples/ 目录下作为高级集成示例。
 """
 
 from pathlib import Path
@@ -50,49 +53,22 @@ async def test_thinking_mcp_servers_config():
 
 
 @pytest.mark.asyncio
-async def test_thinking_analysis_example_exists():
-    """测试 thinking/ 目录存在并包含分析示例."""
-    thinking_dir = EXAMPLES_DIR / "thinking"
+async def test_thinking_integration_example_exists():
+    """测试 Thinking MCP 集成示例文档存在.
+
+    2026-01-30 内容优化：thinking/ 示例子目录已被删除（偏离定位）。
+    现在的 Thinking 示例位于 examples/mcp-thinking-integration-example.md
+    """
+    example_file = EXAMPLES_DIR / "mcp-thinking-integration-example.md"
 
     if not EXAMPLES_DIR.exists():
         pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
 
-    assert thinking_dir.exists(), f"Thinking 目录不存在: {thinking_dir}"
+    assert example_file.exists(), f"Thinking MCP 集成示例不存在: {example_file}"
 
-    # 验证分析相关文件存在
-    analysis_files = [
-        thinking_dir / "analysis-basic.md",
-        thinking_dir / "analysis-advanced.md",
-        thinking_dir / "analysis-workflow.md",
-    ]
-
-    for example_file in analysis_files:
-        assert example_file.exists(), f"Thinking 分析示例不存在: {example_file}"
-        content = example_file.read_text(encoding="utf-8")
-        assert len(content) > 100, f"{example_file.name} 内容过少"
-
-
-@pytest.mark.asyncio
-async def test_thinking_export_example_exists():
-    """测试 thinking/ 目录存在并包含导出示例."""
-    thinking_dir = EXAMPLES_DIR / "thinking"
-
-    if not EXAMPLES_DIR.exists():
-        pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
-
-    assert thinking_dir.exists(), f"Thinking 目录不存在: {thinking_dir}"
-
-    # 验证导出相关文件存在
-    export_files = [
-        thinking_dir / "export-formats.md",
-        thinking_dir / "export-workflow.md",
-        thinking_dir / "export-automation.md",
-    ]
-
-    for example_file in export_files:
-        assert example_file.exists(), f"Thinking 导出示例不存在: {example_file}"
-        content = example_file.read_text(encoding="utf-8")
-        assert len(content) > 100, f"{example_file.name} 内容过少"
+    # 验证文件内容非空
+    content = example_file.read_text(encoding="utf-8")
+    assert len(content) > 150, "示例文档内容过少"
 
 
 @pytest.mark.asyncio
@@ -101,54 +77,21 @@ async def test_thinking_example_content_validity():
     if not EXAMPLES_DIR.exists():
         pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
 
-    thinking_dir = EXAMPLES_DIR / "thinking"
-    if not thinking_dir.exists():
-        pytest.skip(f"thinking 目录不存在: {thinking_dir}")
+    # 2026-01-30 内容优化：使用新的 mcp-thinking-integration-example.md
+    example_file = EXAMPLES_DIR / "mcp-thinking-integration-example.md"
 
-    # 检查所有 thinking 目录下的 Markdown 文件
-    thinking_files = list(thinking_dir.glob("*.md"))
+    if not example_file.exists():
+        pytest.skip(f"Thinking MCP 集成示例不存在: {example_file}")
 
-    assert len(thinking_files) >= 6, f"应该至少有6个 Thinking 示例文件，实际: {len(thinking_files)}"
+    content = example_file.read_text(encoding="utf-8")
 
-    for example_file in thinking_files:
-        content = example_file.read_text(encoding="utf-8")
+    # 验证基本的 Markdown 结构
+    assert "#" in content, f"{example_file.name} 缺少标题"
 
-        # 验证基本的 Markdown 结构
-        assert "#" in content, f"{example_file.name} 缺少标题"
-
-        # 验证包含 Thinking 相关关键词
-        thinking_keywords = ["Thinking", "session", "MCP", "sequential_thinking", "export"]
-        found_keywords = [kw for kw in thinking_keywords if kw.lower() in content.lower()]
-        assert len(found_keywords) >= 1, f"{example_file.name} 应该包含 Thinking 相关关键词"
-
-
-@pytest.mark.asyncio
-async def test_thinking_cross_references():
-    """测试 Thinking 示例中的交叉引用链接."""
-    if not EXAMPLES_DIR.exists():
-        pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
-
-    thinking_dir = EXAMPLES_DIR / "thinking"
-    if not thinking_dir.exists():
-        pytest.skip(f"thinking 目录不存在: {thinking_dir}")
-
-    # 检查所有 thinking 目录下的文件
-    thinking_files = list(thinking_dir.glob("*.md"))
-
-    for example_file in thinking_files:
-        content = example_file.read_text(encoding="utf-8")
-
-        # 检查是否有引用链接
-        if "](references/" in content or "](../references/" in content:
-            # 提取引用路径
-            import re
-
-            pattern = r'\]\((?:\.\./)?references/([^)]+)\)'
-            matches = re.findall(pattern, content)
-
-            for ref_path in matches:
-                ref_file = SKILL_CREATOR_DIR / "references" / ref_path
-                assert ref_file.exists(), f"{example_file.name} 引用的文档不存在: {ref_path}"
+    # 验证包含 Thinking 相关关键词
+    thinking_keywords = ["Thinking", "session", "MCP", "sequential_thinking", "集成"]
+    found_keywords = [kw for kw in thinking_keywords if kw.lower() in content.lower()]
+    assert len(found_keywords) >= 2, f"{example_file.name} 应该包含 Thinking 相关关键词"
 
 
 @pytest.mark.asyncio
@@ -161,61 +104,12 @@ async def test_thinking_examples_in_readme():
 
     content = readme_file.read_text(encoding="utf-8")
 
-    # 验证 Thinking 目录被提及或索引
-    thinking_references = ["thinking/", "Thinking 集成", "Thinking 集成示例索引"]
-    found_references = [ref for ref in thinking_references if ref in content]
+    # 2026-01-30 内容优化：检查新的 mcp-thinking-integration-example 引用
+    thinking_examples = ["mcp-thinking-integration", "Thinking MCP 集成示范"]
+    found_examples = [ex for ex in thinking_examples if ex in content]
 
-    # 至少应该有一个 Thinking 相关引用被提及
-    assert len(found_references) > 0, "README 应该提及 Thinking 集成示例"
-
-
-@pytest.mark.asyncio
-async def test_thinking_session_workflow_example():
-    """测试 Thinking 示例中的会话工作流说明."""
-    if not EXAMPLES_DIR.exists():
-        pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
-
-    thinking_dir = EXAMPLES_DIR / "thinking"
-    if not thinking_dir.exists():
-        pytest.skip(f"thinking 目录不存在: {thinking_dir}")
-
-    # 检查分析相关文件包含工作流步骤
-    analysis_files = [
-        thinking_dir / "analysis-basic.md",
-        thinking_dir / "analysis-workflow.md",
-    ]
-
-    has_workflow = False
-    for analysis_file in analysis_files:
-        if analysis_file.exists():
-            content = analysis_file.read_text(encoding="utf-8")
-            # 应该包含会话创建或分析的步骤
-            workflow_keywords = ["create_session", "sequential_thinking", "get_session"]
-            found_keywords = [kw for kw in workflow_keywords if kw in content]
-            if len(found_keywords) > 0:
-                has_workflow = True
-                break
-
-    assert has_workflow, "Thinking 分析示例应该包含工作流步骤"
-
-    # 检查导出相关文件包含导出功能说明
-    export_files = [
-        thinking_dir / "export-formats.md",
-        thinking_dir / "export-workflow.md",
-    ]
-
-    has_export_info = False
-    for export_file in export_files:
-        if export_file.exists():
-            content = export_file.read_text(encoding="utf-8")
-            # 应该包含导出相关关键词
-            export_keywords = ["export_session", "format", "markdown", "json"]
-            found_keywords = [kw for kw in export_keywords if kw.lower() in content.lower()]
-            if len(found_keywords) >= 2:
-                has_export_info = True
-                break
-
-    assert has_export_info, "Thinking 导出示例应该包含导出功能说明"
+    # 应该有 Thinking 集成示例被提及
+    assert len(found_examples) > 0, "README 应该提及 Thinking MCP 集成示例"
 
 
 @pytest.mark.asyncio

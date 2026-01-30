@@ -4,6 +4,9 @@
 1. SKILL.md 中的 mcp_servers 配置
 2. GitHub 示例文档的存在性和有效性
 3. 交叉引用链接的有效性
+
+注意：2026-01-30 内容优化后，github-requirement-tracking.md 和 github-automation.md
+已合并为 github-integration.md。
 """
 
 from pathlib import Path
@@ -50,33 +53,22 @@ async def test_github_mcp_servers_config():
 
 
 @pytest.mark.asyncio
-async def test_github_requirement_tracking_example_exists():
-    """测试 github-requirement-tracking.md 示例文档存在."""
-    example_file = EXAMPLES_DIR / "github-requirement-tracking.md"
+async def test_github_integration_example_exists():
+    """测试 github-integration.md 示例文档存在.
+
+    2026-01-30 内容优化：github-requirement-tracking.md 和 github-automation.md
+    已合并为 github-integration.md
+    """
+    example_file = EXAMPLES_DIR / "github-integration.md"
 
     if not EXAMPLES_DIR.exists():
         pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
 
-    assert example_file.exists(), f"GitHub 需求追踪示例不存在: {example_file}"
+    assert example_file.exists(), f"GitHub 集成示例不存在: {example_file}"
 
     # 验证文件内容非空
     content = example_file.read_text(encoding="utf-8")
-    assert len(content) > 100, "示例文档内容过少"
-
-
-@pytest.mark.asyncio
-async def test_github_automation_example_exists():
-    """测试 github-automation.md 示例文档存在."""
-    example_file = EXAMPLES_DIR / "github-automation.md"
-
-    if not EXAMPLES_DIR.exists():
-        pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
-
-    assert example_file.exists(), f"GitHub 自动化示例不存在: {example_file}"
-
-    # 验证文件内容非空
-    content = example_file.read_text(encoding="utf-8")
-    assert len(content) > 100, "示例文档内容过少"
+    assert len(content) > 200, "示例文档内容过少"
 
 
 @pytest.mark.asyncio
@@ -85,24 +77,21 @@ async def test_github_example_content_validity():
     if not EXAMPLES_DIR.exists():
         pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
 
-    github_files = [
-        EXAMPLES_DIR / "github-requirement-tracking.md",
-        EXAMPLES_DIR / "github-automation.md",
-    ]
+    # 2026-01-30 内容优化：使用合并后的 github-integration.md
+    example_file = EXAMPLES_DIR / "github-integration.md"
 
-    for example_file in github_files:
-        if not example_file.exists():
-            pytest.fail(f"示例文件不存在: {example_file}")
+    if not example_file.exists():
+        pytest.fail(f"GitHub 集成示例不存在: {example_file}")
 
-        content = example_file.read_text(encoding="utf-8")
+    content = example_file.read_text(encoding="utf-8")
 
-        # 验证基本的 Markdown 结构
-        assert "#" in content, f"{example_file.name} 缺少标题"
+    # 验证基本的 Markdown 结构
+    assert "#" in content, f"{example_file.name} 缺少标题"
 
-        # 验证包含 GitHub 相关关键词
-        github_keywords = ["GitHub", "issue", "MCP"]
-        found_keywords = [kw for kw in github_keywords if kw.lower() in content.lower()]
-        assert len(found_keywords) >= 2, f"{example_file.name} 应该包含 GitHub 相关关键词"
+    # 验证包含 GitHub 相关关键词
+    github_keywords = ["GitHub", "issue", "MCP", "PR", "分支", "需求跟踪"]
+    found_keywords = [kw for kw in github_keywords if kw.lower() in content.lower()]
+    assert len(found_keywords) >= 3, f"{example_file.name} 应该包含 GitHub 相关关键词"
 
 
 @pytest.mark.asyncio
@@ -111,28 +100,25 @@ async def test_github_cross_references():
     if not EXAMPLES_DIR.exists():
         pytest.skip(f"examples 目录不存在: {EXAMPLES_DIR}")
 
-    github_files = [
-        EXAMPLES_DIR / "github-requirement-tracking.md",
-        EXAMPLES_DIR / "github-automation.md",
-    ]
+    # 2026-01-30 内容优化：使用合并后的 github-integration.md
+    example_file = EXAMPLES_DIR / "github-integration.md"
 
-    for example_file in github_files:
-        if not example_file.exists():
-            continue
+    if not example_file.exists():
+        pytest.skip(f"GitHub 集成示例不存在: {example_file}")
 
-        content = example_file.read_text(encoding="utf-8")
+    content = example_file.read_text(encoding="utf-8")
 
-        # 检查是否有引用链接
-        if "](references/" in content or "](../references/" in content:
-            # 提取引用路径
-            import re
+    # 检查是否有引用链接
+    if "](references/" in content or "](../references/" in content:
+        # 提取引用路径
+        import re
 
-            pattern = r'\]\((?:\.\./)?references/([^)]+)\)'
-            matches = re.findall(pattern, content)
+        pattern = r'\]\((?:\.\./)?references/([^)]+)\)'
+        matches = re.findall(pattern, content)
 
-            for ref_path in matches:
-                ref_file = SKILL_CREATOR_DIR / "references" / ref_path
-                assert ref_file.exists(), f"{example_file.name} 引用的文档不存在: {ref_path}"
+        for ref_path in matches:
+            ref_file = SKILL_CREATOR_DIR / "references" / ref_path
+            assert ref_file.exists(), f"{example_file.name} 引用的文档不存在: {ref_path}"
 
 
 @pytest.mark.asyncio
@@ -145,12 +131,12 @@ async def test_github_examples_in_readme():
 
     content = readme_file.read_text(encoding="utf-8")
 
-    # 验证 GitHub 示例被提及或索引
-    github_examples = ["github-requirement-tracking", "github-automation"]
+    # 2026-01-30 内容优化：检查新的 github-integration.md 引用
+    github_examples = ["github-integration", "GitHub 集成"]
     found_examples = [ex for ex in github_examples if ex in content]
 
-    # 至少应该有一个 GitHub 示例被提及
-    assert len(found_examples) > 0, "README 应该提及至少一个 GitHub 示例"
+    # 应该有 GitHub 集成示例被提及
+    assert len(found_examples) > 0, "README 应该提及 GitHub 集成示例"
 
 
 @pytest.mark.asyncio

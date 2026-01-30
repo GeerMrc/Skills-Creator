@@ -7,7 +7,7 @@
 > **相关文档**：
 > - [MCP 工具参考](mcp-tools-reference.md) - MCP 工具完整参考
 > - [高级调试指南](troubleshooting-advanced.md) - 深度问题排查
-> - [客户端兼容性说明](requirement-workflow.md#客户端兼容性) - 回退机制说明
+> - [客户端兼容性说明](requirement-collection-guide.md) - 回退机制说明
 
 ---
 
@@ -192,7 +192,7 @@ cd skill-creator-mcp && grep version pyproject.toml
 
 ## 相关文档
 
-- **[客户端兼容性说明](requirement-workflow.md#客户端兼容性)** - 回退机制说明
+- **[客户端兼容性说明](requirement-collection-guide.md)** - 回退机制说明
 - **[MCP 集成指南](mcp-tools-reference.md)** - MCP 工具配置
 - **[验证规范](validation.md)** - 技能验证规则
 - **[高级调试指南](troubleshooting-advanced.md)** - 深度问题排查和日志分析

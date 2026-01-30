@@ -25,8 +25,8 @@ Skill-Creator 提供两个核心 MCP 集成示范：
 
 | 示范 | MCP 类型 | 核心功能 | 详细文档 |
 |------|----------|----------|----------|
-| **GitHub MCP** | 任务自动化 | 需求跟踪、Git 自动化、PR 管理 | [集成示范](mcp-github-integration.md) |
-| **Thinking MCP** | 思考记录 | 分析记录、决策追溯、知识传递 | [集成示范](mcp-thinking-integration.md) |
+| **GitHub MCP** | 任务自动化 | 需求跟踪、Git 自动化、PR 管理 | [集成示范](../examples/mcp-github-integration-example.md) |
+| **Thinking MCP** | 思考记录 | 分析记录、决策追溯、知识传递 | [集成示范](../examples/mcp-thinking-integration-example.md) |
 
 ---
 
@@ -213,8 +213,8 @@ mcp_servers:
 ## 参考资料
 
 **示范案例**：
-- **[GitHub MCP 集成示范](mcp-github-integration.md)** - 需求跟踪、Git 自动化
-- **[Thinking MCP 集成示范](mcp-thinking-integration.md)** - 思考记录、决策追溯
+- **[GitHub MCP 集成示范](../examples/mcp-github-integration-example.md)** - 需求跟踪、Git 自动化
+- **[Thinking MCP 集成示范](../examples/mcp-thinking-integration-example.md)** - 思考记录、决策追溯
 
 **核心参考**：
 - **[MCP 工具参考](mcp-tools-reference.md)** - skill-creator MCP 工具完整参考
