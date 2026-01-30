@@ -77,7 +77,7 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 - 根据收集到的需求提供可执行建议
 - 参考 `references/requirement-workflow.md` 获取完整工作流指南
 
-> 详见：[需求收集工作流指南](references/requirement-workflow.md) | [需求澄清指南](references/requirement-collection.md) | [MCP Server 文档](../../skill-creator-mcp/docs/)
+> 详见：[需求收集工作流指南](references/requirement-workflow.md) | [需求澄清指南](references/requirement-collection.md)
 
 ## MCP 组件
 
@@ -115,7 +115,6 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 
 ### 核心文档
 
-- **[客户端兼容性说明](../../skill-creator-mcp/docs/client-compatibility.md)** - 客户端限制与自动降级策略
 - **[需求澄清指南](references/requirement-collection.md)** - AI 对话式需求收集流程详解
 - **[MCP 集成指南](references/mcp-integration.md)** - MCP 工具使用、资源访问、配置方法
 - **[最佳实践 - 核心原则](references/best-practices-core.md)** - 渐进式披露架构、描述写作规范
@@ -136,4 +135,4 @@ Skill-Creator 采用混合架构：**MCP Server** 提供原子操作（12 工具
 - Agent-Skill 编排完整收集流程（循环、验证、重试、提供建议）
 - 详见：[需求收集工作流指南](references/requirement-workflow.md)
 
-详见：[ADR 001 混合架构设计](../../docs/adr/001-hybrid-architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)
+> 详见：[混合架构设计](references/architecture.md) | [协同示例](examples/mcp-skill-collaboration.md)

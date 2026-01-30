@@ -36,6 +36,8 @@
 | 示例 | 说明 | 行数 |
 |------|------|------|
 | **[MCP 协作](mcp-skill-collaboration.md)** | Agent-Skill 与 MCP 协同工作流 | ~300 |
+| **[Thinking 分析示例](thinking-analysis.md)** | analyze_skill + Thinking MCP 记录思考过程 | ~470 |
+| **[Thinking 导出示例](thinking-export.md)** | 导出思考会话为文档 | ~460 |
 
 ### GitHub MCP 集成示例
 
@@ -59,7 +61,6 @@
 | 获取重构建议 | [refactor_skill 示例](mcp-refactor-examples.md) |
 | 打包发布技能 | [package_skill 示例](mcp-package-examples.md) |
 | 看综合工作流 | [MCP 协作](mcp-skill-collaboration.md) |
-| 配置 MCP Server | [MCP Server 文档](../../skill-creator-mcp/docs/) |
 
 ---
 

@@ -61,7 +61,6 @@
 |------|---------|
 | 如何使用 MCP 工具 | [MCP 集成指南](mcp-integration.md) |
 | Agent-Skill 开发规范 | [最佳实践 - 核心](best-practices-core.md) |
-| 如何配置 MCP Server | [MCP Server 文档](../../skill-creator-mcp/docs/) |
 | 如何验证技能 | [验证指南](validation-guide.md) |
 | 需求澄清功能 | [需求澄清指南](requirement-collection.md) |
 | API 参数和返回值 | [API 核心参考](requirement-collection-api-core.md) |
@@ -94,5 +93,4 @@
 
 - **[SKILL.md](../SKILL.md)** - Agent-Skill 主入口
 - **[Examples](../examples/README.md)** - 使用示例索引
-- **[ADR 001: 混合架构设计](../../docs/adr/001-hybrid-architecture.md)** - 架构决策记录
-- **[MCP Server 文档](../../skill-creator-mcp/docs/)** - MCP Server 技术文档
+- **[混合架构设计](architecture.md)** - 架构设计说明

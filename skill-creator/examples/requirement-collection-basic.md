@@ -72,8 +72,8 @@
 > - 动态问题生成 → 预定义问题列表
 > - 交互式输入收集 → 逐步问答模式
 > - LLM 智能分析 → 固定规则检查
-
-详见 [客户端兼容性说明](../../skill-creator-mcp/docs/client-compatibility.md)
+>
+> 详见 [客户端兼容性说明](../references/requirement-workflow.md#客户端兼容性)
 
 ## 相关文档
 

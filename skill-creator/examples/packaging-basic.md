@@ -182,4 +182,3 @@ ls -la /tmp/test-skill/
 
 **更多高级示例**: [packaging-advanced.md](packaging-advanced.md)
 **规范文档**: [packaging.md](../references/packaging.md)
-**MCP 文档**: [../../skill-creator-mcp/docs/](../../skill-creator-mcp/docs/)

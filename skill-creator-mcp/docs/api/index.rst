@@ -15,7 +15,7 @@ This page contains the API reference documentation for skill-creator-mcp.
 MCP Tools
 ----------
 
-Skill Creator MCP Server provides 18 tools organized into 5 categories.
+Skill Creator MCP Server provides 12 tools organized into 3 categories.
 
 Skill Lifecycle Tools (4)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -114,13 +114,3 @@ Tool Categories Reference
   - ``generate_dynamic_question`` - Generate dynamic question
   - ``validate_answer_format`` - Validate answer format
   - ``check_requirement_completeness`` - Check completeness
-
-**Batch Operations** (2):
-  - ``batch_validate_skills`` - Validate multiple skills concurrently
-  - ``batch_analyze_skills`` - Analyze multiple skills concurrently
-
-**Health Check Tools** (3):
-  - ``health_check`` - Complete health check
-  - ``quick_status`` - Quick status summary
-  - ``is_healthy`` - Quick health check
-  - ``test_requirement_completeness`` - Test requirement completeness judgment

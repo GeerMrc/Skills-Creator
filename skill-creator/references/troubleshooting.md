@@ -5,9 +5,9 @@
 本文档提供 Skill-Creator 使用过程中常见问题的解决方案。
 
 > **相关文档**：
-> - [回退机制说明](../../skill-creator-mcp/docs/client-compatibility.md) - 客户端限制与自动降级策略
 > - [MCP 集成指南](mcp-integration.md) - MCP 工具配置
 > - [高级调试指南](troubleshooting-advanced.md) - 深度问题排查
+> - [客户端兼容性说明](requirement-workflow.md#客户端兼容性) - 回退机制说明
 
 ---
 
@@ -192,7 +192,7 @@ cd skill-creator-mcp && grep version pyproject.toml
 
 ## 相关文档
 
-- **[回退机制说明](../../skill-creator-mcp/docs/client-compatibility.md)** - 客户端限制与自动降级策略
+- **[客户端兼容性说明](requirement-workflow.md#客户端兼容性)** - 回退机制说明
 - **[MCP 集成指南](mcp-integration.md)** - MCP 工具配置
 - **[验证规范](validation.md)** - 技能验证规则
 - **[高级调试指南](troubleshooting-advanced.md)** - 深度问题排查和日志分析

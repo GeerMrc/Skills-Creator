@@ -2,7 +2,7 @@
 
 > **版本**: v0.3.4
 > **项目类型**: MCP Server + Agent-Skill 混合架构
-> **测试覆盖率**: 97% (568个测试用例，566通过，2跳过)
+> **测试覆盖率**: 97% (568个测试用例，562通过，4失败，2跳过)
 
 > **📢 目录结构变更通知 (v0.2.0)**: Agent-Skill 相关代码已统一到 `skill-creator/` 目录。如果您直接引用 `SKILL.md`、`examples/` 或 `references/`，请参阅 [迁移指南](MIGRATION.md) 更新您的路径配置。
 
@@ -254,7 +254,7 @@ Skills-Creator/
 
 ## MCP 工具列表
 
-MCP Server 提供 18 个工具，按功能划分为 5 类：
+MCP Server 提供 **12个工具**，按功能划分为 **3类**：
 
 ### 技能生命周期（4个）
 
@@ -282,12 +282,6 @@ MCP Server 提供 18 个工具，按功能划分为 5 类：
 | `generate_dynamic_question` | 生成动态问题 |
 | `validate_answer_format` | 验证答案格式 |
 | `check_requirement_completeness` | 检查完整性 |
-
-### 打包工具（1个）
-
-| 工具 | 功能 |
-|------|------|
-| `package_skill` | 统一打包工具（支持通用和Agent-Skill标准两种模式） |
 
 **package_skill** 统一打包工具，支持两种模式：
 - `strict=False` (默认): 通用打包模式
