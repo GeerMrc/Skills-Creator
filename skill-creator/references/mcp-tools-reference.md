@@ -4,7 +4,7 @@
 
 本文档提供 MCP 工具的完整参考，用于 Agent-Skill 工作流编排。
 
-> **MCP Server 配置**: 详见 [MCP Server README](../../skill-creator-mcp/README.md)
+> **MCP Server 配置**: MCP Server 需要单独配置和安装
 
 > **示例代码**: 查看 [MCP 使用示例](../examples/mcp-usage-examples.md) 获取完整的代码示例和用法。
 
@@ -217,5 +217,4 @@ Claude：[调用 analyze_skill_tool 工具]
 
 - **[MCP 使用示例](../examples/mcp-usage-examples.md)** - 完整代码示例
 - **[混合架构设计](architecture.md)** - 职责边界说明
-- **[MCP Server README](../../skill-creator-mcp/README.md)** - 配置和安装
 - **[最佳实践 - 核心](best-practices-core.md)** - 开发规范

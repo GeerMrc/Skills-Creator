@@ -60,7 +60,6 @@
 | 需求 | 推荐文档 |
 |------|---------|
 | MCP 工具参数和用法 | [MCP 工具参考](mcp-tools-reference.md) |
-| MCP Server 配置 | [MCP Server README](../../skill-creator-mcp/README.md) |
 | Agent-Skill 开发规范 | [最佳实践 - 核心](best-practices-core.md) |
 | 如何验证技能 | [验证指南](validation-guide.md) |
 | 需求澄清功能 | [需求澄清指南](requirement-collection.md) |
