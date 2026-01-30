@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-551%20passed%2C%202%20skipped-success](#)
+[![Tests](https://img.shields.io/badge/tests-553%20passed-success](#)
 [![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen](#)
 
 Agent-Skills 开发与质量保证 MCP Server。
@@ -433,10 +433,10 @@ result = await package_skill(
 # Agent-Skill标准打包模式（带版本号）
 result = await package_skill(
     skill_path="/path/to/skill",
-    version="0.3.4",
+    version="0.3.6",
     strict=True
 )
-# 生成: skill-v0.3.4.zip
+# 生成: skill-v0.3.6.zip
 ```
 
 ## 开发
