@@ -251,17 +251,17 @@
 
 | ID | 任务名称 | 优先级 | 状态 | 完成时间 | Commit |
 |----|----------|--------|------|----------|--------|
-| T-101 | 删除 thinking/ 子目录 | P0 | completed | 2026-01-30 | c127e68 |
-| T-102 | 移动/删除 mcp-integration-example.md | P0 | completed | 2026-01-30 | c127e68 |
-| T-201 | 合并需求收集 references 文档 | P0 | completed | 2026-01-30 | c127e68 |
-| T-301 | 移动 MCP 集成示范 | P1 | completed | 2026-01-30 | c127e68 |
-| T-302 | 移动 brainstorming-techniques.md | P1 | completed | 2026-01-30 | c127e68 |
-| T-401 | 合并打包示例文件 | P1 | completed | 2026-01-30 | c127e68 |
-| T-402 | 合并 GitHub 集成示例 | P1 | completed | 2026-01-30 | c127e68 |
-| T-501 | 更新 references/README.md 行数 | P1 | completed | 2026-01-30 | c127e68 |
-| T-502 | 更新 examples/README.md 行数 | P1 | completed | 2026-01-30 | c127e68 |
-| T-601 | 验证所有链接有效性 | P2 | completed | 2026-01-30 | c127e68 |
-| T-602 | 生成最终审核报告 | P2 | completed | 2026-01-30 | 待提交 |
+| T-101 | 删除 thinking/ 子目录 | P0 | completed | 2026-01-30 | 3eb29f9 |
+| T-102 | 移动/删除 mcp-integration-example.md | P0 | completed | 2026-01-30 | 3eb29f9 |
+| T-201 | 合并需求收集 references 文档 | P0 | completed | 2026-01-30 | 3eb29f9 |
+| T-301 | 移动 MCP 集成示范 | P1 | completed | 2026-01-30 | 3eb29f9 |
+| T-302 | 移动 brainstorming-techniques.md | P1 | completed | 2026-01-30 | 3eb29f9 |
+| T-401 | 合并打包示例文件 | P1 | completed | 2026-01-30 | 3eb29f9 |
+| T-402 | 合并 GitHub 集成示例 | P1 | completed | 2026-01-30 | 3eb29f9 |
+| T-501 | 更新 references/README.md 行数 | P1 | completed | 2026-01-30 | 3eb29f9 |
+| T-502 | 更新 examples/README.md 行数 | P1 | completed | 2026-01-30 | 3eb29f9 |
+| T-601 | 验证所有链接有效性 | P2 | completed | 2026-01-30 | 3eb29f9 |
+| T-602 | 生成最终审核报告 | P2 | completed | 2026-01-30 | 3eb29f9 |
 
 ---
 
