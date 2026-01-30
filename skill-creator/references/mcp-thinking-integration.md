@@ -1,10 +1,23 @@
-# Thinking MCP 集成指南
+# Thinking MCP 集成示范
 
-## 概述
+> **文档定位**：本文档是 Thinking MCP 与 Agent-Skills 集成的**示范案例**，展示如何将外部 MCP 集成到 Agent-Skills 开发工作流中。
+>
+> **适用场景**：当你的 Agent-Skill 需要思考记录、决策追溯、知识传递等功能时，可参考本示范实现 Thinking MCP 集成。
+>
+> **扩展指南**：要集成其他 MCP（如 FileSystem、Database、Web Search），请参考 [MCP 集成扩展指南](mcp-integration-guide.md)。
+>
+> **相关示例**：[Thinking 分析示例](../examples/thinking-analysis.md) | [Thinking 导出示例](../examples/thinking-export.md)
+
+## 示范概述
 
 Thinking MCP 提供思考记录能力，与 Skill-Creator 集成后可实现代码分析思考过程记录、决策逻辑追溯和思考会话导出。
 
-> **示例代码**：查看 [Thinking 分析示例](../examples/thinking-analysis.md) 和 [Thinking 导出示例](../examples/thinking-export.md)
+本示范展示如何在 Agent-Skills 开发工作流中集成 Thinking MCP，实现以下核心功能：
+
+1. **分析思考记录** - 记录代码分析的完整思考过程
+2. **思考会话导出** - 导出为多种格式（Markdown、HTML、JSON）
+3. **思考模板应用** - 使用预定义模板系统化分析问题
+4. **思考可视化** - 生成思考流程图和树状结构
 
 ## 配置方法
 
@@ -219,8 +232,9 @@ resume_info = await resume_session(session_id=session["id"])
 | 团队协作 | 讨论会 | 共享思考会话 |
 | 审查效率 | 需要重新分析 | 查看思考记录 |
 
-## 参考链接
+## 参考资源
 
+- **[MCP 集成扩展指南](mcp-integration-guide.md)** - 为其他 Agent-Skills 集成 MCP 的通用方法论
+- **[MCP 工具参考](mcp-tools-reference.md)** - skill-creator MCP 工具完整参考
 - **[Thinking 分析示例](../examples/thinking-analysis.md)** - 思考过程记录
 - **[Thinking 导出示例](../examples/thinking-export.md)** - 思考会话导出
-- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 基础配置

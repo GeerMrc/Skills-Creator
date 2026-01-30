@@ -14,11 +14,21 @@
 
 ### MCP 集成
 
-| 文档 | 说明 | 行数 |
-|------|------|------|
-| **[MCP 工具参考](mcp-tools-reference.md)** | MCP 工具完整参考和工作流集成 | ~180 |
-| **[GitHub 集成指南](mcp-github-integration.md)** | 与 GitHub MCP Server 集成示例 | ~150 |
-| **[Thinking MCP 集成指南](mcp-thinking-integration.md)** | 与 Thinking MCP Server 集成示例 | ~150 |
+**核心参考**：
+
+| 文档 | 说明 | 定位 | 行数 |
+|------|------|------|------|
+| **[MCP 工具参考](mcp-tools-reference.md)** | skill-creator MCP 的12个工具完整参考 | 核心参考 | ~180 |
+| **[MCP 集成扩展指南](mcp-integration-guide.md)** | 为 Agent-Skills 集成任何 MCP 的通用方法论 | 方法指南 | ~340 |
+
+**集成示范**：
+
+| 文档 | 说明 | 用途 | 行数 |
+|------|------|------|------|
+| **[GitHub MCP 集成示范](mcp-github-integration.md)** | GitHub MCP 集成最佳实践示范 | Git 自动化、需求跟踪 | ~160 |
+| **[Thinking MCP 集成示范](mcp-thinking-integration.md)** | Thinking MCP 集成最佳实践示范 | 思考记录、决策追溯 | ~230 |
+
+> **使用提示**：参考示范案例了解具体实现，使用扩展指南学习通用方法论。
 
 ### 验证相关
 

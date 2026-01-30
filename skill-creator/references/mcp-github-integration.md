@@ -1,10 +1,23 @@
-# GitHub MCP 集成指南
+# GitHub MCP 集成示范
 
-## 概述
+> **文档定位**：本文档是 GitHub MCP 与 Agent-Skills 集成的**示范案例**，展示如何将外部 MCP 集成到 Agent-Skills 开发工作流中。
+>
+> **适用场景**：当你的 Agent-Skill 需要 Git 自动化、需求跟踪、PR 管理等功能时，可参考本示范实现 GitHub MCP 集成。
+>
+> **扩展指南**：要集成其他 MCP（如 FileSystem、Database、Web Search），请参考 [MCP 集成扩展指南](mcp-integration-guide.md)。
+>
+> **相关示例**：[GitHub 需求跟踪示例](../examples/github-requirement-tracking.md) | [Git 自动化示例](../examples/github-automation.md)
+
+## 示范概述
 
 GitHub MCP 提供 GitHub 操作能力，与 Skill-Creator 集成后可实现需求跟踪、Git 工作流自动化和问题跟踪。
 
-> **示例代码**：查看 [GitHub 需求跟踪示例](../examples/github-requirement-tracking.md) 和 [Git 自动化示例](../examples/github-automation.md)
+本示范展示如何在 Agent-Skills 开发工作流中集成 GitHub MCP，实现以下核心功能：
+
+1. **需求跟踪** - 自动创建 GitHub Issue 跟踪需求
+2. **Git 自动化** - 自动创建 feature 分支
+3. **PR 管理** - 自动创建 Pull Request
+4. **问题跟踪** - 验证失败自动创建 Issue
 
 ## 配置方法
 
@@ -149,8 +162,9 @@ if not validation["is_valid"]:
 | 问题跟踪 | 手动记录 | 自动 Issue |
 | 团队协作 | 口头/文档 | GitHub 原生 |
 
-## 参考链接
+## 参考资源
 
+- **[MCP 集成扩展指南](mcp-integration-guide.md)** - 为其他 Agent-Skills 集成 MCP 的通用方法论
+- **[MCP 工具参考](mcp-tools-reference.md)** - skill-creator MCP 工具完整参考
 - **[GitHub 需求跟踪示例](../examples/github-requirement-tracking.md)** - 需求 Issue 自动创建
 - **[Git 自动化示例](../examples/github-automation.md)** - 分支和 PR 自动化
-- **[MCP 集成指南](mcp-tools-reference.md)** - MCP 基础配置
