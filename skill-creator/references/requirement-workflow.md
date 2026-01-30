@@ -22,18 +22,18 @@
 ### 工作流程
 
 ```yaml
-1. 调用 create_requirement_session(mode="basic")
+1. 调用 create_requirement_session_tool(mode="basic")
    → 返回: session_id, total_steps=5
 
 2. 循环（5步）：
-   a. 调用 get_static_question(mode="basic", step_index=i)
+   a. 调用 get_static_question_tool(mode="basic", step_index=i)
    b. 向用户展示问题
    c. 获取用户输入
-   d. 调用 validate_answer_format(answer, validation)
+   d. 调用 validate_answer_format_tool(answer, validation)
    e. 如果验证失败，显示错误并重新获取
-   f. 调用 update_requirement_answer(session_id, question_key, answer)
+   f. 调用 update_requirement_answer_tool(session_id, question_key, answer)
 
-3. 调用 check_requirement_completeness(answers)
+3. 调用 check_requirement_completeness_tool(answers)
    → 返回: complete, missing_items, suggestions
 ```
 

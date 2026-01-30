@@ -1,22 +1,22 @@
-# validate_skill 使用示例
+# validate_skill_tool 使用示例
 
-`validate_skill` 工具用于验证 Agent-Skill 的结构和内容符合规范。
+`validate_skill_tool` 工具用于验证 Agent-Skill 的结构和内容符合规范。
 
 ## 概述
 
-`validate_skill` 检查技能的目录结构、命名规范、内容完整性等。
+`validate_skill_tool` 检查技能的目录结构、命名规范、内容完整性等。
 
 ## 基本用法
 
 ```python
 # 完整验证（结构和内容）
-validate_skill(skill_path="/path/to/skill")
+validate_skill_tool(skill_path="/path/to/skill")
 
 # 只检查结构
-validate_skill(skill_path="/path/to/skill", check_structure=True, check_content=False)
+validate_skill_tool(skill_path="/path/to/skill", check_structure=True, check_content=False)
 
 # 只检查内容
-validate_skill(skill_path="/path/to/skill", check_structure=False, check_content=True)
+validate_skill_tool(skill_path="/path/to/skill", check_structure=False, check_content=True)
 ```
 
 **响应**:

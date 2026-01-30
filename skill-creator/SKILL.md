@@ -96,9 +96,9 @@ Skill-Creator 是一个混合架构的元技能，结合 MCP Server 和 Agent-Sk
 - validate_answer_format_tool - 验证答案格式
 - check_requirement_completeness_tool - 检查需求完整性（LLM）
 
-**技能工具 (4)**: init_skill | validate_skill | analyze_skill | refactor_skill
+**技能工具 (4)**: init_skill_tool | validate_skill_tool | analyze_skill_tool | refactor_skill_tool
 
-**打包工具 (1)**: package_skill（支持 strict 模式生成标准化包名）
+**打包工具 (1)**: package_skill（注意：此工具无 `_tool` 后缀，为历史兼容保留）
 
 > 注：工具分类统计：7个需求收集原子工具 + 4个技能工具 + 1个打包工具 = 12个工具
 

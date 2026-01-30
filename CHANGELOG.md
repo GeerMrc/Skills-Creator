@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.4] - 2026-01-29
 
+### Changed
+
+**文档更新** - 统一 MCP 工具命名规范:
+- 更新 SKILL.md：工具名统一使用 `_tool` 后缀（如 `init_skill_tool`）
+- 更新 mcp-integration.md：
+  - 所有工具表格使用完整工具名
+  - 新增"工具命名约定"章节，说明命名规则
+  - 更新代码示例使用完整工具名
+- 更新 requirement-workflow.md：工作流代码使用完整工具名
+- 更新示例文件：creating-a-skill.md, mcp-init-examples.md, mcp-validate-examples.md
+
+**命名规则**:
+- 技能工具：`init_skill_tool`, `validate_skill_tool`, `analyze_skill_tool`, `refactor_skill_tool`
+- 打包工具：`package_skill`（特殊：无 `_tool` 后缀，为历史兼容保留）
+- 需求工具：所有工具带 `_tool` 后缀
+
 ### Removed
 
 **代码清理**:
