@@ -36,8 +36,18 @@
 | 示例 | 说明 | 行数 |
 |------|------|------|
 | **[MCP 协作](mcp-skill-collaboration.md)** | Agent-Skill 与 MCP 协同工作流 | ~300 |
-| **[Thinking 分析示例](thinking-analysis.md)** | analyze_skill + Thinking MCP 记录思考过程 | ~470 |
-| **[Thinking 导出示例](thinking-export.md)** | 导出思考会话为文档 | ~460 |
+| **[Thinking 集成](thinking/README.md)** | Thinking MCP 集成示例索引 | ~80 |
+
+#### Thinking 子目录
+
+| 示例 | 说明 | 行数 |
+|------|------|------|
+| **[基础分析](thinking/analysis-basic.md)** | analyze_skill + Thinking 基础集成 | ~150 |
+| **[高级分析](thinking/analysis-advanced.md)** | 对比/逆向/假设思考 | ~160 |
+| **[分析工作流](thinking/analysis-workflow.md)** | 思考步骤规划 | ~150 |
+| **[导出格式](thinking/export-formats.md)** | 多格式导出对比 | ~170 |
+| **[导出工作流](thinking/export-workflow.md)** | 批量导出和归档 | ~150 |
+| **[导出自动化](thinking/export-automation.md)** | 自动化和版本控制 | ~140 |
 
 ### GitHub MCP 集成示例
 
