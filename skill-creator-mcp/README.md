@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-566%20passed%2C%202%20skipped-success](#)
+[![Tests](https://img.shields.io/badge/tests-551%20passed%2C%202%20skipped-success](#)
 [![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen](#)
 
 Agent-Skills 开发与质量保证 MCP Server。
@@ -23,7 +23,7 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 ---
 
-## 最新特性（v0.3.4）
+## 最新特性（v0.3.6）
 
 ### 生命周期管理
 - ✅ **AppContext** - 应用生命周期上下文
@@ -49,7 +49,7 @@ Agent-Skills 开发与质量保证 MCP Server。
 
 > 🚧 **项目正在开发中**
 >
-> 当前版本：v0.3.4
+> 当前版本：v0.3.6
 >
 > 这是 Skill-Creator 项目的 MCP Server 组件，提供创建、验证、分析和重构 Agent-Skills 的工具。
 

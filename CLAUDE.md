@@ -33,9 +33,9 @@
 
 **Skills-Creator** 是一个基于 **MCP Server + Agent-Skill 混合架构**的完整解决方案，用于开发、验证和优化 Agent-Skills。
 
-- **当前版本**: v0.3.4
+- **当前版本**: v0.3.6
 - **开发环境**: conda base Python 环境
-- **测试覆盖率**: 97% (568个测试用例)
+- **测试覆盖率**: 97% (553个测试用例)
 - **技术栈**: FastMCP SDK + Pydantic 2.0+ + pytest
 
 ### 1.2 技术架构
@@ -76,7 +76,7 @@
 │   │   ├── utils/              # 工具函数
 │   │   ├── prompts/            # Prompt 模板
 │   │   └── resources/          # 资源内容
-│   ├── tests/                  # 测试套件 (97% 覆盖率, 568个测试)
+│   ├── tests/                  # 测试套件 (97% 覆盖率, 553个测试)
 │   ├── pyproject.toml          # 项目配置
 │   └── README.md
 ├── docs/                       # 项目文档

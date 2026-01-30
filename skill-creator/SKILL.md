@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-version: 0.3.4
+version: 0.3.6
 description: |
   Agent-Skills 开发与质量保证工具。通过 MCP 工具提供技能初始化、需求澄清、规范验证、结构分析、重构建议和模板生成功能。
 
